@@ -1,3 +1,4 @@
+import 'package:fair_front/screens/mainMenu.dart';
 import 'package:flutter/material.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 
@@ -21,6 +22,9 @@ class FairMeetingApp extends StatelessWidget {
     return MaterialApp(
       title: 'Fair Meeting',
       home: const LoginScreen(),  // 로그인 화면을 호출
+      routes: {
+        '/main' : (context) => MainmenuScreen()
+      },
       debugShowCheckedModeBanner: false,
     );
   }
