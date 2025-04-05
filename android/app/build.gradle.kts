@@ -8,7 +8,7 @@ plugins {
 android {
     namespace = "com.example.fair_front"
     compileSdk = flutter.compileSdkVersion
-    ndkVersion = flutter.ndkVersion
+    ndkVersion = "29.0.13113456"     // NDK 버전 고정
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
