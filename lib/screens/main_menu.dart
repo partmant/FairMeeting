@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:fair_front/screens/kakao_map_screen.dart';
+import '../widgets/logo_title.dart';
+import 'package:fair_front/screens/login.dart';
 
 
 class MainmenuScreen extends StatefulWidget {
@@ -15,43 +18,20 @@ class _MainmenuScreenState extends State<MainmenuScreen> {
       body: Container(
         color: Colors.yellow.shade50,
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.end, // 내용 하단 정렬
           children: [
-            // 상단 부분
-            Container(
-              padding: EdgeInsets.symmetric(vertical: 20),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    'FAIR',
-                    style: TextStyle(
-                      color: Color(0xFFD9C189),
-                      fontWeight: FontWeight.bold,
-                      fontSize: 35,
-                    ),
-                  ),
-                  SizedBox(height: 5),
-                  Text(
-                    'MEETING',
-                    style: TextStyle(
-                      color: Color(0xFFD9C189),
-                      fontWeight: FontWeight.bold,
-                      fontSize: 30,
-                    ),
-                  ),
-                ],
-              ),
+            const SizedBox(height: 60), // 로고 위에 공간 추가
+            const Center(
+              child: LogoTitle(),
             ),
+            const SizedBox(height: 20), // 로고와 버튼 사이 여백
             Expanded(
               child: Padding(
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 8.0, vertical: 15.0), // 여백 추가로 조정
+                padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 15.0),
                 child: GridView.count(
-                  crossAxisCount: 2, // 2열 레이아웃
-                  crossAxisSpacing: 20, // 버튼 간격 줄이기
-                  mainAxisSpacing: 20, // 버튼 간격 줄이기
-                  childAspectRatio: 1, // 정사각형 비율 유지
+                  crossAxisCount: 2,
+                  crossAxisSpacing: 20,
+                  mainAxisSpacing: 20,
+                  childAspectRatio: 1,
                   children: [
                     _buildMenuButton(
                       context: context,
@@ -111,41 +91,54 @@ class _MainmenuScreenState extends State<MainmenuScreen> {
   }) {
     return ElevatedButton(
       onPressed: () {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('$label 버튼을 눌렀습니다.')),
-        );
+        if (label == '약속 만들기') {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const KakaoMapScreen()),
+          );
+        } else if (label == '내 정보') {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const LoginScreen()), // ✅ LoginScreen으로 이동!
+          );
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('$label 버튼을 눌렀습니다.')),
+          );
+        }
       },
+
       style: ElevatedButton.styleFrom(
         backgroundColor: color,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(8),
         ),
-        padding: EdgeInsets.all(4), // 버튼 내부 여백 축소
+        padding: const EdgeInsets.all(4),
       ),
       child: Stack(
         children: [
           Align(
-            alignment: Alignment.topLeft, // 아이콘을 왼쪽 상단에 배치
+            alignment: Alignment.topLeft,
             child: Padding(
-              padding: EdgeInsets.only(top: 4, left: 4),
-              child: Icon(icon, size: 25, color: iconColor), // 아이콘 크기 줄이기
+              padding: const EdgeInsets.only(top: 4, left: 4),
+              child: Icon(icon, size: 25, color: iconColor),
             ),
           ),
           Align(
-            alignment: Alignment.center, // label을 기존 위치에 유지
+            alignment: Alignment.center,
             child: Text(
               label,
               style: TextStyle(
-                fontSize: 15, // 텍스트 크기 줄이기
+                fontSize: 15,
                 fontWeight: FontWeight.bold,
                 color: textColor,
               ),
             ),
           ),
           Align(
-            alignment: Alignment.bottomRight, // subLabel을 오른쪽 하단에 배치
+            alignment: Alignment.bottomRight,
             child: Padding(
-              padding: EdgeInsets.only(right: 4, bottom: 6), // subLabel 위치 조정
+              padding: const EdgeInsets.only(right: 4, bottom: 6),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -156,7 +149,7 @@ class _MainmenuScreenState extends State<MainmenuScreen> {
                       color: textColor,
                     ),
                   ),
-                  SizedBox(height: 2), // 줄 간격 조정
+                  const SizedBox(height: 2),
                   Text(
                     subLabel2,
                     style: TextStyle(
@@ -173,4 +166,3 @@ class _MainmenuScreenState extends State<MainmenuScreen> {
     );
   }
 }
-

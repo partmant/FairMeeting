@@ -1,8 +1,9 @@
-import 'package:fair_front/screens/mainMenu.dart';
+import 'package:fair_front/screens/main_menu.dart';
 import 'package:flutter/material.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 import 'package:kakao_map_plugin/kakao_map_plugin.dart';
 import 'screens/login.dart';
+import 'screens/app_start.dart';
 import 'screens/kakao_map_screen.dart';
 
 
@@ -25,7 +26,7 @@ class FairMeetingApp extends StatelessWidget {
       title: 'Fair Meeting',
       debugShowCheckedModeBanner: false,  //디버그 배너 제거
 
-      home: const LoginScreen(),  // 로그인 화면을 호출
+      home: const AppStart(),  // 로그인 화면을 호출
 
       //home: KakaoMapScreen(),
 

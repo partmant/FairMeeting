@@ -6,6 +6,23 @@
         android:label="fair_front"
         android:icon="@mipmap/ic_launcher"
         android:usesCleartextTraffic="true">    <!-- 추가 -->>
+
+        <meta-data
+            android:name="com.kakao.sdk.AppKey"
+            android:value="9255023b3d9eebeecb1887c7ec03991d" />
+
+        <activity
+            android:name="com.kakao.sdk.auth.AuthCodeHandlerActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="kakao9255023b3d9eebeecb1887c7ec03991d" />
+            </intent-filter>
+        </activity>
+
+
         <activity
             android:name=".MainActivity"
             android:exported="true"

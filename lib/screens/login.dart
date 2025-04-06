@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-
+import 'package:fair_front/screens/main_menu.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 // import 'package:naver_login/naver_login.dart';
 
@@ -34,21 +34,44 @@ class _LoginScreenState extends State<LoginScreen> {
     try {
       OAuthToken token;
 
-      if (await isKakaoTalkInstalled()) {
-        token = await UserApi.instance.loginWithKakaoTalk();
+      bool isInstalled = await isKakaoTalkInstalled();
+      if (isInstalled) {
+        try {
+          token = await UserApi.instance.loginWithKakaoTalk();
+          print('카카오톡으로 로그인 성공: ${token.accessToken}');
+        } catch (error) {
+          print('카카오톡 로그인 실패, WebView로 로그인 시도');
+          token = await UserApi.instance.loginWithKakaoAccount();
+          print('카카오 계정으로 로그인 성공: ${token.accessToken}');
+        }
       } else {
         token = await UserApi.instance.loginWithKakaoAccount();
+        print('카카오 계정으로 로그인 성공: ${token.accessToken}');
       }
-
-      print('카카오 로그인 성공: ${token.accessToken}');
 
       // 사용자 정보 가져오기
       final user = await UserApi.instance.me();
-      print('유저 이메일: ${user.kakaoAccount?.email}');   // 현재 이메일 받을 권한이 없으므로, null로 출력됨
+      print('유저 이메일: ${user.kakaoAccount?.email}');
+
+      // 로그인 후 이동할 때, 무슨 화면 뜨게 할 건지
+      if (mounted) {
+        Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(builder: (context) => const MainmenuScreen()),
+              (Route<dynamic> route) => false,
+        );
+      }
+
     } catch (e) {
       print('카카오 로그인 실패: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('카카오 로그인 실패: $e')),
+        );
+      }
     }
   }
+
+
 
   // 네이버 로그인 함수
   void naverLogin() {
