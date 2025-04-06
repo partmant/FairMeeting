@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:kakao_map_plugin/kakao_map_plugin.dart';
+import 'package:fair_front/widgets/go_back.dart';
 
 class KakaoMapScreen extends StatefulWidget {
   const KakaoMapScreen({super.key});
@@ -20,6 +21,7 @@ class _KakaoMapScreenState extends State<KakaoMapScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: buildCommonAppBar(context),
       body: KakaoMap(
         onMapCreated: (controller) {
           mapController = controller;

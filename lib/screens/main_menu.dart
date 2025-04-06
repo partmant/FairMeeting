@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:fair_front/screens/kakao_map_screen.dart';
 import '../widgets/logo_title.dart';
 import 'package:fair_front/screens/login.dart';
+import 'package:fair_front/screens/my_info.dart';
 
 
 class MainmenuScreen extends StatefulWidget {
@@ -99,7 +100,7 @@ class _MainmenuScreenState extends State<MainmenuScreen> {
         } else if (label == '내 정보') {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => const LoginScreen()), // ✅ LoginScreen으로 이동!
+            MaterialPageRoute(builder: (context) => const MyInfoPage()), // ✅ LoginScreen으로 이동!
           );
         } else {
           ScaffoldMessenger.of(context).showSnackBar(

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fair_front/screens/main_menu.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
+import 'package:fair_front/widgets/go_back.dart';
 // import 'package:naver_login/naver_login.dart';
 
 // 위젯들 import
@@ -82,6 +83,7 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: buildCommonAppBar(context),
       backgroundColor: Colors.white,
       body: SafeArea(
         child: SingleChildScrollView(
