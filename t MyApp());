@@ -1,0 +1,24 @@
+[33mcommit d7bda14842142a4b60d3d0e88a02579029120604[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mfeat/mainUI[m[33m, [m[1;31morigin/feat/mainUI[m[33m)[m
+Author: Yoon, Chanhyeok <jomecena26@naver.com>
+Date:   Fri Apr 4 16:45:32 2025 +0900
+
+    feat: main UI 구현 - 윤찬혁
+
+[33mcommit 289fdc5db7a954f5711daf407960f42c232ade1e[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m, [m[1;32mmain[m[33m)[m
+Merge: bf1186a 8d99887
+Author: Chaehwan Lim <legoch16@gmail.com>
+Date:   Fri Apr 4 14:14:44 2025 +0900
+
+    Resolve conflict: finalize README.md
+
+[33mcommit bf1186afb8789c7e60718226bc9bad5eeb34747a[m
+Author: Chaehwan Lim <legoch16@gmail.com>
+Date:   Fri Apr 4 13:50:32 2025 +0900
+
+    frontend first commit
+
+[33mcommit 8d998870998938f6ab9a498aa10d40badf5c3f24[m
+Author: ChaeHwan Lim <legoch16@gmail.com>
+Date:   Fri Apr 4 13:43:59 2025 +0900
+
+    Initial commit

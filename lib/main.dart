@@ -10,7 +10,7 @@ import 'screens/kakao_map_screen.dart';
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   KakaoSdk.init(
-    nativeAppKey: '9255023b3d9eebeecb1887c7ec03991d'
+      nativeAppKey: '9255023b3d9eebeecb1887c7ec03991d'
   );
   AuthRepository.initialize(appKey: '37a305a2cced0d6cc202933800e44385');  // 앱 실행 전에 반드시 카카오 지도 플러그인 초기화
 
