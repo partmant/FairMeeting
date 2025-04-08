@@ -3,6 +3,8 @@ import 'package:kakao_map_plugin/kakao_map_plugin.dart';
 import 'package:fair_front/widgets/go_back.dart';
 import 'package:fair_front/screens/kakao_map_screen.dart';
 import 'package:dotted_border/dotted_border.dart'; // 점선 테두리용
+import 'package:fair_front/screens/auto_address_complete_screen.dart';
+
 
 class PutLocationScreen extends StatefulWidget {
   const PutLocationScreen({super.key});
@@ -27,7 +29,7 @@ class _PutLocationScreenState extends State<PutLocationScreen> {
 
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: buildCommonAppBar(context),
+      appBar: buildCommonAppBar(context, title:'위치 입력하기'),
       body: SingleChildScrollView(
         child: Column(
           children: [
@@ -96,7 +98,7 @@ class _PutLocationScreenState extends State<PutLocationScreen> {
                     onPressed: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => const KakaoMapScreen()),
+                        MaterialPageRoute(builder: (context) => const AddressAutoCompleteScreen()),
                       );
                     },
                     style: TextButton.styleFrom(

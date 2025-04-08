@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:fair_front/screens/login.dart';
+import 'package:fair_front/screens/login_screen.dart';
 import 'package:fair_front/widgets/go_back.dart';  // 공통 AppBar import
 
 class MyInfoPage extends StatelessWidget {
@@ -21,7 +21,7 @@ class MyInfoPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: buildCommonAppBar(context),  // ✅ 우리가 만든 AppBar만 적용
+      appBar: buildCommonAppBar(context, title:'내 정보'),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(

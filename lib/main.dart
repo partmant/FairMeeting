@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 import 'package:kakao_map_plugin/kakao_map_plugin.dart';
-import 'screens/login.dart';
+import 'screens/login_screen.dart';
 import 'screens/loading_screen.dart';
 import 'screens/kakao_map_screen.dart';
 

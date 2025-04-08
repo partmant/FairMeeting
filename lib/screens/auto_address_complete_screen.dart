@@ -1,6 +1,8 @@
 import 'dart:convert';
+import 'dart:io'; // 추가: 플랫폼 체크를 위해
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:fair_front/widgets/go_back.dart';
 
 void main() {
   runApp(const MyApp());
@@ -34,7 +36,12 @@ class _AddressAutoCompleteScreenState extends State<AddressAutoCompleteScreen> {
 
   // 개발 환경: Android 에뮬레이터의 경우, PC의 localhost를 가리키는 주소입니다.
   // 실제 기기 테스트 시 PC의 IP 주소나 ngrok URL 등을 사용해야 합니다.
-  final String backendUrl = 'http://10.0.2.2:8088/api/address-autocomplete';
+
+  // 수정된 부분 시작 - 플랫폼 구분하여 URL 설정
+  final String backendUrl = Platform.isAndroid
+      ? 'http://10.0.2.2:8088/api/address-autocomplete' // Android용
+      : 'http://127.0.0.1:8088/api/address-autocomplete'; // iOS 시뮬레이터용
+  // 수정된 부분 끝
 
   Future<void> _searchAddress(String query) async {
     if (query.trim().isEmpty) {
@@ -94,9 +101,7 @@ class _AddressAutoCompleteScreenState extends State<AddressAutoCompleteScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("주소 자동완성"),
-      ),
+      appBar: buildCommonAppBar(context, title:'주소 입력하기'),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(

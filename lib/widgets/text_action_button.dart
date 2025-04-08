@@ -1,6 +1,6 @@
 /*
 아이디 찾기 ~ 비회원 로그인 버튼 위젯
-각각의 버튼이 눌렸을 때는 login.dart 에서 처리 예정
+각각의 버튼이 눌렸을 때는 login_screen.dart 에서 처리 예정
  */
 
 import 'package:flutter/material.dart';
