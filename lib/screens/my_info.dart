@@ -1,52 +1,27 @@
 import 'package:flutter/material.dart';
-
-void main() {
-  runApp(const MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: '내 정보',
-      home: const MyInfoPage(),
-    );
-  }
-}
+import 'package:fair_front/screens/login.dart';
+import 'package:fair_front/widgets/go_back.dart';  // 공통 AppBar import
 
 class MyInfoPage extends StatelessWidget {
   const MyInfoPage({super.key});
 
-  void _onButtonPressed(String title) {
+  void _onButtonPressed(String title, BuildContext context) {
     print('$title 버튼 클릭됨');
+
+    if (title == "로그인") {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const LoginScreen()),
+      );
+    }
+    // 나중에 로그아웃, 회원탈퇴도 여기에 추가할 수 있음
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(
-        elevation: 0,
-        backgroundColor: Colors.white,
-        centerTitle: true,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () {},
-        ),
-        title: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: const [
-            Icon(Icons.person, color: Colors.black),
-            SizedBox(width: 4),
-            Text(
-              '내 정보',
-              style: TextStyle(color: Colors.black),
-            ),
-          ],
-        ),
-      ),
+      appBar: buildCommonAppBar(context),  // ✅ 우리가 만든 AppBar만 적용
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -67,7 +42,7 @@ class MyInfoPage extends StatelessWidget {
                     borderRadius: BorderRadius.circular(8),
                   ),
                 ),
-                onPressed: () => _onButtonPressed("로그인"),
+                onPressed: () => _onButtonPressed("로그인", context),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: const [
@@ -98,7 +73,7 @@ class MyInfoPage extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     TextButton.icon(
-                      onPressed: () => _onButtonPressed("친구 목록 보기"),
+                      onPressed: () => _onButtonPressed("친구 목록 보기", context),
                       icon: const Icon(Icons.people, color: Colors.black, size: 16),
                       label: const Text(
                         '친구 목록 보기',
@@ -132,12 +107,12 @@ class MyInfoPage extends StatelessWidget {
                 ),
                 child: ListView(
                   children: [
-                    _buildOutlinedMenu(Icons.password, '비밀번호 변경'),
-                    _buildOutlinedMenu(Icons.lock, '개인 정보 및 보안'),
-                    _buildOutlinedMenu(Icons.campaign, '공지사항'),
-                    _buildOutlinedMenu(Icons.policy, '약관 및 정책'),
-                    _buildOutlinedMenu(Icons.logout, '로그아웃'),
-                    _buildOutlinedMenu(Icons.cancel, '회원 탈퇴'),
+                    _buildOutlinedMenu(context, Icons.password, '비밀번호 변경'),
+                    _buildOutlinedMenu(context, Icons.lock, '개인 정보 및 보안'),
+                    _buildOutlinedMenu(context, Icons.campaign, '공지사항'),
+                    _buildOutlinedMenu(context, Icons.policy, '약관 및 정책'),
+                    _buildOutlinedMenu(context, Icons.logout, '로그아웃'),
+                    _buildOutlinedMenu(context, Icons.cancel, '회원 탈퇴'),
                   ],
                 ),
               ),
@@ -148,11 +123,11 @@ class MyInfoPage extends StatelessWidget {
     );
   }
 
-  Widget _buildOutlinedMenu(IconData icon, String title) {
+  Widget _buildOutlinedMenu(BuildContext context, IconData icon, String title) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 6),
       child: OutlinedButton(
-        onPressed: () => _onButtonPressed(title),
+        onPressed: () => _onButtonPressed(title, context),
         style: OutlinedButton.styleFrom(
           backgroundColor: Colors.white,
           side: const BorderSide(color: Color(0xFFD9C189), width: 1.5),

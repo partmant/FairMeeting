@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:fair_front/screens/kakao_map_screen.dart';
+import 'package:fair_front/screens/put_location.dart';
 import '../widgets/logo_title.dart';
 import 'package:fair_front/screens/login.dart';
-
+import 'package:fair_front/screens/my_info.dart';
 
 class MainmenuScreen extends StatefulWidget {
   const MainmenuScreen({super.key});
@@ -19,11 +19,11 @@ class _MainmenuScreenState extends State<MainmenuScreen> {
         color: Colors.yellow.shade50,
         child: Column(
           children: [
-            const SizedBox(height: 60), // 로고 위에 공간 추가
+            const SizedBox(height: 60),
             const Center(
               child: LogoTitle(),
             ),
-            const SizedBox(height: 20), // 로고와 버튼 사이 여백
+            const SizedBox(height: 20),
             Expanded(
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 15.0),
@@ -94,12 +94,12 @@ class _MainmenuScreenState extends State<MainmenuScreen> {
         if (label == '약속 만들기') {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => const KakaoMapScreen()),
+            MaterialPageRoute(builder: (context) => const PutLocationScreen()),
           );
         } else if (label == '내 정보') {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => const LoginScreen()), // ✅ LoginScreen으로 이동!
+            MaterialPageRoute(builder: (context) => const MyInfoPage()),
           );
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -107,7 +107,6 @@ class _MainmenuScreenState extends State<MainmenuScreen> {
           );
         }
       },
-
       style: ElevatedButton.styleFrom(
         backgroundColor: color,
         shape: RoundedRectangleBorder(
