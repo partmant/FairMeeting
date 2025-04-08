@@ -1,3 +1,4 @@
+import 'package:fair_front/screens/auto_address_complete_screen.dart';
 import 'package:fair_front/screens/main_menu.dart';
 import 'package:flutter/material.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
