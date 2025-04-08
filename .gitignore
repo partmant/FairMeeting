@@ -31,3 +31,13 @@ build/
 
 ### VS Code ###
 .vscode/
+
+
+# macOS .DS_Store
+
+# Eclipse / STS 
+.metadata/ 
+bin/ 
+*.log 
+
+app.log

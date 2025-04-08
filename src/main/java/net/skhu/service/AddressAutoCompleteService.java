@@ -22,7 +22,8 @@ public class AddressAutoCompleteService {
 
     public List<Map<String, Object>> getAutoComplete(String query) {
         // Kakao API 호출 URL (여기서는 추가적인 좌표나 반경 파라미터 없이 오직 query만 사용)
-        String url = String.format(
+        System.out.println(query);			// 디버깅용 코드
+    	String url = String.format(
             "https://dapi.kakao.com/v2/local/search/keyword.json?query=%s",
             query
         );
