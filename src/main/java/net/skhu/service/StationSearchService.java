@@ -29,8 +29,7 @@ public class StationSearchService {
      */
     public List<StationSearchResult> getNearbyStations(List<Coordinate> coordinates) {
         List<StationSearchResult> results = new ArrayList<>();
-        // 카테고리 그룹 코드 "SW8": 지하철역
-        String categoryGroupCode = "SW8";
+        String categoryGroupCode = "SW8";	// 카테고리 그룹 코드 "SW8": 지하철역
         int radius = 2000; // (단위: 미터)
 
         HttpHeaders headers = new HttpHeaders();
