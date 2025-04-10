@@ -21,6 +21,10 @@ dependencies:
 
   dotted_border: ^2.0.0                    # 점선 사용
 
+  intl: ^0.18.1 # cal 패키지
+
+  table_calendar: ^3.0.9 # 피그마용 달력 ^3.0.9
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -32,3 +36,4 @@ flutter:
   assets:
     - assets/kakaoOauth.png
     - assets/naverOauth.png
+

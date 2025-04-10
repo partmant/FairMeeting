@@ -4,6 +4,8 @@ import '../widgets/logo_title.dart';
 import 'package:fair_front/screens/login.dart';
 import 'package:fair_front/screens/my_info.dart';
 
+import 'calender.dart';
+
 class MainmenuScreen extends StatefulWidget {
   const MainmenuScreen({super.key});
 
@@ -101,7 +103,12 @@ class _MainmenuScreenState extends State<MainmenuScreen> {
             context,
             MaterialPageRoute(builder: (context) => const MyInfoPage()),
           );
-        } else {
+        } else if (label == '약속 캘린더') {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (builder) => const AppointmentCalendarScreen()),
+          );
+        }else {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text('$label 버튼을 눌렀습니다.')),
           );
