@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:fair_front/screens/put_location.dart';
+import 'package:fair_front/screens/put_location_screen.dart';
 import '../widgets/logo_title.dart';
-import 'package:fair_front/screens/login.dart';
-import 'package:fair_front/screens/my_info.dart';
+import 'package:fair_front/screens/login_screen.dart';
+import 'package:fair_front/screens/my_info_screen.dart';
 
 import 'calender.dart';
 

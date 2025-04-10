@@ -1,15 +1,19 @@
 import 'package:flutter/material.dart';
 
-AppBar buildCommonAppBar(BuildContext context) {
+PreferredSizeWidget buildCommonAppBar(BuildContext context, {String? title}) {
   return AppBar(
-    backgroundColor: Colors.transparent,
+    backgroundColor: Colors.white,
     elevation: 0,
-    toolbarHeight: 28,        // appBar 높이 여기서 수정. 기본 56 -> 28 줄임
     leading: IconButton(
       icon: const Icon(Icons.arrow_back, color: Colors.black),
       onPressed: () => Navigator.pop(context),
     ),
-    title: null,
     centerTitle: true,
+    title: title != null
+        ? Text(
+      title,
+      style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+    )
+        : null, // title 없으면 비워둠
   );
 }
