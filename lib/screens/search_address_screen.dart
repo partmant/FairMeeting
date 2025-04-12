@@ -1,47 +1,22 @@
 import 'dart:convert';
-import 'dart:io'; // 추가: 플랫폼 체크를 위해
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:fair_front/widgets/go_back.dart';
 
-void main() {
-  runApp(const MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class SearchAddressScreen extends StatefulWidget {
+  const SearchAddressScreen({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: '주소 자동완성',
-      debugShowCheckedModeBanner: false,
-      home: const AddressAutoCompleteScreen(),
-    );
-  }
+  State<SearchAddressScreen> createState() => _SearchAddressScreenState();
 }
 
-class AddressAutoCompleteScreen extends StatefulWidget {
-  const AddressAutoCompleteScreen({Key? key}) : super(key: key);
-
-  @override
-  State<AddressAutoCompleteScreen> createState() =>
-      _AddressAutoCompleteScreenState();
-}
-
-class _AddressAutoCompleteScreenState extends State<AddressAutoCompleteScreen> {
+class _SearchAddressScreenState extends State<SearchAddressScreen> {
   final TextEditingController _searchController = TextEditingController();
   List<dynamic> _suggestions = [];
   bool _isLoading = false;
 
-  // 개발 환경: Android 에뮬레이터의 경우, PC의 localhost를 가리키는 주소입니다.
-  // 실제 기기 테스트 시 PC의 IP 주소나 ngrok URL 등을 사용해야 합니다.
-
-  // 수정된 부분 시작 - 플랫폼 구분하여 URL 설정
-  final String backendUrl = Platform.isAndroid
-      ? 'http://10.0.2.2:8088/api/address-autocomplete' // Android용
-      : 'http://127.0.0.1:8088/api/address-autocomplete'; // iOS 시뮬레이터용
-  // 수정된 부분 끝
+  // 개발 환경: Android 에뮬레이터의 경우, PC의 localhost를 가리키는 주소
+  // 실제 기기 테스트 시 PC의 IP 주소 또는 ngrok URL 등을 사용
+  final String backendUrl = 'http://10.0.2.2:8088/api/address-autocomplete';
 
   Future<void> _searchAddress(String query) async {
     if (query.trim().isEmpty) {
@@ -62,7 +37,8 @@ class _AddressAutoCompleteScreenState extends State<AddressAutoCompleteScreen> {
     try {
       final response = await http.get(uri);
       if (response.statusCode == 200) {
-        final data = jsonDecode(utf8.decode(response.bodyBytes)); // UTF-8로 디코딩, 명시적으로 안 해주면 한글 깨짐
+        // UTF-8 디코딩하여 한글 깨짐 방지
+        final data = jsonDecode(utf8.decode(response.bodyBytes));
         setState(() {
           _suggestions = data as List<dynamic>;
         });
@@ -101,7 +77,9 @@ class _AddressAutoCompleteScreenState extends State<AddressAutoCompleteScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: buildCommonAppBar(context, title:'주소 입력하기'),
+      appBar: AppBar(
+        title: const Text("주소 자동완성"),
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -129,12 +107,9 @@ class _AddressAutoCompleteScreenState extends State<AddressAutoCompleteScreen> {
                     leading: const Icon(Icons.location_on),
                     title: Text(name),
                     onTap: () {
-                      // 항목 선택 시 TextField에 주소를 확정하고, 자동완성 목록을 초기화합니다.
                       setState(() {
-                        _searchController.text = name;
-                        _suggestions = [];
+                        Navigator.pop(context, suggestion); // 항목을 탭하면 선택한 결과를 반환하며 SearchAddressScreen 종료
                       });
-                      // 선택한 결과를 이전 화면으로 반환하는 동작을 추가할 수도 있습니다.
                     },
                   );
                 },
