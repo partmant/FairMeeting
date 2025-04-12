@@ -12,10 +12,17 @@ class AppointmentCalendarScreen extends StatefulWidget {
 
 class _AppointmentCalendarScreenState
     extends State<AppointmentCalendarScreen> {
+  static final DateTime _baseDate = DateTime(2020, 1);
+  static final int _initialPage = DateTime(2025, 3).difference(_baseDate).inDays ~/ 30;
+  final PageController _pageController = PageController(
+    initialPage: _initialPage,
+    viewportFraction: 0.92,
+  );
+
   DateTime _focusedDay = DateTime(2025, 3, 27);
   DateTime? _selectedDay;
 
-  final List<int> _yearList = [for (var y = 2023; y <= 2030; y++) y];
+  final List<int> _yearList = [for (var y = 2020; y <= 2030; y++) y];
   int _selectedYear = 2025;
   int _selectedMonth = 3;
 
@@ -89,8 +96,9 @@ class _AppointmentCalendarScreenState
                       if (year != null) {
                         setState(() {
                           _selectedYear = year;
-                          _focusedDay =
-                              DateTime(_selectedYear, _selectedMonth, 1);
+                          _focusedDay = DateTime(_selectedYear, _selectedMonth, 1);
+                          final index = (_focusedDay.difference(_baseDate).inDays ~/ 30);
+                          _pageController.jumpToPage(index);
                         });
                       }
                     },
@@ -108,8 +116,9 @@ class _AppointmentCalendarScreenState
                       if (month != null) {
                         setState(() {
                           _selectedMonth = month;
-                          _focusedDay =
-                              DateTime(_selectedYear, _selectedMonth, 1);
+                          _focusedDay = DateTime(_selectedYear, _selectedMonth, 1);
+                          final index = (_focusedDay.difference(_baseDate).inDays ~/ 30);
+                          _pageController.jumpToPage(index);
                         });
                       }
                     },
@@ -120,88 +129,97 @@ class _AppointmentCalendarScreenState
 
             const SizedBox(height: 24),
 
-            // 캘린더 (비율 줄이기)
-            Transform.scale(
-              scale: 0.8, // 전체 비율 축소
-              child: TableCalendar(
-                locale: 'ko_KR',
-                firstDay: DateTime.utc(2020, 1, 1),
-                lastDay: DateTime.utc(2030, 12, 31),
-                focusedDay: _focusedDay,
-                selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
-                onDaySelected: (selectedDay, focusedDay) {
+            // 캘린더
+            Expanded(
+              child: PageView.builder(
+                controller: _pageController,
+                itemCount: 240, // 20년치
+                onPageChanged: (index) {
+                  final newFocused = DateTime(_baseDate.year, _baseDate.month + index);
                   setState(() {
-                    _selectedDay = selectedDay;
-                    _focusedDay = focusedDay;
-                    _selectedYear = focusedDay.year;
-                    _selectedMonth = focusedDay.month;
+                    _focusedDay = newFocused;
+                    _selectedYear = newFocused.year;
+                    _selectedMonth = newFocused.month;
                   });
                 },
-                onPageChanged: (focusedDay) {
-                  setState(() {
-                    _focusedDay = focusedDay;
-                    _selectedYear = focusedDay.year;
-                    _selectedMonth = focusedDay.month;
-                  });
-                },
-                headerVisible: false,
-                daysOfWeekHeight: 40,
-                calendarStyle: CalendarStyle(
-                  outsideDaysVisible: true,
-                  weekendTextStyle: const TextStyle(color: Colors.red),
-                  todayDecoration: BoxDecoration(
-                    color: Colors.grey.shade300,
-                    shape: BoxShape.circle,
-                  ),
-                  selectedDecoration: const BoxDecoration(
-                    color: Colors.black,
-                    shape: BoxShape.circle,
-                  ),
-                ),
-                daysOfWeekStyle: const DaysOfWeekStyle(
-                  weekdayStyle: TextStyle(fontWeight: FontWeight.bold),
-                  weekendStyle: TextStyle(fontWeight: FontWeight.bold),
-                ),
-                calendarBuilders: CalendarBuilders(
-                  dowBuilder: (context, day) {
-                    final text = DateFormat.E('ko_KR').format(day);
-                    final isWeekend = day.weekday == DateTime.sunday ||
-                        day.weekday == DateTime.saturday;
-
-                    BorderRadius borderRadius = BorderRadius.zero;
-                    if (day.weekday == DateTime.sunday) {
-                      borderRadius =
-                      const BorderRadius.only(topLeft: Radius.circular(12));
-                    } else if (day.weekday == DateTime.saturday) {
-                      borderRadius = const BorderRadius.only(
-                          topRight: Radius.circular(12));
-                    }
-
-                    return Container(
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFE5D597),
-                        border: Border.all(
-                            color: const Color(0xFFCCCCCC), width: 0.5),
-                        borderRadius: borderRadius,
-                      ),
-                      child: Center(
-                        child: Text(
-                          text,
-                          style: TextStyle(
-                            color: isWeekend ? Colors.red : Colors.black87,
-                            fontWeight: FontWeight.w600,
-                          ),
+                itemBuilder: (context, index) {
+                  final month = DateTime(_baseDate.year, _baseDate.month + index);
+                  return Transform.scale(
+                    scale: 0.95,
+                    child: TableCalendar(
+                      locale: 'ko_KR',
+                      firstDay: DateTime(2020, 1, 1),
+                      lastDay: DateTime(2040, 12, 31),
+                      focusedDay: month,
+                      selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
+                      onDaySelected: (selectedDay, focusedDay) {
+                        setState(() {
+                          _selectedDay = selectedDay;
+                          _focusedDay = focusedDay;
+                          _selectedYear = focusedDay.year;
+                          _selectedMonth = focusedDay.month;
+                        });
+                      },
+                      headerVisible: false,
+                      daysOfWeekHeight: 40,
+                      calendarStyle: CalendarStyle(
+                        outsideDaysVisible: true,
+                        weekendTextStyle: const TextStyle(color: Colors.red),
+                        todayDecoration: BoxDecoration(
+                          color: Colors.grey.shade300,
+                          shape: BoxShape.circle,
+                        ),
+                        selectedDecoration: const BoxDecoration(
+                          color: Colors.black,
+                          shape: BoxShape.circle,
                         ),
                       ),
-                    );
-                  },
-                  defaultBuilder: (context, day, focusedDay) {
-                    return _buildDayCell(day, false);
-                  },
-                  outsideBuilder: (context, day, focusedDay) {
-                    return _buildDayCell(day, true);
-                  },
-                ),
+                      daysOfWeekStyle: const DaysOfWeekStyle(
+                        weekdayStyle: TextStyle(fontWeight: FontWeight.bold),
+                        weekendStyle: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      calendarBuilders: CalendarBuilders(
+                        dowBuilder: (context, day) {
+                          final text = DateFormat.E('ko_KR').format(day);
+                          final isWeekend =
+                              day.weekday == DateTime.sunday || day.weekday == DateTime.saturday;
+
+                          BorderRadius borderRadius = BorderRadius.zero;
+                          if (day.weekday == DateTime.sunday) {
+                            borderRadius =
+                            const BorderRadius.only(topLeft: Radius.circular(12));
+                          } else if (day.weekday == DateTime.saturday) {
+                            borderRadius =
+                            const BorderRadius.only(topRight: Radius.circular(12));
+                          }
+
+                          return Container(
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFE5D597),
+                              border: Border.all(color: Color(0xFFCCCCCC), width: 0.5),
+                              borderRadius: borderRadius,
+                            ),
+                            child: Center(
+                              child: Text(
+                                text,
+                                style: TextStyle(
+                                  color: isWeekend ? Colors.red : Colors.black87,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ),
+                          );
+                        },
+                        defaultBuilder: (context, day, focusedDay) {
+                          return _buildDayCell(day, false);
+                        },
+                        outsideBuilder: (context, day, focusedDay) {
+                          return _buildDayCell(day, true);
+                        },
+                      ),
+                    ),
+                  );
+                },
               ),
             ),
 
@@ -224,13 +242,12 @@ class _AppointmentCalendarScreenState
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            DateFormat('y년 M월 d일').format(_selectedDay!) +
-                                '\n시간 : ',
+                            DateFormat('y년 M월 d일').format(_selectedDay!) + '\n시간 : ',
                             style: const TextStyle(fontSize: 16),
                           ),
                           TextButton(
                             onPressed: () {},
-                            style: TextButton.styleFrom(foregroundColor: Colors.black), // ← 글자 색 변경
+                            style: TextButton.styleFrom(foregroundColor: Colors.black),
                             child: const Text('알림 끄기'),
                           ),
                         ],
@@ -238,8 +255,7 @@ class _AppointmentCalendarScreenState
                       const SizedBox(height: 8),
                       const Text(
                         '장소 :',
-                        style: TextStyle(
-                            fontSize: 18, fontWeight: FontWeight.bold),
+                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                       ),
                       const Text(
                         '주소 :',
@@ -251,12 +267,12 @@ class _AppointmentCalendarScreenState
                         children: [
                           TextButton(
                             onPressed: () {},
-                            style: TextButton.styleFrom(foregroundColor: Colors.black), // ← 글자 색 변경
+                            style: TextButton.styleFrom(foregroundColor: Colors.black),
                             child: const Text('+ 메모 추가하기'),
                           ),
                           TextButton(
                             onPressed: () {},
-                            style: TextButton.styleFrom(foregroundColor: Colors.black), // ← 글자 색 변경
+                            style: TextButton.styleFrom(foregroundColor: Colors.black),
                             child: const Text('길찾기'),
                           ),
                         ],
@@ -265,6 +281,7 @@ class _AppointmentCalendarScreenState
                   ),
                 ),
               ),
+            const SizedBox(height: 20),
           ],
         ),
       ),
