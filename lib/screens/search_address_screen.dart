@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'dart:io';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class SearchAddressScreen extends StatefulWidget {
   const SearchAddressScreen({Key? key}) : super(key: key);
@@ -14,9 +16,10 @@ class _SearchAddressScreenState extends State<SearchAddressScreen> {
   List<dynamic> _suggestions = [];
   bool _isLoading = false;
 
-  // 개발 환경: Android 에뮬레이터의 경우, PC의 localhost를 가리키는 주소
-  // 실제 기기 테스트 시 PC의 IP 주소 또는 ngrok URL 등을 사용
-  final String backendUrl = 'http://10.0.2.2:8088/api/address-autocomplete';
+  // 플랫폼 따라서 다른 값 할당, 값 설정 없어도 safe 처리
+  final String backendUrl = Platform.isIOS
+      ? (dotenv.env['BACKEND_URL_IOS'] ?? '')
+      : (dotenv.env['BACKEND_URL_ANDROID'] ?? '');
 
   Future<void> _searchAddress(String query) async {
     if (query.trim().isEmpty) {
