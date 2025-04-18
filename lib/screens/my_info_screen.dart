@@ -21,12 +21,34 @@ class MyInfoPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: buildCommonAppBar(context, title:'내 정보'),
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          onPressed: () => Navigator.pop(context),
+        ),
+        centerTitle: true,
+        title: Padding(
+          padding: const EdgeInsets.only(top: 12),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(Icons.person, color: Colors.black),
+              const SizedBox(width: 8),
+              const Text(
+                '내 정보           ',
+                style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+              ),
+            ],
+          ),
+        ),
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-            // 로그인 버튼 형태 사용자 정보 카드
+            // 로그인 버튼
             Container(
               width: double.infinity,
               height: 60,
@@ -52,7 +74,7 @@ class MyInfoPage extends StatelessWidget {
                       '로그인',
                       style: TextStyle(
                         fontSize: 18,
-                        fontWeight: FontWeight.w500,
+                        fontWeight: FontWeight.w700,
                         color: Colors.black,
                       ),
                     ),
@@ -63,7 +85,7 @@ class MyInfoPage extends StatelessWidget {
 
             const SizedBox(height: 10),
 
-            // 친구 목록 보기 + 줄
+            // 친구 목록 보기
             Padding(
               padding: const EdgeInsets.only(top: 8, right: 4),
               child: Align(
@@ -87,7 +109,7 @@ class MyInfoPage extends StatelessWidget {
                     ),
                     Container(
                       height: 1.5,
-                      width: 110,
+                      width: 115,
                       color: const Color(0xFFD9C189),
                     ),
                   ],
@@ -95,24 +117,27 @@ class MyInfoPage extends StatelessWidget {
               ),
             ),
 
-            const SizedBox(height: 20),
+            const SizedBox(height: 30),
 
             // 메뉴 리스트
             Expanded(
               child: Container(
-                padding: const EdgeInsets.all(12),
+                padding: const EdgeInsets.only(top: 12, left: 12, right: 12), // bottom 제거
                 decoration: BoxDecoration(
                   border: Border.all(color: Colors.black),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: ListView(
+                  padding: EdgeInsets.zero,
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
                   children: [
                     _buildOutlinedMenu(context, Icons.password, '비밀번호 변경'),
                     _buildOutlinedMenu(context, Icons.lock, '개인 정보 및 보안'),
                     _buildOutlinedMenu(context, Icons.campaign, '공지사항'),
                     _buildOutlinedMenu(context, Icons.policy, '약관 및 정책'),
                     _buildOutlinedMenu(context, Icons.logout, '로그아웃'),
-                    _buildOutlinedMenu(context, Icons.cancel, '회원 탈퇴'),
+                    _buildOutlinedMenu(context, Icons.cancel, '회원 탈퇴', isLast: true),
                   ],
                 ),
               ),
@@ -123,9 +148,14 @@ class MyInfoPage extends StatelessWidget {
     );
   }
 
-  Widget _buildOutlinedMenu(BuildContext context, IconData icon, String title) {
+  Widget _buildOutlinedMenu(
+      BuildContext context,
+      IconData icon,
+      String title, {
+        bool isLast = false,
+      }) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 6),
+      padding: EdgeInsets.only(top: 8, bottom: isLast ? 0 : 8),
       child: OutlinedButton(
         onPressed: () => _onButtonPressed(title, context),
         style: OutlinedButton.styleFrom(

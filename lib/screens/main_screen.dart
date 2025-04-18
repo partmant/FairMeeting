@@ -3,8 +3,10 @@ import 'package:fair_front/screens/put_location_screen.dart';
 import '../widgets/logo_title.dart';
 import 'package:fair_front/screens/login_screen.dart';
 import 'package:fair_front/screens/my_info_screen.dart';
+import 'package:fair_front/screens/settings_screen.dart';
 
-import 'calender.dart';
+
+import 'calender_screen.dart';
 
 class MainmenuScreen extends StatefulWidget {
   const MainmenuScreen({super.key});
@@ -106,9 +108,16 @@ class _MainmenuScreenState extends State<MainmenuScreen> {
         } else if (label == '약속 캘린더') {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (builder) => const AppointmentCalendarScreen()),
+            MaterialPageRoute(
+                builder: (builder) => const AppointmentCalendarScreen()),
           );
-        }else {
+        } else if (label == '환경설정')   {
+          Navigator.push(
+            context,
+              MaterialPageRoute(
+              builder: (builder) =>  SettingsScreen()),
+          );
+        } else {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text('$label 버튼을 눌렀습니다.')),
           );
