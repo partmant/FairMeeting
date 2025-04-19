@@ -33,7 +33,8 @@ build/
 .vscode/
 
 
-# macOS .DS_Store
+# macOS
+.DS_Store
 
 # Eclipse / STS 
 .metadata/ 
