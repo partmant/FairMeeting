@@ -6,7 +6,7 @@ import 'package:fair_front/screens/search_address_screen.dart';
 import 'package:fair_front/widgets/location_map.dart';
 import 'package:fair_front/widgets/location_list.dart';
 import 'package:fair_front/widgets/location_button.dart';
-import 'package:fair_front/controller/location_controller.dart';
+import 'package:fair_front/controllers/location_controller.dart';
 
 class PutLocationScreen extends StatefulWidget {
   const PutLocationScreen({super.key});
@@ -50,9 +50,9 @@ class _PutLocationScreenState extends State<PutLocationScreen> {
               height: mapWidth,
             ),
             const SizedBox(height: sidePadding),
-            LocationButton(controller: _controller),
+            LocationButton(controller: _controller),  // 위치 입력하기 버튼
             const SizedBox(height: 10),
-            LocationList(controller: _controller),
+            LocationList(controller: _controller),  // 선택된 주소 리스트
           ],
         ),
       ),

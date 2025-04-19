@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'dart:io';
+import '../services/api_config.dart'; // ✅ 추가된 경로
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class SearchAddressScreen extends StatefulWidget {
@@ -16,11 +16,6 @@ class _SearchAddressScreenState extends State<SearchAddressScreen> {
   List<dynamic> _suggestions = [];
   bool _isLoading = false;
 
-  // 플랫폼 따라서 다른 값 할당, 값 설정 없어도 safe 처리
-  final String backendUrl = Platform.isIOS
-      ? (dotenv.env['BACKEND_URL_IOS'] ?? '')
-      : (dotenv.env['BACKEND_URL_ANDROID'] ?? '');
-
   Future<void> _searchAddress(String query) async {
     if (query.trim().isEmpty) {
       setState(() {
@@ -33,14 +28,14 @@ class _SearchAddressScreenState extends State<SearchAddressScreen> {
       _isLoading = true;
     });
 
-    final uri = Uri.parse(backendUrl).replace(queryParameters: {
+    final uri = Uri.parse('${ApiConfig.baseUrl}/api/address-autocomplete')
+        .replace(queryParameters: {
       'query': query,
     });
 
     try {
       final response = await http.get(uri);
       if (response.statusCode == 200) {
-        // UTF-8 디코딩하여 한글 깨짐 방지
         final data = jsonDecode(utf8.decode(response.bodyBytes));
         setState(() {
           _suggestions = data as List<dynamic>;
@@ -87,7 +82,6 @@ class _SearchAddressScreenState extends State<SearchAddressScreen> {
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
-            // 주소 입력 필드
             TextField(
               controller: _searchController,
               decoration: const InputDecoration(
@@ -96,10 +90,8 @@ class _SearchAddressScreenState extends State<SearchAddressScreen> {
               ),
             ),
             const SizedBox(height: 10),
-            // 로딩 인디케이터
             if (_isLoading) const LinearProgressIndicator(),
             const SizedBox(height: 10),
-            // 자동완성 결과 목록 (장소 이름만 표시)
             Expanded(
               child: ListView.builder(
                 itemCount: _suggestions.length,
@@ -110,9 +102,7 @@ class _SearchAddressScreenState extends State<SearchAddressScreen> {
                     leading: const Icon(Icons.location_on),
                     title: Text(name),
                     onTap: () {
-                      setState(() {
-                        Navigator.pop(context, suggestion); // 항목을 탭하면 선택한 결과를 반환하며 SearchAddressScreen 종료
-                      });
+                      Navigator.pop(context, suggestion);
                     },
                   );
                 },

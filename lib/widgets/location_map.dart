@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:kakao_map_plugin/kakao_map_plugin.dart';
-import 'package:fair_front/controller/location_controller.dart';
+import 'package:fair_front/controllers/location_controller.dart';
 
 class LocationMap extends StatelessWidget {
   final LocationController controller;

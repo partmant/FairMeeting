@@ -1,34 +1,32 @@
 import 'package:flutter/material.dart';
 import 'package:kakao_map_plugin/kakao_map_plugin.dart';
+import '../services/address_service.dart'; // ✅ 서비스 임포트
 
 class LocationController {
   KakaoMapController? mapController;
 
-  final List<Map<String, dynamic>> selectedAddresses = []; // 선택된 주소 리스트
+  final List<Map<String, dynamic>> selectedAddresses = [];
   final Set<Marker> markers = {};
   int? selectedAddressIndex;
   LatLng currentCenter = LatLng(37.5651, 126.9784);
 
-  VoidCallback? onChanged; // 화면 갱신을 위한 콜백
+  VoidCallback? onChanged;
 
-  void notify() => onChanged?.call(); // 변경된 값이 있으면 실행
+  void notify() => onChanged?.call();
 
   void dispose() {
     mapController?.dispose();
   }
 
   void onMapCreated(KakaoMapController controller) {
-    // 지도 생성 시
     mapController = controller;
-    updateMapCenter(
-        currentCenter.latitude, currentCenter.longitude); // 현재 좌표로 지도 중심 이동
+    updateMapCenter(currentCenter.latitude, currentCenter.longitude);
   }
 
   Future<void> updateMapCenter(double lat, double lng) async {
-    // 지도 중심 이동 메소드
     currentCenter = LatLng(lat, lng);
-    await mapController?.panTo(currentCenter); // 중심 이동
-    notify(); // 위치 변경 후 UI 갱신
+    await mapController?.panTo(currentCenter);
+    notify();
   }
 
   void addAddress(Map<String, dynamic> addressData) {
@@ -55,22 +53,19 @@ class LocationController {
     notify();
   }
 
-  void moveSelectedMarker(LatLng newLatLng) {
+  Future<void> moveSelectedMarker(LatLng newLatLng) async {
     if (selectedAddressIndex != null &&
         selectedAddressIndex! < selectedAddresses.length) {
       final address = selectedAddresses[selectedAddressIndex!];
       final Marker? oldMarker = address['marker'];
 
       if (oldMarker != null) {
-        print('선택된 마커 이동 중: ${newLatLng.latitude}, ${newLatLng.longitude}');  // 확인용 출력문
+        print('선택된 마커 이동 중: ${newLatLng.latitude}, ${newLatLng.longitude}');
 
-        // 기존 마커 제거: 메모리와 리스트에서 제거
         markers.remove(oldMarker);
 
-        // 새 마커 생성
         final newMarker = Marker(
           markerId: oldMarker.markerId,
-          // 같은 ID 유지
           latLng: newLatLng,
           width: oldMarker.width,
           height: oldMarker.height,
@@ -78,14 +73,23 @@ class LocationController {
           offsetY: oldMarker.offsetY,
         );
 
-        // 리스트, 맵에 반영
         address['marker'] = newMarker;
         address['lat'] = newLatLng.latitude;
         address['lng'] = newLatLng.longitude;
 
-        markers.add(newMarker); 
+        markers.add(newMarker);
 
-        // 모든 마커 제거 후 다시 추가
+        // ✅ 서비스 호출로 이름 업데이트
+        try {
+          final name = await AddressService.fetchAddressName(
+            newLatLng.latitude,
+            newLatLng.longitude,
+          );
+          address['name'] = name;
+        } catch (e) {
+          print("❗ 주소명 요청 중 예외 발생: $e");
+        }
+
         mapController?.clearMarker();
         mapController?.addMarker(markers: markers.toList());
 
@@ -94,7 +98,7 @@ class LocationController {
     }
   }
 
-  void deleteAddressAt(int index) { // 선택된 주소 삭제
+  void deleteAddressAt(int index) {
     if (index >= 0 && index < selectedAddresses.length) {
       final marker = selectedAddresses[index]['marker'];
       if (marker != null) {
@@ -105,10 +109,12 @@ class LocationController {
 
       if (selectedAddressIndex == index) {
         selectedAddressIndex = null;
-      } else
-      if (selectedAddressIndex != null && selectedAddressIndex! > index) {
+      } else if (selectedAddressIndex != null && selectedAddressIndex! > index) {
         selectedAddressIndex = selectedAddressIndex! - 1;
       }
+
+      mapController?.clearMarker();
+      mapController?.addMarker(markers: markers.toList());
 
       notify();
     }
@@ -118,6 +124,7 @@ class LocationController {
     selectedAddresses.clear();
     markers.clear();
     selectedAddressIndex = null;
+    mapController?.clearMarker();
     notify();
   }
 }

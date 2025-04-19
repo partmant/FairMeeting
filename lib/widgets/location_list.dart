@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:fair_front/controller/location_controller.dart';
+import 'package:fair_front/controllers/location_controller.dart';
 
 class LocationList extends StatelessWidget {
   final LocationController controller;
