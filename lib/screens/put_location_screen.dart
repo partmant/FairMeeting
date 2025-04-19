@@ -44,7 +44,7 @@ class _PutLocationScreenState extends State<PutLocationScreen> {
         child: Column(
           children: [
             const SizedBox(height: sidePadding),
-            LocationMap(
+            LocationMap(  // 지도
               controller: _controller,
               width: mapWidth,
               height: mapWidth,

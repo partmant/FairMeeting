@@ -21,10 +21,10 @@ class _AppStartState extends State<AppStart> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      body: SafeArea( // ✅ 상태바 영역 피하기
+      body: SafeArea( // 상태바 영역 피하기
         child: Center(
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center, // ✅ 가운데 정렬
+            mainAxisAlignment: MainAxisAlignment.center, // 가운데 정렬
             children: const [
               LogoTitle(),
             ],

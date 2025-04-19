@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:kakao_map_plugin/kakao_map_plugin.dart';
-import '../services/address_service.dart'; // ✅ 서비스 임포트
+import '../services/address_service.dart';
+import 'package:geolocator/geolocator.dart';
 
 class LocationController {
   KakaoMapController? mapController;
@@ -8,7 +9,7 @@ class LocationController {
   final List<Map<String, dynamic>> selectedAddresses = [];
   final Set<Marker> markers = {};
   int? selectedAddressIndex;
-  LatLng currentCenter = LatLng(37.5651, 126.9784);
+  LatLng currentCenter = LatLng(37.5651, 126.9784); // 디폴트 지도 중심(서울시청)
 
   VoidCallback? onChanged;
 
@@ -18,15 +19,40 @@ class LocationController {
     mapController?.dispose();
   }
 
-  void onMapCreated(KakaoMapController controller) {
+  void onMapCreated(KakaoMapController controller) async {
     mapController = controller;
-    updateMapCenter(currentCenter.latitude, currentCenter.longitude);
+    await setCurrentLocationAsCenter(); // 사용자 위치로 지도 중심 설정
+    updateMapCenter(currentCenter.latitude, currentCenter.longitude); // 지도 중심 이동
   }
 
   Future<void> updateMapCenter(double lat, double lng) async {
     currentCenter = LatLng(lat, lng);
     await mapController?.panTo(currentCenter);
     notify();
+  }
+
+  // 사용자의 현재 위치를 중심으로 설정
+  Future<void> setCurrentLocationAsCenter() async {
+    try {
+      // 권한 요청
+      LocationPermission permission = await Geolocator.checkPermission();
+
+      // 권한이 없으면 권한 요청 팝업 띄우기
+      if (permission == LocationPermission.denied || permission == LocationPermission.deniedForever) {
+        permission = await Geolocator.requestPermission();
+      }
+      // 권한 있으면 실행
+      if (permission == LocationPermission.whileInUse || permission == LocationPermission.always) {
+        final position = await Geolocator.getCurrentPosition( // 현재 위치 받아오기
+          desiredAccuracy: LocationAccuracy.high,);
+        print("📍 사용자 현재 위치: 위도=${position.latitude}, 경도=${position.longitude}");  // 확인용 출력문
+        currentCenter = LatLng(position.latitude, position.longitude);  // 지도 중심 업데이트
+      } else {
+        print("📛 위치 권한이 거부되었습니다.");
+      }
+    } catch (e) {
+      print("❗ 위치 가져오기 실패: $e");
+    }
   }
 
   void addAddress(Map<String, dynamic> addressData) {

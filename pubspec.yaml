@@ -12,6 +12,8 @@ dependencies:
   flutter:
     sdk: flutter
 
+  geolocator: ^10.0.0 # 카카오 GPS
+
   cupertino_icons: ^1.0.8
 
   http: ^0.13.5         # HTTP 요청을 위해 사용
