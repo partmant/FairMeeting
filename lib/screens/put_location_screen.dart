@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:kakao_map_plugin/kakao_map_plugin.dart';
 import 'package:fair_front/widgets/go_back.dart';
 import 'package:fair_front/screens/search_address_screen.dart';
-import 'package:fair_front/widgets/location_map.dart';
-import 'package:fair_front/widgets/location_list.dart';
-import 'package:fair_front/widgets/location_button.dart';
+import 'package:fair_front/widgets/put_location/location_map.dart';
+import 'package:fair_front/widgets/put_location/location_list.dart';
+import 'package:fair_front/widgets/put_location/location_button.dart';
 import 'package:fair_front/controllers/location_controller.dart';
 
 class PutLocationScreen extends StatefulWidget {

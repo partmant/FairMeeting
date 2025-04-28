@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:fair_front/screens/main_screen.dart';
+import 'package:fair_front/screens/main_menu_screen.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 import 'package:fair_front/widgets/go_back.dart';
 // import 'package:naver_login/naver_login.dart';

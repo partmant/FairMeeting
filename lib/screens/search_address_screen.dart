@@ -1,8 +1,9 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import '../services/api_config.dart'; // ✅ 추가된 경로
-import 'package:flutter_dotenv/flutter_dotenv.dart';
+import '../services/api_config.dart';
+import '../widgets/search_address/address_suggestion_list.dart';
+import '../services/address_search_service.dart';
 
 class SearchAddressScreen extends StatefulWidget {
   const SearchAddressScreen({Key? key}) : super(key: key);
@@ -18,42 +19,15 @@ class _SearchAddressScreenState extends State<SearchAddressScreen> {
 
   Future<void> _searchAddress(String query) async {
     if (query.trim().isEmpty) {
-      setState(() {
-        _suggestions = [];
-      });
+      setState(() => _suggestions = []);
       return;
     }
 
+    setState(() => _isLoading = true);
+
+    final results = await AddressSearchService.fetchSuggestions(query);
     setState(() {
-      _isLoading = true;
-    });
-
-    final uri = Uri.parse('${ApiConfig.baseUrl}/api/address-autocomplete')
-        .replace(queryParameters: {
-      'query': query,
-    });
-
-    try {
-      final response = await http.get(uri);
-      if (response.statusCode == 200) {
-        final data = jsonDecode(utf8.decode(response.bodyBytes));
-        setState(() {
-          _suggestions = data as List<dynamic>;
-        });
-      } else {
-        debugPrint("Backend API Error: ${response.statusCode}");
-        setState(() {
-          _suggestions = [];
-        });
-      }
-    } catch (e) {
-      debugPrint("Exception: $e");
-      setState(() {
-        _suggestions = [];
-      });
-    }
-
-    setState(() {
+      _suggestions = results;
       _isLoading = false;
     });
   }
@@ -75,13 +49,12 @@ class _SearchAddressScreenState extends State<SearchAddressScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("주소 자동완성"),
-      ),
+      appBar: AppBar(title: const Text("주소 검색")),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
+            // 입력창 + 로딩 바 포함
             TextField(
               controller: _searchController,
               decoration: const InputDecoration(
@@ -92,21 +65,13 @@ class _SearchAddressScreenState extends State<SearchAddressScreen> {
             const SizedBox(height: 10),
             if (_isLoading) const LinearProgressIndicator(),
             const SizedBox(height: 10),
-            Expanded(
-              child: ListView.builder(
-                itemCount: _suggestions.length,
-                itemBuilder: (context, index) {
-                  final suggestion = _suggestions[index] as Map<String, dynamic>;
-                  final String name = suggestion['name'] ?? '';
-                  return ListTile(
-                    leading: const Icon(Icons.location_on),
-                    title: Text(name),
-                    onTap: () {
-                      Navigator.pop(context, suggestion);
-                    },
-                  );
-                },
-              ),
+
+            // 하단 주소 리스트
+            AddressSuggestionList(
+              suggestions: _suggestions,
+              onSelect: (suggestion) {
+                Navigator.pop(context, suggestion);
+              },
             ),
           ],
         ),
