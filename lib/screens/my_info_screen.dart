@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fair_front/screens/login_screen.dart';
-import 'package:fair_front/widgets/go_back.dart';  // 공통 AppBar import
+import 'package:fair_front/widgets/go_back.dart'; // 공통 AppBar import
 
 class MyInfoPage extends StatelessWidget {
   const MyInfoPage({super.key});
@@ -14,7 +14,7 @@ class MyInfoPage extends StatelessWidget {
         MaterialPageRoute(builder: (context) => const LoginScreen()),
       );
     }
-    // 나중에 로그아웃, 회원탈퇴도 여기에 추가할 수 있음
+    // 로그아웃, 회원탈퇴 등 다른 처리도 여기에 추가 가능
   }
 
   @override
@@ -120,9 +120,10 @@ class MyInfoPage extends StatelessWidget {
             const SizedBox(height: 30),
 
             // 메뉴 리스트
-            Expanded(
+            SizedBox(
+              height: 480, // <- 여기서 검은 테두리 박스 높이 조절
               child: Container(
-                padding: const EdgeInsets.only(top: 12, left: 12, right: 12), // bottom 제거
+                padding: const EdgeInsets.only(top: 12, left: 12, right: 12),
                 decoration: BoxDecoration(
                   border: Border.all(color: Colors.black),
                   borderRadius: BorderRadius.circular(12),
