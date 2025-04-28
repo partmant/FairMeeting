@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:kakao_map_plugin/kakao_map_plugin.dart';
 import 'package:fair_front/controllers/location_controller.dart';
 
+// put_location 상단의 지도
 class LocationMap extends StatelessWidget {
   final LocationController controller;
   final double width;
