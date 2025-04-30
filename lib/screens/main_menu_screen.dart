@@ -16,37 +16,50 @@ class MainmenuScreen extends StatelessWidget {
         'label': '약속 만들기',
         'sub': '간편하게\n약속 장소 정하기',
         'icon': Icons.calendar_today,
-        'color': Colors.white,
-        'textColor': Colors.black,
+        'color': Color(0xFFD9C189),
+        'textColor': Colors.white,
+        'subTextColor': Colors.black,
         'onTap': () => Navigator.push(context, MaterialPageRoute(builder: (_) => const PutLocationScreen())),
       },
       {
         'label': '약속 캘린더',
-        'sub': '내 약속 확인하기',
+        'sub': '내 약속\n확인하기',
         'icon': Icons.event_available,
-        'color': Colors.orange.shade200,
+        'color': Colors.white,
+        'textColor': Colors.black,
         'onTap': () => Navigator.push(context, MaterialPageRoute(builder: (_) => const AppointmentCalendarScreen())),
       },
       {
         'label': '내 정보',
         'sub': '개인정보 수정',
         'icon': Icons.person,
-        'color': Colors.orange.shade200,
+        'color': Colors.white,
+        'textColor': Colors.black,
         'onTap': () => Navigator.push(context, MaterialPageRoute(builder: (_) => const MyInfoPage())),
       },
       {
         'label': '환경설정',
         'sub': '앱 설정 관리',
         'icon': Icons.settings,
-        'color': Colors.white,
-        'textColor': Colors.black,
+        'color': Color(0xFFD9C189),
+        'textColor': Colors.white,
+        'subTextColor': Colors.black,
         'onTap': () => Navigator.push(context, MaterialPageRoute(builder: (_) => SettingsScreen())),
       },
     ];
 
     return Scaffold(
       body: Container(
-        color: Colors.yellow.shade50,
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              Color(0xFFFFF8E1).withOpacity(0.4), // 연한 노란색, 40% 투명도 적용
+              Color(0xFFFFD54F).withOpacity(0.4), // 좀 더 진한 노란색, 40% 투명도 적용
+            ],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
+        ),
         child: Column(
           children: [
             const SizedBox(height: 60),
@@ -60,7 +73,10 @@ class MainmenuScreen extends StatelessWidget {
                   crossAxisSpacing: 20,
                   mainAxisSpacing: 20,
                   childAspectRatio: 1,
-                  children: menuItems.map((item) => MainMenuButton(data: item)).toList(),
+                  children: menuItems.map((item) => MainMenuButton(data: {
+                    ...item,
+                    'labelStyle': const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  })).toList(),
                 ),
               ),
             ),

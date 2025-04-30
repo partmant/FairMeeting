@@ -138,7 +138,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   elevation: 4,
                 ),
-                child: const Text('로그인', style: TextStyle(fontSize: 18)),
+                child: const Text('로그인', style: TextStyle(fontSize: 20)),
               ),
               const SizedBox(height: 25),
 

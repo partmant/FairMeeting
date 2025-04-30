@@ -7,7 +7,7 @@ class SettingsScreen extends StatelessWidget {
     _SettingsItem(Icons.near_me_outlined, '위치 권한 관리'),
     _SettingsItem(Icons.language, '언어 / language'),
     _SettingsItem(Icons.headset_mic, '고객센터'),
-    _SettingsItem(Icons.info_outline, 'FAIR-METTING 정보'),
+    _SettingsItem(Icons.info_outline, 'FAIR-MEETING 정보'),
   ];
 
   @override
@@ -17,19 +17,29 @@ class SettingsScreen extends StatelessWidget {
         backgroundColor: Colors.white,
         elevation: 0,
         leading: BackButton(color: Colors.black),
-        title: Transform.translate(
-          offset: const Offset(0, 15),
-          child: Center(
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(Icons.settings, color: Colors.black),
-                SizedBox(width: 8),
-                Text('설정', style: TextStyle(color: Colors.black)),
-              ],
-            ),
+        title: Padding(
+          padding: const EdgeInsets.only(top: 25), // 설정 아이콘 + 텍스트 상하 위치 조정
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                Icons.settings,
+                color: Colors.black,
+                size: 28, // 아이콘 크기
+              ),
+              SizedBox(width: 8),
+              Text(
+                '설정   ',
+                style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 25, // 텍스트 크기
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
           ),
         ),
+        centerTitle: true,
         automaticallyImplyLeading: false,
         actions: [SizedBox(width: 48)],
       ),
@@ -44,16 +54,18 @@ class SettingsScreen extends StatelessWidget {
                   Text(
                     'FAIR',
                     style: TextStyle(
-                      fontSize: 24,
-                      color: Colors.amber[200],
+                      fontSize: 27,
+                      fontFamily: 'Itim',
+                      color: Color(0xFFD9C189).withOpacity(0.8),
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                   Text(
                     'MEETING',
                     style: TextStyle(
-                      fontSize: 24,
-                      color: Colors.amber[200],
+                      fontSize: 27,
+                      fontFamily: 'Itim',
+                      color: Color(0xFFD9C189).withOpacity(0.8),
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -65,7 +77,7 @@ class SettingsScreen extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Container(
                 decoration: BoxDecoration(
-                  border: Border.all(color: Colors.black, width: 0.8), // 메뉴 리스트 테두리 검은색 적용
+                  border: Border.all(color: Colors.black, width: 0.8),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Column(
@@ -84,7 +96,7 @@ class SettingsScreen extends StatelessWidget {
       padding: const EdgeInsets.all(8),
       child: Container(
         decoration: BoxDecoration(
-          border: Border.all(color: Color(0xFFD9C189), width: 1.5), // 개별 버튼 테두리 색 변경
+          border: Border.all(color: Color(0xFFD9C189), width: 1.5),
           borderRadius: BorderRadius.circular(12),
         ),
         child: ElevatedButton(

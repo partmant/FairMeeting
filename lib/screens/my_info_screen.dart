@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:fair_front/screens/login_screen.dart';
-import 'package:fair_front/widgets/go_back.dart'; // 공통 AppBar import
 
 class MyInfoPage extends StatelessWidget {
   const MyInfoPage({super.key});
@@ -14,47 +13,54 @@ class MyInfoPage extends StatelessWidget {
         MaterialPageRoute(builder: (context) => const LoginScreen()),
       );
     }
-    // 로그아웃, 회원탈퇴 등 다른 처리도 여기에 추가 가능
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () => Navigator.pop(context),
-        ),
-        centerTitle: true,
-        title: Padding(
-          padding: const EdgeInsets.only(top: 12),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Icon(Icons.person, color: Colors.black),
-              const SizedBox(width: 8),
-              const Text(
-                '내 정보           ',
-                style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
-              ),
-            ],
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(50),
+        child: AppBar(
+          backgroundColor: Colors.white,
+          elevation: 0,
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back, color: Colors.black),
+            onPressed: () => Navigator.pop(context),
+          ),
+          centerTitle: true,
+          title: Padding(
+            padding: const EdgeInsets.only(left: 0,top: 22), // 아이콘 + ' 내 정보' 위치 조정
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: const [
+                Icon(Icons.person, color: Colors.black87, size: 25),
+                SizedBox(width: 8),
+                Text(
+                  '내 정보',
+                  style: TextStyle(
+                    color: Colors.black87,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 25,
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
       body: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(20),
         child: Column(
           children: [
             // 로그인 버튼
             Container(
               width: double.infinity,
-              height: 60,
+              height: 80,
               decoration: BoxDecoration(
                 border: Border.all(color: Colors.black, width: 1.2),
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(10),
               ),
               child: TextButton(
                 style: TextButton.styleFrom(
@@ -68,12 +74,12 @@ class MyInfoPage extends StatelessWidget {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: const [
-                    Icon(Icons.login_rounded, color: Colors.black),
-                    SizedBox(width: 8),
+                    Icon(Icons.login_rounded, color: Colors.black, size: 24,),
+                    SizedBox(width: 10),
                     Text(
                       '로그인',
                       style: TextStyle(
-                        fontSize: 18,
+                        fontSize: 22,
                         fontWeight: FontWeight.w700,
                         color: Colors.black,
                       ),
@@ -83,11 +89,11 @@ class MyInfoPage extends StatelessWidget {
               ),
             ),
 
-            const SizedBox(height: 10),
+            const SizedBox(height: 20),
 
             // 친구 목록 보기
             Padding(
-              padding: const EdgeInsets.only(top: 8, right: 4),
+              padding: const EdgeInsets.only(top: 2, right: 4),
               child: Align(
                 alignment: Alignment.centerRight,
                 child: Column(
@@ -121,12 +127,12 @@ class MyInfoPage extends StatelessWidget {
 
             // 메뉴 리스트
             SizedBox(
-              height: 480, // <- 여기서 검은 테두리 박스 높이 조절
+              height: 480,
               child: Container(
                 padding: const EdgeInsets.only(top: 12, left: 12, right: 12),
                 decoration: BoxDecoration(
                   border: Border.all(color: Colors.black),
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(10),
                 ),
                 child: ListView(
                   padding: EdgeInsets.zero,
@@ -164,7 +170,7 @@ class MyInfoPage extends StatelessWidget {
           side: const BorderSide(color: Color(0xFFD9C189), width: 1.5),
           padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
+            borderRadius: BorderRadius.circular(10),
           ),
         ),
         child: Row(

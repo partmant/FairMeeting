@@ -16,6 +16,7 @@ class LogoTitle extends StatelessWidget {
         Text(
           'FAIR',
           style: TextStyle(
+            fontFamily: 'Itim', // 폰트 수정
             fontSize: 40,
             fontWeight: FontWeight.bold,
             color: Color(0xFFD9C189),
@@ -24,6 +25,7 @@ class LogoTitle extends StatelessWidget {
         Text(
           'MEETING',
           style: TextStyle(
+            fontFamily: 'Itim', // 폰트 수정
             fontSize: 40,
             fontWeight: FontWeight.bold,
             color: Color(0xFFD9C189),

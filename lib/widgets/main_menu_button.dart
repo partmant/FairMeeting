@@ -8,6 +8,7 @@ class MainMenuButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final Color textColor = data['textColor'] ?? Colors.white;
+    final Color subTextColor = data['subTextColor'] ?? textColor;
 
     return ElevatedButton(
       onPressed: data['onTap'],
@@ -19,35 +20,61 @@ class MainMenuButton extends StatelessWidget {
       ),
       child: Stack(
         children: [
+          // 아이콘 (좌상단)
           Positioned(
             top: 0,
             left: 0,
             child: Icon(
               data['icon'],
               color: textColor,
-              size: 24,
+              size: 40,
+              shadows: [
+                Shadow(
+                  offset: const Offset(1.5, 1.5),
+                  blurRadius: 1,
+                  color: Colors.black.withOpacity(0.2),
+                ),
+              ],
             ),
           ),
+
+          // 중앙 텍스트
           Center(
             child: Text(
               data['label'],
               textAlign: TextAlign.center,
               style: TextStyle(
-                fontSize: 16,
+                fontSize: 27,
                 fontWeight: FontWeight.bold,
                 color: textColor,
+                shadows: [
+                  Shadow(
+                    offset: const Offset(2, 2),
+                    blurRadius: 2,
+                    color: Colors.black.withOpacity(0.2),
+                  ),
+                ],
               ),
             ),
           ),
+
+          // 우하단 서브 텍스트
           Positioned(
-            bottom: 0,
-            right: 0,
+            bottom: 5,
+            right: 5,
             child: Text(
               data['sub'],
               textAlign: TextAlign.right,
               style: TextStyle(
-                fontSize: 10,
-                color: textColor,
+                fontSize: 15,
+                color: subTextColor,
+                shadows: [
+                  Shadow(
+                    offset: const Offset(1.5, 1.5),
+                    blurRadius: 3,
+                    color: Colors.black.withOpacity(0.25),
+                  ),
+                ],
               ),
             ),
           ),

@@ -45,4 +45,8 @@ flutter:
     - assets/naverOauth.png
     - .env
 
+  fonts:
+    - family: Itim
+      fonts:
+        - asset: assets/fonts/Itim-Regular.ttf
 
