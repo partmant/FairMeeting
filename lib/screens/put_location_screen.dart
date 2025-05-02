@@ -1,39 +1,17 @@
-// put_location_screen.dart (화면 전체를 구성하는 파일)
 import 'package:flutter/material.dart';
-import 'package:kakao_map_plugin/kakao_map_plugin.dart';
+import 'package:provider/provider.dart';
 import 'package:fair_front/widgets/go_back.dart';
-import 'package:fair_front/screens/search_address_screen.dart';
 import 'package:fair_front/widgets/put_location/location_map.dart';
 import 'package:fair_front/widgets/put_location/location_list.dart';
 import 'package:fair_front/widgets/put_location/location_button.dart';
 import 'package:fair_front/controllers/location_controller.dart';
 
-class PutLocationScreen extends StatefulWidget {
+class PutLocationScreen extends StatelessWidget {
   const PutLocationScreen({super.key});
 
   @override
-  State<PutLocationScreen> createState() => _PutLocationScreenState();
-}
-
-class _PutLocationScreenState extends State<PutLocationScreen> {
-  final LocationController _controller = LocationController();
-
-  @override
-  void initState() {
-    super.initState();
-    _controller.onChanged = () {
-      if (mounted) setState(() {});
-    };
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
+    final locationController = Provider.of<LocationController>(context); // Provider로부터 컨트롤러 가져오기
     double mapWidth = MediaQuery.of(context).size.width - 20;
     const double sidePadding = 10;
 
@@ -44,15 +22,15 @@ class _PutLocationScreenState extends State<PutLocationScreen> {
         child: Column(
           children: [
             const SizedBox(height: sidePadding),
-            LocationMap(  // 지도
-              controller: _controller,
+            LocationMap(  // 지도 생성
+              controller: locationController,
               width: mapWidth,
               height: mapWidth,
             ),
             const SizedBox(height: sidePadding),
-            LocationButton(controller: _controller),  // 위치 입력하기 버튼
+            LocationButton(controller: locationController),
             const SizedBox(height: 10),
-            LocationList(controller: _controller),  // 선택된 주소 리스트
+            LocationList(controller: locationController),
           ],
         ),
       ),

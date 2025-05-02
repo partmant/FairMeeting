@@ -27,12 +27,27 @@ class LocationMap extends StatelessWidget {
           center: controller.currentCenter,
           markers: controller.markers.toList(),
           onMapCreated: controller.onMapCreated,
-          onMapTap: (LatLng tappedPoint) async {  // 지도 클릭 시
-            await controller.updateMapCenter( // 지도 중심 이동
+
+          // ✅ 지도 클릭 시 중심 이동 + 마커 이동
+          onMapTap: (LatLng tappedPoint) async {
+            await controller.moveMapCenter(
               tappedPoint.latitude,
               tappedPoint.longitude,
             );
-            controller.moveSelectedMarker(tappedPoint); // 마커 이동
+            controller.moveSelectedMarker(tappedPoint);
+          },
+
+          // ✅ 사용자가 지도를 이동한 후 손을 뗐을 때 중심 좌표 갱신
+          onDragChangeCallback: (latLng, zoomLevel, dragType) async {
+            if (dragType == DragType.end) {
+              final newCenter = await controller.mapController?.getCenter();
+              if (newCenter != null) {
+                controller.setMapCenter(
+                  newCenter.latitude,
+                  newCenter.longitude,
+                );
+              }
+            }
           },
         ),
       ),

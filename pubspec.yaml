@@ -31,6 +31,8 @@ dependencies:
 
   flutter_dotenv: ^5.0.2                   # .env 생성 관리
 
+  provider: ^6.1.1
+
 
 dev_dependencies:
   flutter_test:

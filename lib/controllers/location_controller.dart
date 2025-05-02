@@ -3,58 +3,72 @@ import 'package:kakao_map_plugin/kakao_map_plugin.dart';
 import '../services/address_service.dart';
 import 'package:geolocator/geolocator.dart';
 
-class LocationController {
+class LocationController with ChangeNotifier {
   KakaoMapController? mapController;
 
   final List<Map<String, dynamic>> selectedAddresses = [];
   final Set<Marker> markers = {};
   int? selectedAddressIndex;
-  LatLng currentCenter = LatLng(37.5651, 126.9784); // 디폴트 지도 중심(서울시청)
+  LatLng currentCenter = LatLng(37.5651, 126.9784); // 기본 지도 중심
 
-  VoidCallback? onChanged;
+  bool _hasInitialized = false; // 최초 진입 여부 플래그
 
-  void notify() => onChanged?.call();
-
-  void dispose() {
-    mapController?.dispose();
-  }
-
+  // 지도 초기화 함수
   void onMapCreated(KakaoMapController controller) async {
     mapController = controller;
-    await setCurrentLocationAsCenter(); // 사용자 위치로 지도 중심 설정
-    updateMapCenter(currentCenter.latitude, currentCenter.longitude); // 지도 중심 이동
-  }
 
-  Future<void> updateMapCenter(double lat, double lng) async {
-    currentCenter = LatLng(lat, lng);
-    await mapController?.panTo(currentCenter);
-    notify();
-  }
+    if (!_hasInitialized) {
+      await setCurrentLocationAsCenter();
+      _hasInitialized = true;
+    }
 
-  // 사용자의 현재 위치를 중심으로 설정
-  Future<void> setCurrentLocationAsCenter() async {
-    try {
-      // 권한 요청
-      LocationPermission permission = await Geolocator.checkPermission();
+    await moveMapCenter(currentCenter.latitude, currentCenter.longitude); // 지도 중심 이동
 
-      // 권한이 없으면 권한 요청 팝업 띄우기
-      if (permission == LocationPermission.denied || permission == LocationPermission.deniedForever) {
-        permission = await Geolocator.requestPermission();
-      }
-      // 권한 있으면 실행
-      if (permission == LocationPermission.whileInUse || permission == LocationPermission.always) {
-        final position = await Geolocator.getCurrentPosition( // 현재 위치 받아오기
-          desiredAccuracy: LocationAccuracy.high,);
-        print("📍 사용자 현재 위치: 위도=${position.latitude}, 경도=${position.longitude}");  // 확인용 출력문
-        currentCenter = LatLng(position.latitude, position.longitude);  // 지도 중심 업데이트
-      } else {
-        print("📛 위치 권한이 거부되었습니다.");
-      }
-    } catch (e) {
-      print("❗ 위치 가져오기 실패: $e");
+    if (markers.isNotEmpty) {
+      mapController?.addMarker(markers: markers.toList());
+      print("✅ 지도에 ${markers.length}개의 마커 재추가 완료");
+    } else {
+      print("ℹ️ 현재 markers는 비어있음");
     }
   }
 
+  // 좌표로 지도 중심 이동 및 상태 반영
+  Future<void> moveMapCenter(double lat, double lng) async {
+    currentCenter = LatLng(lat, lng);
+    await mapController?.panTo(currentCenter);
+    notifyListeners();
+  }
+
+  // 지도 중심만 설정
+  void setMapCenter(double lat, double lng) {
+    currentCenter = LatLng(lat, lng);
+    print("📌 사용자 중심 위치 저장만: $currentCenter");
+  }
+
+  // 사용자 위치를 지도 중심으로 설정
+  Future<void> setCurrentLocationAsCenter() async {
+    try {
+      LocationPermission permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied || permission == LocationPermission.deniedForever) {
+        permission = await Geolocator.requestPermission();
+      }
+      // 권한 있으면 사용자 위치로 지도 중심 설정
+      if (permission == LocationPermission.whileInUse || permission == LocationPermission.always) {
+        final position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+        currentCenter = LatLng(position.latitude, position.longitude);
+      }
+      // 없으면 기본(서울시청)으로 설정
+      else {
+        print("📛 위치 권한이 거부되었습니다.");
+        currentCenter = LatLng(37.5651, 126.9784); // ✅ 명시적 기본 위치 설정
+      }
+    } catch (e) {
+      print("❗ 위치 가져오기 실패: $e");
+      currentCenter = LatLng(37.5651, 126.9784); // ✅ 예외 발생 시도 기본 위치 설정
+    }
+  }
+
+  // 새로운 주소 및 마커 표시
   void addAddress(Map<String, dynamic> addressData) {
     final markerId = UniqueKey().toString();
     final lat = double.parse(addressData['lat'].toString());
@@ -76,9 +90,10 @@ class LocationController {
     markers.add(marker);
 
     mapController?.addMarker(markers: markers.toList());
-    notify();
+    notifyListeners();
   }
 
+  // 선택된 주소의 마커 이동 및 주소 수정
   Future<void> moveSelectedMarker(LatLng newLatLng) async {
     if (selectedAddressIndex != null &&
         selectedAddressIndex! < selectedAddresses.length) {
@@ -86,8 +101,6 @@ class LocationController {
       final Marker? oldMarker = address['marker'];
 
       if (oldMarker != null) {
-        print('선택된 마커 이동 중: ${newLatLng.latitude}, ${newLatLng.longitude}');
-
         markers.remove(oldMarker);
 
         final newMarker = Marker(
@@ -102,10 +115,8 @@ class LocationController {
         address['marker'] = newMarker;
         address['lat'] = newLatLng.latitude;
         address['lng'] = newLatLng.longitude;
-
         markers.add(newMarker);
 
-        // ✅ 서비스 호출로 이름 업데이트
         try {
           final name = await AddressService.fetchAddressName(
             newLatLng.latitude,
@@ -118,12 +129,12 @@ class LocationController {
 
         mapController?.clearMarker();
         mapController?.addMarker(markers: markers.toList());
-
-        notify();
+        notifyListeners();
       }
     }
   }
 
+  // 주소와 마커 삭제
   void deleteAddressAt(int index) {
     if (index >= 0 && index < selectedAddresses.length) {
       final marker = selectedAddresses[index]['marker'];
@@ -141,16 +152,32 @@ class LocationController {
 
       mapController?.clearMarker();
       mapController?.addMarker(markers: markers.toList());
-
-      notify();
+      notifyListeners();
     }
   }
 
-  void clearAll() {
+  // 화면 전체 초기화 및 지도 중심 재설정
+  void clearAll() async {
     selectedAddresses.clear();
     markers.clear();
     selectedAddressIndex = null;
     mapController?.clearMarker();
-    notify();
+
+    // 위치 초기화 플래그
+    _hasInitialized = false;
+
+    // 사용자 위치로 중심 초기화
+    await setCurrentLocationAsCenter();
+
+    // 지도 중심 이동
+    await moveMapCenter(currentCenter.latitude, currentCenter.longitude);
+
+    notifyListeners();
+  }
+
+  @override
+  void dispose() {
+    mapController?.dispose();
+    super.dispose();
   }
 }

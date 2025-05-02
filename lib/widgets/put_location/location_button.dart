@@ -16,7 +16,7 @@ class LocationButton extends StatelessWidget {
 
     if (result != null && result is Map<String, dynamic>) { // 주소 선택 후
       controller.addAddress(result);
-      await controller.updateMapCenter( // 선택된 주소로 지도 중심 이동
+      await controller.moveMapCenter( // 선택된 주소로 지도 중심 이동
         double.parse(result['lat'].toString()),
         double.parse(result['lng'].toString()),
       );

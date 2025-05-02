@@ -23,7 +23,7 @@ class LocationList extends StatelessWidget {
           final double lat = double.parse(address['lat'].toString());
           final double lng = double.parse(address['lng'].toString());
 
-          return Card(  // 주소 리스트 카드 위젯로
+          return Card(  // 주소 리스트 카드 위젯으로
             margin: const EdgeInsets.symmetric(vertical: 4),
             child: ListTile(
               leading: const Icon(Icons.location_on),
@@ -38,7 +38,7 @@ class LocationList extends StatelessWidget {
               ),
               onTap: () async { // 주소 클릭 시 해당 주소로 지도 중심 이동
                 controller.selectedAddressIndex = index;
-                await controller.updateMapCenter(lat, lng);
+                await controller.moveMapCenter(lat, lng); // 수정된 메서드 사용
               },
             ),
           );
