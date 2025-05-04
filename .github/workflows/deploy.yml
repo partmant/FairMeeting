@@ -23,8 +23,11 @@ jobs:
             cd ~/fair_back
             git pull origin main
 
-            echo "기존 컨테이너 정리"
+            echo "JAR 빌드 시작"
+            ./mvnw clean package -DskipTests
+
+            echo "기존 컨테이너 종료 및 정리"
             docker-compose down || true
 
-            echo "Docker Compose 빌드 및 실행"
+            echo "Docker 이미지 빌드 및 컨테이너 실행"
             docker-compose up -d --build
