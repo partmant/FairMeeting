@@ -42,3 +42,6 @@ bin/
 *.log 
 
 app.log
+
+# .env
+.env

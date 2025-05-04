@@ -1,0 +1,12 @@
+services:
+  fair-back:
+    image: fair-back
+    container_name: fair-back-container
+    ports:
+      - "8088:8088"
+    environment:
+      - KAKAO_API_KEY=${KAKAO_API_KEY}
+      - DB_URL=${DB_URL}
+      - DB_USERNAME=${DB_USERNAME}
+      - DB_PASSWORD=${DB_PASSWORD}
+      
