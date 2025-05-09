@@ -18,7 +18,7 @@ import org.springframework.web.client.RestTemplate;
 public class AddressAutoCompleteService {
 
     @Value("${kakao.rest.api.key}")
-    private String kakaoRestApiKey;
+    private String restApiKey;
 
     public List<Map<String, Object>> getAutoComplete(String query) {
     	System.out.println("[주소 자동완성 요청] query: " + query);	// 확인용 출력문
@@ -28,7 +28,7 @@ public class AddressAutoCompleteService {
         );
 
         HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", "KakaoAK " + kakaoRestApiKey);
+        headers.set("Authorization", "KakaoAK " + restApiKey);
         HttpEntity<String> entity = new HttpEntity<>(headers);
         RestTemplate restTemplate = new RestTemplate();
 

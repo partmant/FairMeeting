@@ -24,6 +24,6 @@ public class CategorySearchController {
             @RequestParam double x,
             @RequestParam double y
     ) {
-        return categorySearchService.searchByCategory(category, x, y);
+        return categorySearchService.searchByCategory(category, x, y);	// service의 반환을 dto 객체를 반환하게 수정
     }
 }

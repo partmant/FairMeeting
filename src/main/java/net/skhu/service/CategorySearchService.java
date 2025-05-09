@@ -23,8 +23,8 @@ import net.skhu.dto.CategoryResponse;
 @RequiredArgsConstructor
 public class CategorySearchService {
 
-    @Value("${KAKAO_API_KEY}")
-    private String kakaoApiKey;
+	@Value("${kakao.rest.api.key}")
+    private String restApiKey;
 
     private final RestTemplate restTemplate = new RestTemplate();
     private static final int FIXED_RADIUS = 20000; // 고정 반경
@@ -33,7 +33,7 @@ public class CategorySearchService {
         String url = "https://dapi.kakao.com/v2/local/search/category.json";
 
         HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", "KakaoAK " + kakaoApiKey);
+        headers.set("Authorization", "KakaoAK " + restApiKey);
         HttpEntity<Void> entity = new HttpEntity<>(headers);
 
         UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromUriString(url)

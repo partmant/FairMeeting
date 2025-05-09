@@ -20,7 +20,7 @@ import lombok.RequiredArgsConstructor;
 public class AddressService {
 
 	@Value("${kakao.rest.api.key}")
-    private String kakaoRestApiKey;
+    private String restApiKey;
 
     public Map<String, String> getAddressName(double lat, double lng) {
 
@@ -32,7 +32,7 @@ public class AddressService {
         );
 
         HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", "KakaoAK " + kakaoRestApiKey);
+        headers.set("Authorization", "KakaoAK " + restApiKey);
         HttpEntity<String> entity = new HttpEntity<>(headers);
         RestTemplate restTemplate = new RestTemplate();
 
