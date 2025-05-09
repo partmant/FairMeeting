@@ -1,6 +1,22 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
-import 'package:intl/intl.dart';
+
+void main() {
+  runApp(const MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      theme: ThemeData.light(),
+      home: const AppointmentCalendarScreen(),
+    );
+  }
+}
 
 class AppointmentCalendarScreen extends StatefulWidget {
   const AppointmentCalendarScreen({super.key});
@@ -12,316 +28,342 @@ class AppointmentCalendarScreen extends StatefulWidget {
 
 class _AppointmentCalendarScreenState
     extends State<AppointmentCalendarScreen> {
-  static final DateTime _baseDate = DateTime(2020, 1);
-  static final int _initialPage = DateTime(2025, 3).difference(_baseDate).inDays ~/ 30;
-  final PageController _pageController = PageController(
-    initialPage: _initialPage,
-    viewportFraction: 0.92,
-  );
-
-  DateTime _focusedDay = DateTime(2025, 3, 27);
+  DateTime _focusedDay = DateTime.now();
   DateTime? _selectedDay;
+  final Map<DateTime, List<Map<String, String>>> _appointments = {};
 
-  final List<int> _yearList = [for (var y = 2020; y <= 2030; y++) y];
-  int _selectedYear = 2025;
-  int _selectedMonth = 3;
+  final TextEditingController _timeController = TextEditingController();
+  final TextEditingController _locationController = TextEditingController();
 
-  List<DateTime> markedDates = [
-    DateTime(2025, 3, 9),
-    DateTime(2025, 3, 22),
-    DateTime(2025, 3, 27),
-  ];
+  void _showAddAppointmentDialog(DateTime selectedDay) {
+    _timeController.clear();
+    _locationController.clear();
 
-  @override
-  Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        backgroundColor: Colors.white,
-        body: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+    showCupertinoModalPopup(
+      context: context,
+      builder: (_) => Container(
+        padding: const EdgeInsets.all(16),
+        height: 350,
+        color: Colors.white,
+        child: Column(
           children: [
-            // 뒤로가기 버튼
-            Padding(
-              padding:
-              const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
-              child: Row(
-                children: [
-                  IconButton(
-                    icon: const Icon(Icons.arrow_back),
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                  ),
-                ],
-              ),
-            ),
-
-            // 제목
-            Transform.translate(
-              offset: const Offset(0, -15),
-              child: Center(
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: const [
-                    Icon(Icons.event_note_outlined, size: 28),
-                    SizedBox(width: 8),
-                    Text(
-                      '약속 캘린더',
-                      style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-
-            // 드롭다운
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 25.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  DropdownButton<int>(
-                    value: _selectedYear,
-                    items: _yearList.map((year) {
-                      return DropdownMenuItem(
-                        value: year,
-                        child: Text('$year년'),
-                      );
-                    }).toList(),
-                    onChanged: (year) {
-                      if (year != null) {
-                        setState(() {
-                          _selectedYear = year;
-                          _focusedDay = DateTime(_selectedYear, _selectedMonth, 1);
-                          final index = (_focusedDay.difference(_baseDate).inDays ~/ 30);
-                          _pageController.jumpToPage(index);
-                        });
-                      }
-                    },
-                  ),
-                  const SizedBox(width: 8),
-                  DropdownButton<int>(
-                    value: _selectedMonth,
-                    items: List.generate(12, (i) => i + 1).map((month) {
-                      return DropdownMenuItem(
-                        value: month,
-                        child: Text('$month월'),
-                      );
-                    }).toList(),
-                    onChanged: (month) {
-                      if (month != null) {
-                        setState(() {
-                          _selectedMonth = month;
-                          _focusedDay = DateTime(_selectedYear, _selectedMonth, 1);
-                          final index = (_focusedDay.difference(_baseDate).inDays ~/ 30);
-                          _pageController.jumpToPage(index);
-                        });
-                      }
-                    },
-                  ),
-                ],
-              ),
-            ),
-
-            const SizedBox(height: 24),
-
-            // 캘린더
-            Expanded(
-              child: PageView.builder(
-                controller: _pageController,
-                itemCount: 240, // 20년치
-                onPageChanged: (index) {
-                  final newFocused = DateTime(_baseDate.year, _baseDate.month + index);
-                  setState(() {
-                    _focusedDay = newFocused;
-                    _selectedYear = newFocused.year;
-                    _selectedMonth = newFocused.month;
-                  });
-                },
-                itemBuilder: (context, index) {
-                  final month = DateTime(_baseDate.year, _baseDate.month + index);
-                  return Transform.scale(
-                    scale: 0.95,
-                    child: TableCalendar(
-                      locale: 'ko_KR',
-                      firstDay: DateTime(2020, 1, 1),
-                      lastDay: DateTime(2040, 12, 31),
-                      focusedDay: month,
-                      selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
-                      onDaySelected: (selectedDay, focusedDay) {
-                        setState(() {
-                          _selectedDay = selectedDay;
-                          _focusedDay = focusedDay;
-                          _selectedYear = focusedDay.year;
-                          _selectedMonth = focusedDay.month;
-                        });
-                      },
-                      headerVisible: false,
-                      daysOfWeekHeight: 40,
-                      calendarStyle: CalendarStyle(
-                        outsideDaysVisible: true,
-                        weekendTextStyle: const TextStyle(color: Colors.red),
-                        todayDecoration: BoxDecoration(
-                          color: Colors.grey.shade300,
-                          shape: BoxShape.circle,
-                        ),
-                        selectedDecoration: const BoxDecoration(
-                          color: Colors.black,
-                          shape: BoxShape.circle,
-                        ),
-                      ),
-                      daysOfWeekStyle: const DaysOfWeekStyle(
-                        weekdayStyle: TextStyle(fontWeight: FontWeight.bold),
-                        weekendStyle: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      calendarBuilders: CalendarBuilders(
-                        dowBuilder: (context, day) {
-                          final text = DateFormat.E('ko_KR').format(day);
-                          final isWeekend =
-                              day.weekday == DateTime.sunday || day.weekday == DateTime.saturday;
-
-                          BorderRadius borderRadius = BorderRadius.zero;
-                          if (day.weekday == DateTime.sunday) {
-                            borderRadius =
-                            const BorderRadius.only(topLeft: Radius.circular(12));
-                          } else if (day.weekday == DateTime.saturday) {
-                            borderRadius =
-                            const BorderRadius.only(topRight: Radius.circular(12));
-                          }
-
-                          return Container(
-                            decoration: BoxDecoration(
-                              color: const Color(0xFFE5D597),
-                              border: Border.all(color: Color(0xFFCCCCCC), width: 0.5),
-                              borderRadius: borderRadius,
-                            ),
-                            child: Center(
-                              child: Text(
-                                text,
-                                style: TextStyle(
-                                  color: isWeekend ? Colors.red : Colors.black87,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ),
-                          );
-                        },
-                        defaultBuilder: (context, day, focusedDay) {
-                          return _buildDayCell(day, false);
-                        },
-                        outsideBuilder: (context, day, focusedDay) {
-                          return _buildDayCell(day, true);
-                        },
-                      ),
-                    ),
-                  );
-                },
-              ),
-            ),
-
-            const SizedBox(height: 12),
-
-            if (_selectedDay != null)
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                child: Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    border: Border.all(color: Colors.black, width: 1.2),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            DateFormat('y년 M월 d일').format(_selectedDay!) + '\n시간 : ',
-                            style: const TextStyle(fontSize: 16),
-                          ),
-                          TextButton(
-                            onPressed: () {},
-                            style: TextButton.styleFrom(foregroundColor: Colors.black),
-                            child: const Text('알림 끄기'),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 8),
-                      const Text(
-                        '장소 :',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                      ),
-                      const Text(
-                        '주소 :',
-                        style: TextStyle(fontSize: 16),
-                      ),
-                      const SizedBox(height: 10),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          TextButton(
-                            onPressed: () {},
-                            style: TextButton.styleFrom(foregroundColor: Colors.black),
-                            child: const Text('+ 메모 추가하기'),
-                          ),
-                          TextButton(
-                            onPressed: () {},
-                            style: TextButton.styleFrom(foregroundColor: Colors.black),
-                            child: const Text('길찾기'),
-                          ),
-                        ],
-                      )
-                    ],
-                  ),
-                ),
-              ),
+            const Text('새 일정 추가',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFFD9C189),
+                )),
             const SizedBox(height: 20),
+            CupertinoTextField(
+              controller: _timeController,
+              placeholder: '시간 :',
+            ),
+            const SizedBox(height: 10),
+            CupertinoTextField(
+              controller: _locationController,
+              placeholder: '장소 :',
+            ),
+            const Spacer(),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                CupertinoButton(
+                  child: const Text('취소',
+                      style: TextStyle(color: Color(0xFFD9C189))),
+                  onPressed: () => Navigator.of(context).pop(),
+                ),
+                Container(
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFD9C189),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: CupertinoButton(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 24, vertical: 10),
+                    child: const Text('추가',
+                        style: TextStyle(color: Colors.white)),
+                    onPressed: () {
+                      if (_timeController.text.isNotEmpty &&
+                          _locationController.text.isNotEmpty) {
+                        final newAppointment = {
+                          'time': _timeController.text,
+                          'location': _locationController.text,
+                        };
+                        setState(() {
+                          final key = DateTime(
+                            selectedDay.year,
+                            selectedDay.month,
+                            selectedDay.day,
+                          );
+                          _appointments.putIfAbsent(key, () => []);
+                          _appointments[key]!.add(newAppointment);
+                          _selectedDay = selectedDay; // 바로 보이게
+                        });
+                        Navigator.of(context).pop();
+                      }
+                    },
+                  ),
+                ),
+              ],
+            ),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildDayCell(DateTime day, bool isOutside) {
-    bool isLastWeek = day
-        .isAfter(DateTime(_focusedDay.year, _focusedDay.month + 1, 0)
-        .subtract(const Duration(days: 7)));
+  void _showMonthYearPicker() {
+    DateTime tempPickedDate = _focusedDay;
 
-    BorderRadius borderRadius = BorderRadius.zero;
-    if (isLastWeek && day.weekday == DateTime.saturday) {
-      borderRadius = const BorderRadius.only(
-        bottomRight: Radius.circular(12),
-      );
-    } else if (isLastWeek && day.weekday == DateTime.sunday) {
-      borderRadius = const BorderRadius.only(
-        bottomLeft: Radius.circular(12),
+    showCupertinoModalPopup(
+      context: context,
+      builder: (BuildContext context) {
+        return Container(
+          height: 350,
+          color: Colors.white,
+          child: Column(
+            children: [
+              Container(
+                padding:
+                const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                color: Colors.grey[100],
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    CupertinoButton(
+                      padding: EdgeInsets.zero,
+                      child: Text('취소',
+                          style: TextStyle(color: Colors.grey[900])),
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                    ),
+                    CupertinoButton(
+                      padding: EdgeInsets.zero,
+                      child: const Text('완료',
+                          style: TextStyle(color: Color(0xFFD9C189))),
+                      onPressed: () {
+                        setState(() {
+                          _focusedDay = tempPickedDate;
+                          _selectedDay = tempPickedDate;
+                        });
+                        Navigator.of(context).pop();
+                      },
+                    ),
+                  ],
+                ),
+              ),
+              Expanded(
+                child: CupertinoDatePicker(
+                  mode: CupertinoDatePickerMode.date,
+                  initialDateTime: _focusedDay,
+                  minimumDate: DateTime(2020),
+                  maximumDate: DateTime(2030),
+                  onDateTimeChanged: (DateTime newDate) {
+                    tempPickedDate = newDate;
+                  },
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildDayCell(DateTime day,
+      {required bool isSelected,
+        required bool isToday,
+        required bool isOutside}) {
+    Color lineColor = isSelected
+        ? Color(0xFFD9C189)
+        : isToday
+        ? Colors.red
+        : Colors.grey[300]!;
+
+    Color textColor = isOutside ? Colors.grey : Colors.black;
+
+    BoxDecoration? decoration;
+    if (isSelected || isToday) {
+      decoration = BoxDecoration(
+        shape: BoxShape.circle,
+        color: isSelected ? Color(0xFFD9C189) : Colors.red,
       );
     }
 
-    return Container(
-      decoration: BoxDecoration(
-        border: const Border(
-          right: BorderSide(color: Color(0xFFE0E0E0), width: 0.8),
-          bottom: BorderSide(color: Color(0xFFE0E0E0), width: 0.8),
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Container(
+          height: 1,
+          margin: const EdgeInsets.only(bottom: 6),
+          color: lineColor,
         ),
-        borderRadius: borderRadius,
-      ),
-      child: Center(
-        child: Container(
-          padding: const EdgeInsets.all(6),
+        Container(
+          decoration: decoration,
+          padding: const EdgeInsets.all(8),
           child: Text(
             '${day.day}',
             style: TextStyle(
-              color: isOutside ? Colors.grey : Colors.black,
+              color: isSelected || isToday ? Colors.white : textColor,
             ),
           ),
         ),
+      ],
+    );
+  }
+
+  List<Map<String, String>> _getAppointmentsForDay(DateTime day) {
+    return _appointments[DateTime(day.year, day.month, day.day)] ?? [];
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final selectedAppointments =
+    _selectedDay != null ? _getAppointmentsForDay(_selectedDay!) : [];
+
+    return Scaffold(
+      backgroundColor: Colors.white,
+      appBar: AppBar(
+        centerTitle: true,
+        toolbarHeight: 80,
+        backgroundColor: Colors.white,
+        elevation: 0,
+        iconTheme: const IconThemeData(color: Colors.black),
+        title: Padding(
+          padding: const EdgeInsets.only(top: 25),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: const [
+              Icon(Icons.event_available, color: Colors.black),
+              SizedBox(width: 8),
+              Text(
+                '약속 캘린더',
+                style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 25,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+      body: Column(
+        children: [
+          GestureDetector(
+            onTap: _showMonthYearPicker,
+            child: Padding(
+              padding: const EdgeInsets.all(12.0),
+              child: Text(
+                '${_focusedDay.year}년 ${_focusedDay.month}월',
+                style: const TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
+                ),
+              ),
+            ),
+          ),
+          Container(height: 1, color: Colors.grey[300]),
+          TableCalendar(
+            firstDay: DateTime(2020),
+            lastDay: DateTime(2030),
+            focusedDay: _focusedDay,
+            selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
+            onDaySelected: (selectedDay, focusedDay) {
+              setState(() {
+                _selectedDay = selectedDay;
+                _focusedDay = focusedDay;
+              });
+              _showAddAppointmentDialog(selectedDay);
+            },
+            onPageChanged: (focusedDay) {
+              setState(() {
+                _focusedDay = focusedDay;
+              });
+            },
+            rowHeight: 80,
+            calendarStyle: const CalendarStyle(
+              outsideDaysVisible: true,
+            ),
+            daysOfWeekHeight: 40,
+            daysOfWeekStyle: const DaysOfWeekStyle(
+              weekdayStyle: TextStyle(color: Colors.black),
+              weekendStyle: TextStyle(color: Colors.grey),
+            ),
+            headerStyle: const HeaderStyle(
+              titleTextStyle: TextStyle(color: Colors.black),
+              formatButtonVisible: false,
+              titleCentered: true,
+              leftChevronIcon: Icon(Icons.chevron_left, color: Colors.black),
+              rightChevronIcon: Icon(Icons.chevron_right, color: Colors.black),
+            ),
+            calendarBuilders: CalendarBuilders(
+              dowBuilder: (context, day) {
+                final koreanWeekdays = ['일', '월', '화', '수', '목', '금', '토'];
+                return Center(
+                  child: Text(
+                    koreanWeekdays[day.weekday % 7],
+                    style: const TextStyle(
+                        color: Colors.black, fontWeight: FontWeight.bold),
+                  ),
+                );
+              },
+              defaultBuilder: (context, day, focusedDay) {
+                return _buildDayCell(day,
+                    isSelected: false,
+                    isToday: false,
+                    isOutside: false);
+              },
+              todayBuilder: (context, day, focusedDay) {
+                return _buildDayCell(day,
+                    isSelected: false, isToday: true, isOutside: false);
+              },
+              selectedBuilder: (context, day, focusedDay) {
+                return _buildDayCell(day,
+                    isSelected: true, isToday: false, isOutside: false);
+              },
+              outsideBuilder: (context, day, focusedDay) {
+                return _buildDayCell(day,
+                    isSelected: false, isToday: false, isOutside: true);
+              },
+            ),
+          ),
+          const Divider(),
+          if (selectedAppointments.isNotEmpty)
+            ...selectedAppointments.asMap().entries.map((entry) {
+              final index = entry.key;
+              final appt = entry.value;
+              return ListTile(
+                title: Text('${appt['time']} - ${appt['location']}'),
+                leading: const Icon(Icons.event_note),
+                trailing: IconButton(
+                  icon: const Icon(Icons.close, color: Color(0xFFD9C189)),
+                  onPressed: () {
+                    final key = DateTime(
+                      _selectedDay!.year,
+                      _selectedDay!.month,
+                      _selectedDay!.day,
+                    );
+                    setState(() {
+                      _appointments[key]!.removeAt(index);
+                      if (_appointments[key]!.isEmpty) {
+                        _appointments.remove(key);
+                      }
+                    });
+                  },
+                ),
+              );
+            }),
+          if (_selectedDay != null && selectedAppointments.isEmpty)
+            const Padding(
+              padding: EdgeInsets.all(16.0),
+              child: Text(
+                '등록된 일정이 없습니다.',
+                style: TextStyle(color: Colors.grey),
+              ),
+            ),
+        ],
       ),
     );
   }

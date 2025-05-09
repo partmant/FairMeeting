@@ -27,7 +27,7 @@ class MainmenuScreen extends StatelessWidget {
         'icon': Icons.event_available,
         'color': Colors.white,
         'textColor': Colors.black,
-        'onTap': () => Navigator.push(context, MaterialPageRoute(builder: (_) => const AppointmentCalendarScreen())),
+        'onTap': () => Navigator.push(context, MaterialPageRoute(builder: (_) =>  AppointmentCalendarScreen())),
       },
       {
         'label': '내 정보',
