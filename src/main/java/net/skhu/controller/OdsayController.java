@@ -13,7 +13,7 @@ import net.skhu.dto.OdsayRouteResponse;
 import net.skhu.service.OdsayService;
 
 @RestController
-@RequestMapping("/odsay")
+@RequestMapping("api/odsay")
 @RequiredArgsConstructor
 public class OdsayController {
 

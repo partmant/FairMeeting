@@ -1,4 +1,4 @@
-package net.skhu.model;
+package net.skhu.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Coordinate {	// 사용자 위도, 경도
-    private double lat;
-    private double lng;
+public class GeocodingResponse {
+    private String name; // 건물명 또는 주소명
 }
