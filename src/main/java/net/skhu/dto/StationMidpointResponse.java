@@ -1,15 +1,16 @@
 package net.skhu.dto;
 
+import java.util.List;
+import java.util.Map;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data
 @AllArgsConstructor
 public class StationMidpointResponse {
-    private String source;
-    private String target;
-    private String balancedMidpoint;
-    private double timeFromSourceToMid;
-    private double timeFromTargetToMid;
-    private double timeDifference;
+    private List<String> sources;              // 다수의 출발역 리스트
+    private String balancedMidpoint;           // 최적 중간역 이름
+    private Map<String, Double> timeFromSourceToMid; // 출발역별 중간역까지 소요시간 맵
+    private double timeDifference;             // 최대/최소 소요시간 차이
 }
