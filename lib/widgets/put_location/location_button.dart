@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fair_front/controllers/location_controller.dart';
 import 'package:fair_front/screens/search_address_screen.dart';
+import 'package:fair_front/models/place_autocomplete_response.dart';
 import 'package:dotted_border/dotted_border.dart';
 
 class LocationButton extends StatelessWidget {
@@ -8,17 +9,17 @@ class LocationButton extends StatelessWidget {
 
   const LocationButton({super.key, required this.controller});
 
-  void _navigateToSearchAddress(BuildContext context) async { // 지도 검색 화면으로 이동
+  void _navigateToSearchAddress(BuildContext context) async {
     final result = await Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => const SearchAddressScreen()),
     );
 
-    if (result != null && result is Map<String, dynamic>) { // 주소 선택 후
+    if (result != null && result is PlaceAutoCompleteResponse) {
       controller.addAddress(result);
-      await controller.moveMapCenter( // 선택된 주소로 지도 중심 이동
-        double.parse(result['lat'].toString()),
-        double.parse(result['lng'].toString()),
+      await controller.moveMapCenter(
+        result.latitude,
+        result.longitude,
       );
     }
   }

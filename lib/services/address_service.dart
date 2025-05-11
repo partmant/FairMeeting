@@ -1,10 +1,12 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../services/api_config.dart';
+import '../models/geocoding_response.dart';
+import '../models/place_autocomplete_response.dart';
 
 class AddressService {
-  static Future<String> fetchAddressName(double lat, double lng) async {
-    final uri = Uri.parse('${ApiConfig.baseUrl}/api/address-name').replace(queryParameters: {
+  static Future<GeocodingResponse> fetchAddressName(double lat, double lng) async {
+    final uri = Uri.parse('${ApiConfig.baseUrl}/api/geocoding/address').replace(queryParameters: {
       'lat': lat.toString(),
       'lng': lng.toString(),
     });
@@ -12,20 +14,21 @@ class AddressService {
     final response = await http.get(uri);
     if (response.statusCode == 200) {
       final json = jsonDecode(utf8.decode(response.bodyBytes));
-      return json['name'] ?? "주소 없음";
+      return GeocodingResponse.fromJson(json);
     } else {
       throw Exception("주소 조회 실패: ${response.statusCode}");
     }
   }
 
-  static Future<List<dynamic>> fetchAddressSuggestions(String query) async {
-    final uri = Uri.parse('${ApiConfig.baseUrl}/api/address-autocomplete').replace(queryParameters: {
+  static Future<List<PlaceAutoCompleteResponse>> fetchAddressSuggestions(String query) async {
+    final uri = Uri.parse('${ApiConfig.baseUrl}/api/places/autocomplete').replace(queryParameters: {
       'query': query,
     });
 
     final response = await http.get(uri);
     if (response.statusCode == 200) {
-      return jsonDecode(utf8.decode(response.bodyBytes)) as List<dynamic>;
+      final List<dynamic> jsonList = jsonDecode(utf8.decode(response.bodyBytes));
+      return jsonList.map((item) => PlaceAutoCompleteResponse.fromJson(item)).toList();
     } else {
       throw Exception("자동완성 실패: ${response.statusCode}");
     }
