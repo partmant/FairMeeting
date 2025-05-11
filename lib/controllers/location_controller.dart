@@ -1,15 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:kakao_map_plugin/kakao_map_plugin.dart';
-import '../services/address_service.dart';
 import 'package:geolocator/geolocator.dart';
+
+import '../services/address_service.dart';
+import '../models/place_autocomplete_response.dart';
+import '../models/geocoding_response.dart';
 
 class LocationController with ChangeNotifier {
   KakaoMapController? mapController;
 
-  final List<Map<String, dynamic>> selectedAddresses = [];
+  final List<PlaceAutoCompleteResponse> selectedAddresses = [];
   final Set<Marker> markers = {};
   int? selectedAddressIndex;
-  LatLng currentCenter = LatLng(37.5651, 126.9784); // 기본 지도 중심
+  LatLng currentCenter = LatLng(37.5651, 126.9784); // 디폴트 지도 중심
 
   bool _hasInitialized = false; // 최초 진입 여부 플래그
 
@@ -26,7 +29,7 @@ class LocationController with ChangeNotifier {
 
     if (markers.isNotEmpty) {
       mapController?.addMarker(markers: markers.toList());
-      print("✅ 지도에 ${markers.length}개의 마커 재추가 완료");
+      print("✅ 지도에 \${markers.length}개의 마커 재추가 완료");
     } else {
       print("ℹ️ 현재 markers는 비어있음");
     }
@@ -42,7 +45,7 @@ class LocationController with ChangeNotifier {
   // 지도 중심만 설정
   void setMapCenter(double lat, double lng) {
     currentCenter = LatLng(lat, lng);
-    print("📌 사용자 중심 위치 저장만: $currentCenter");
+    print("📌 사용자 중심 위치 저장만: \$currentCenter");
   }
 
   // 사용자 위치를 지도 중심으로 설정
@@ -60,20 +63,18 @@ class LocationController with ChangeNotifier {
       // 없으면 기본(서울시청)으로 설정
       else {
         print("📛 위치 권한이 거부되었습니다.");
-        currentCenter = LatLng(37.5651, 126.9784); // ✅ 명시적 기본 위치 설정
+        currentCenter = LatLng(37.5651, 126.9784); // 명시적 기본 위치 설정
       }
     } catch (e) {
-      print("❗ 위치 가져오기 실패: $e");
-      currentCenter = LatLng(37.5651, 126.9784); // ✅ 예외 발생 시도 기본 위치 설정
+      print("❗ 위치 가져오기 실패: \$e");
+      currentCenter = LatLng(37.5651, 126.9784); // 예외 발생 시 기본 위치 설정
     }
   }
 
   // 새로운 주소 및 마커 표시
-  void addAddress(Map<String, dynamic> addressData) {
+  void addAddress(PlaceAutoCompleteResponse address) {
     final markerId = UniqueKey().toString();
-    final lat = double.parse(addressData['lat'].toString());
-    final lng = double.parse(addressData['lng'].toString());
-    final position = LatLng(lat, lng);
+    final position = LatLng(address.latitude, address.longitude);
 
     final marker = Marker(
       markerId: markerId,
@@ -84,8 +85,7 @@ class LocationController with ChangeNotifier {
       offsetY: 44,
     );
 
-    addressData['marker'] = marker;
-    selectedAddresses.add(addressData);
+    selectedAddresses.add(address);
     selectedAddressIndex = selectedAddresses.length - 1;
     markers.add(marker);
 
@@ -95,41 +95,49 @@ class LocationController with ChangeNotifier {
 
   // 선택된 주소의 마커 이동 및 주소 수정
   Future<void> moveSelectedMarker(LatLng newLatLng) async {
-    if (selectedAddressIndex != null &&
-        selectedAddressIndex! < selectedAddresses.length) {
-      final address = selectedAddresses[selectedAddressIndex!];
-      final Marker? oldMarker = address['marker'];
+    if (selectedAddressIndex != null && selectedAddressIndex! < selectedAddresses.length) {
+      final oldAddress = selectedAddresses[selectedAddressIndex!];
 
-      if (oldMarker != null) {
-        markers.remove(oldMarker);
+      // 기존 마커 찾기
+      final oldMarker = markers.firstWhere(
+            (m) => m.latLng.latitude == oldAddress.latitude && m.latLng.longitude == oldAddress.longitude,
+      );
 
-        final newMarker = Marker(
-          markerId: oldMarker.markerId,
-          latLng: newLatLng,
-          width: oldMarker.width,
-          height: oldMarker.height,
-          offsetX: oldMarker.offsetX,
-          offsetY: oldMarker.offsetY,
+      // 기존 마커 제거
+      markers.remove(oldMarker);
+
+      // 새 마커 생성
+      final newMarker = Marker(
+        markerId: oldMarker.markerId,
+        latLng: newLatLng,
+        width: oldMarker.width,
+        height: oldMarker.height,
+        offsetX: oldMarker.offsetX,
+        offsetY: oldMarker.offsetY,
+      );
+
+      try {
+        // 새 위치의 주소명 요청
+        final GeocodingResponse response = await AddressService.fetchAddressName(
+          newLatLng.latitude,
+          newLatLng.longitude,
+        );
+        final updatedAddress = PlaceAutoCompleteResponse(
+          placeName: response.name,
+          roadAddress: oldAddress.roadAddress, // 기존 도로명 유지
+          latitude: newLatLng.latitude,
+          longitude: newLatLng.longitude,
         );
 
-        address['marker'] = newMarker;
-        address['lat'] = newLatLng.latitude;
-        address['lng'] = newLatLng.longitude;
+        // 리스트, 마커 업데이트
+        selectedAddresses[selectedAddressIndex!] = updatedAddress;
         markers.add(newMarker);
-
-        try {
-          final name = await AddressService.fetchAddressName(
-            newLatLng.latitude,
-            newLatLng.longitude,
-          );
-          address['name'] = name;
-        } catch (e) {
-          print("❗ 주소명 요청 중 예외 발생: $e");
-        }
 
         mapController?.clearMarker();
         mapController?.addMarker(markers: markers.toList());
         notifyListeners();
+      } catch (e) {
+        print("❗ 주소명 요청 중 예외 발생: \$e");
       }
     }
   }
@@ -137,13 +145,18 @@ class LocationController with ChangeNotifier {
   // 주소와 마커 삭제
   void deleteAddressAt(int index) {
     if (index >= 0 && index < selectedAddresses.length) {
-      final marker = selectedAddresses[index]['marker'];
-      if (marker != null) {
-        markers.remove(marker);
-      }
+      final address = selectedAddresses[index];
 
+      // 해당 주소의 마커 찾기
+      final marker = markers.firstWhere(
+            (m) => m.latLng.latitude == address.latitude && m.latLng.longitude == address.longitude,
+      );
+
+      // 마커 제거 및 리스트 갱신
+      markers.remove(marker);
       selectedAddresses.removeAt(index);
 
+      // 선택 인덱스 보정
       if (selectedAddressIndex == index) {
         selectedAddressIndex = null;
       } else if (selectedAddressIndex != null && selectedAddressIndex! > index) {
@@ -157,21 +170,15 @@ class LocationController with ChangeNotifier {
   }
 
   // 화면 전체 초기화 및 지도 중심 재설정
-  void clearAll() async {
+  Future<void> clearAll() async {
     selectedAddresses.clear();
     markers.clear();
     selectedAddressIndex = null;
     mapController?.clearMarker();
 
-    // 위치 초기화 플래그
     _hasInitialized = false;
-
-    // 사용자 위치로 중심 초기화
     await setCurrentLocationAsCenter();
-
-    // 지도 중심 이동
     await moveMapCenter(currentCenter.latitude, currentCenter.longitude);
-
     notifyListeners();
   }
 

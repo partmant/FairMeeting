@@ -1,9 +1,9 @@
+// screens/search_address_screen.dart
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import '../services/api_config.dart';
+import '../services/address_service.dart';
+import '../models/place_autocomplete_response.dart';
 import '../widgets/search_address/address_suggestion_list.dart';
-import '../services/address_search_service.dart';
 
 class SearchAddressScreen extends StatefulWidget {
   const SearchAddressScreen({Key? key}) : super(key: key);
@@ -14,7 +14,7 @@ class SearchAddressScreen extends StatefulWidget {
 
 class _SearchAddressScreenState extends State<SearchAddressScreen> {
   final TextEditingController _searchController = TextEditingController();
-  List<dynamic> _suggestions = [];
+  List<PlaceAutoCompleteResponse> _suggestions = [];
   bool _isLoading = false;
 
   Future<void> _searchAddress(String query) async {
@@ -25,11 +25,19 @@ class _SearchAddressScreenState extends State<SearchAddressScreen> {
 
     setState(() => _isLoading = true);
 
-    final results = await AddressSearchService.fetchSuggestions(query);
-    setState(() {
-      _suggestions = results;
-      _isLoading = false;
-    });
+    try {
+      final results = await AddressService.fetchAddressSuggestions(query);
+      setState(() {
+        _suggestions = results;
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() => _isLoading = false);
+      // 에러 핸들링 (optional)
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('주소 검색 실패: $e')),
+      );
+    }
   }
 
   @override
@@ -54,7 +62,6 @@ class _SearchAddressScreenState extends State<SearchAddressScreen> {
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
-            // 입력창 + 로딩 바 포함
             TextField(
               controller: _searchController,
               decoration: const InputDecoration(
@@ -65,12 +72,10 @@ class _SearchAddressScreenState extends State<SearchAddressScreen> {
             const SizedBox(height: 10),
             if (_isLoading) const LinearProgressIndicator(),
             const SizedBox(height: 10),
-
-            // 하단 주소 리스트
-            AddressSuggestionList(
+            AddressSuggestionList(  // 하단 주소 리스트
               suggestions: _suggestions,
-              onSelect: (suggestion) {
-                Navigator.pop(context, suggestion);
+              onSelect: (selected) {
+                Navigator.pop(context, selected);
               },
             ),
           ],

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fair_front/controllers/location_controller.dart';
+import 'package:fair_front/models/place_autocomplete_response.dart';
 
 class LocationList extends StatelessWidget {
   final LocationController controller;
@@ -8,7 +9,7 @@ class LocationList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final addresses = controller.selectedAddresses;
+    final List<PlaceAutoCompleteResponse> addresses = controller.selectedAddresses;
 
     if (addresses.isEmpty) return const SizedBox.shrink();
 
@@ -19,26 +20,26 @@ class LocationList extends StatelessWidget {
         itemCount: addresses.length,
         itemBuilder: (context, index) {
           final address = addresses[index];
-          final String name = address['name'] ?? '';
-          final double lat = double.parse(address['lat'].toString());
-          final double lng = double.parse(address['lng'].toString());
+          final String name = address.placeName;
+          final double lat = address.latitude;
+          final double lng = address.longitude;
 
-          return Card(  // 주소 리스트 카드 위젯으로
+          return Card(
             margin: const EdgeInsets.symmetric(vertical: 4),
             child: ListTile(
               leading: const Icon(Icons.location_on),
               title: Text(name, style: const TextStyle(fontSize: 16)),
-              selected: index == controller.selectedAddressIndex, // 선택된 주소 강조
+              selected: index == controller.selectedAddressIndex,
               selectedTileColor: Colors.grey.shade200,
-              trailing: IconButton( // 주소 삭제 버튼
+              trailing: IconButton(
                 icon: const Icon(Icons.close, color: Colors.red),
                 onPressed: () {
                   controller.deleteAddressAt(index);
                 },
               ),
-              onTap: () async { // 주소 클릭 시 해당 주소로 지도 중심 이동
+              onTap: () async {
                 controller.selectedAddressIndex = index;
-                await controller.moveMapCenter(lat, lng); // 수정된 메서드 사용
+                await controller.moveMapCenter(lat, lng);
               },
             ),
           );
