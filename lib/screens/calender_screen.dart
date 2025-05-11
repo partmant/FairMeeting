@@ -181,7 +181,12 @@ class _AppointmentCalendarScreenState
         ? Colors.red
         : Colors.grey[300]!;
 
-    Color textColor = isOutside ? Colors.grey : Colors.black;
+    Color textColor; // 일요일 빨간색 글씨로 설정
+    if (day.weekday == DateTime.sunday) {
+      textColor = isOutside ? Colors.red[100]! : Colors.red;
+    } else {
+      textColor = isOutside ? Colors.grey : Colors.black;
+    }
 
     BoxDecoration? decoration;
     if (isSelected || isToday) {
@@ -191,21 +196,20 @@ class _AppointmentCalendarScreenState
       );
     }
 
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
+    return Column(    // 날짜 셀과 요일 셀 여백 제거를 위해 다시 편집
       children: [
-        Container(
-          height: 1,
-          margin: const EdgeInsets.only(bottom: 6),
-          color: lineColor,
-        ),
-        Container(
-          decoration: decoration,
-          padding: const EdgeInsets.all(8),
-          child: Text(
-            '${day.day}',
-            style: TextStyle(
-              color: isSelected || isToday ? Colors.white : textColor,
+        Container(height: 1, color: lineColor),
+        Expanded(
+          child: Center(
+            child: Container(
+              decoration: decoration,
+              padding: const EdgeInsets.all(8),
+              child: Text(
+                '${day.day}',
+                style: TextStyle(
+                  color: isSelected || isToday ? Colors.white : textColor,
+                ),
+              ),
             ),
           ),
         ),
@@ -285,6 +289,7 @@ class _AppointmentCalendarScreenState
             rowHeight: 80,
             calendarStyle: const CalendarStyle(
               outsideDaysVisible: true,
+              cellMargin: EdgeInsets.zero, // 이 줄 추가
             ),
             daysOfWeekHeight: 40,
             daysOfWeekStyle: const DaysOfWeekStyle(
@@ -301,7 +306,10 @@ class _AppointmentCalendarScreenState
             calendarBuilders: CalendarBuilders(
               dowBuilder: (context, day) {
                 final koreanWeekdays = ['일', '월', '화', '수', '목', '금', '토'];
-                return Center(
+                return Container(
+                  height: 40, // 이 줄 추가
+                  color: const Color(0xFFD9C189), // 요일 셀 색 변경
+                  alignment: Alignment.center,
                   child: Text(
                     koreanWeekdays[day.weekday % 7],
                     style: const TextStyle(
