@@ -34,7 +34,7 @@ public class StationMidpointService {
      * Neo4j GDS의 Bellman–Ford single-source 스트림 프로시저를 사용합니다.
      * 수행시간을 콘솔에 출력합니다.
      */
-    public StationMidpointResponse findBestMidpoint(List<String> sourceNames) {
+    public StationMidpointResponse findMidStation(List<String> sourceNames) {
         long start = System.currentTimeMillis();
         try (Session session = driver.session()) {
             // 1) 모든 역의 nodeId ↔ name 맵 생성

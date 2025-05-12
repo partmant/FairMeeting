@@ -48,8 +48,9 @@ public class OdsayService {
                     String.class
             );
 
-            if (!response.getStatusCode().is2xxSuccessful() || response.getBody() == null)
-                throw new RuntimeException("ODsay API 응답 오류: " + response.getStatusCode());
+            if (!response.getStatusCode().is2xxSuccessful() || response.getBody() == null) {
+				throw new RuntimeException("ODsay API 응답 오류: " + response.getStatusCode());
+			}
 
             JsonNode root = objectMapper.readTree(response.getBody());
             JsonNode paths = root.path("result").path("path");
@@ -90,7 +91,7 @@ public class OdsayService {
                 route.setTotalWalkTime(totalWalkTime);
                 routeResponses.add(route);
 
-                // 출력용 상세 경로 (선택)
+                // 출력용 상세 경로
                 OdsayDetailedRoute detail = new OdsayDetailedRoute();
                 detail.setTotalTime(route.getTotalTime());
                 detail.setPayment(route.getPayment());

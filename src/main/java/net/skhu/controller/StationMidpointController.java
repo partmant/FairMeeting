@@ -31,7 +31,7 @@ public class StationMidpointController {
             @Valid @RequestBody StationMidpointRequest request
     ) {
         List<String> sources = request.getSources();
-        StationMidpointResponse response = stationService.findBestMidpoint(sources);
+        StationMidpointResponse response = stationService.findMidStation(sources);
 
         if (response == null) {
             return ResponseEntity.internalServerError().build();

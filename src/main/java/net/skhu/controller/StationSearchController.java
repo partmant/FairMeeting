@@ -1,7 +1,5 @@
 package net.skhu.controller;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,10 +25,10 @@ public class StationSearchController {
      * @return 인근 지하철역 목록
      */
     @GetMapping("/search")
-    public ResponseEntity<List<StationDto>> getNearbyStations(
+    public ResponseEntity<StationDto> getNearbyStations(
             @RequestParam double lat,
             @RequestParam double lng) {
-        List<StationDto> result = stationSearchService.getNearbyStations(lat, lng);
+        StationDto result = stationSearchService.findNearestStation(lat, lng);
         return ResponseEntity.ok(result);
     }
 }

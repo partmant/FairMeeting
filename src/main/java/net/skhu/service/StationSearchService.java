@@ -1,6 +1,5 @@
 package net.skhu.service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -22,15 +21,13 @@ public class StationSearchService {
     private String restApiKey;
 
     /**
-     * 주어진 위도와 경도를 기준으로 주변 지하철역을 조회한다.
+     * 주어진 좌표를 기준으로 가장 가까운 지하철역을 반환
      *
      * @param latitude 위도
      * @param longitude 경도
-     * @return 인근 지하철역 리스트
+     * @return 가장 가까운 역 정보
      */
-    public List<StationDto> getNearbyStations(double latitude, double longitude) {
-        List<StationDto> stations = new ArrayList<>();
-
+    public StationDto findNearestStation(double latitude, double longitude) {
         String categoryGroupCode = "SW8";
         int radius = 2000;
 
@@ -49,18 +46,18 @@ public class StationSearchService {
             if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
                 List<Map<String, Object>> docs = (List<Map<String, Object>>) response.getBody().get("documents");
 
-                for (Map<String, Object> doc : docs) {
+                if (!docs.isEmpty()) {
+                    Map<String, Object> doc = docs.get(0); // 가장 가까운 역
                     String name = (String) doc.get("place_name");
                     double x = Double.parseDouble(doc.get("x").toString());
                     double y = Double.parseDouble(doc.get("y").toString());
 
-                    stations.add(new StationDto(name, y, x));
+                    return new StationDto(name, y, x);
                 }
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-        return stations;
+        throw new RuntimeException("가까운 지하철역을 찾을 수 없습니다.");
     }
 }
