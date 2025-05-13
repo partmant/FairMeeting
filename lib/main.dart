@@ -4,17 +4,18 @@ import 'package:flutter/services.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 import 'package:kakao_map_plugin/kakao_map_plugin.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:provider/provider.dart'; // ✅ 추가
-import 'controllers/location_controller.dart'; // ✅ 추가
+import 'package:provider/provider.dart';
+import 'controllers/location_controller.dart';
+import 'controllers/user_controller.dart';
 import 'screens/loading_screen.dart';
 import 'screens/kakao_map_screen.dart';
 import 'package:intl/date_symbol_data_local.dart';
+
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   await dotenv.load();
-
   await initializeDateFormatting('ko_KR', null);
 
   KakaoSdk.init(
@@ -34,7 +35,8 @@ void main() async {
   runApp(
     MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => LocationController()), // Provider 등록
+        ChangeNotifierProvider(create: (_) => LocationController()),    // Provider 등록
+        ChangeNotifierProvider(create: (_) => UserController()),        // 사용자 로그인 여부 확인
       ],
       child: const FairMeetingApp(),
     ),

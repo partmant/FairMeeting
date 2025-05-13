@@ -1,19 +1,59 @@
-/*
-카카오톡 Oauth 로그인 구현
-휴대폰을 연결해서 하면 로그인이 잘 되나, 가상머신에 카카오톡이 안 깔려있어서 때에 따라 오류 발생
- */
-
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
+import 'package:fair_front/controllers/user_controller.dart';
+import 'package:fair_front/screens/main_menu_screen.dart';
 
 class KakaoLoginButton extends StatelessWidget {
-  final VoidCallback onTap;
-
-  const KakaoLoginButton({super.key, required this.onTap});
+  const KakaoLoginButton({super.key});
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: onTap,
+      onTap: () async {
+
+        final userController = context.read<UserController>();
+
+        /* 이미 로그인 한 사람 처리 시
+        if (!userController.isGuest) {
+          print('이미 로그인된 사용자입니다.');
+          return;
+        }
+         */
+
+        try {
+          OAuthToken token;
+
+          bool isInstalled = await isKakaoTalkInstalled();
+          if (isInstalled) {
+            try {
+              token = await UserApi.instance.loginWithKakaoTalk();
+              print('카카오톡으로 로그인 성공: ${token.accessToken}');
+            } catch (error) {
+              print('카카오톡 로그인 실패, WebView로 로그인 시도');
+              token = await UserApi.instance.loginWithKakaoAccount();
+              print('카카오 계정으로 로그인 성공: ${token.accessToken}');
+            }
+          } else {
+            token = await UserApi.instance.loginWithKakaoAccount();
+            print('카카오 계정으로 로그인 성공: ${token.accessToken}');
+          }
+
+          final user = await UserApi.instance.me();
+          print('카카오 로그인 성공: ${user.kakaoAccount?.email}');
+
+          // 회원으로 변경
+          userController.setLoggedIn();
+
+          Navigator.of(context).pushAndRemoveUntil(
+            MaterialPageRoute(builder: (context) => const MainmenuScreen()),
+                (Route<dynamic> route) => false,
+          );
+        } catch (e) {
+          print('카카오 로그인 실패: $e');
+
+        }
+      },
       child: Container(
         height: 50,
         margin: const EdgeInsets.only(top: 12),
@@ -23,7 +63,7 @@ class KakaoLoginButton extends StatelessWidget {
           border: Border.all(color: Colors.grey.shade300),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.05),
+              color: Colors.black,
               blurRadius: 4,
               offset: const Offset(0, 2),
             ),

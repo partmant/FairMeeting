@@ -1,180 +1,28 @@
 import 'package:flutter/material.dart';
-import 'package:fair_front/screens/main_menu_screen.dart';
-import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
+import 'package:fair_front/widgets/logo_title.dart';
+import 'package:fair_front/widgets/kakao_login_button.dart';
+import 'package:fair_front/widgets/guest_login_button.dart';
 import 'package:fair_front/widgets/go_back.dart';
-// import 'package:naver_login/naver_login.dart';
 
-// 위젯들 import
-import '../widgets/kakao_login_button.dart';
-import '../widgets/naver_login_button.dart';
-import '../widgets/logo_title.dart';
-import '../widgets/text_action_button.dart';
-
-class LoginScreen extends StatefulWidget {
+class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});
-
-  @override
-  State<LoginScreen> createState() => _LoginScreenState();
-}
-
-class _LoginScreenState extends State<LoginScreen> {
-  final TextEditingController idController = TextEditingController();
-  final TextEditingController pwController = TextEditingController();
-  bool stayLoggedIn = false;
-
-  void handleLogin() {
-    final id = idController.text;
-    final pw = pwController.text;
-
-    // 로그인 정보 입력 확인용 출력문
-    print('ID: $id, PW: $pw');
-  }
-
-  // 카카오 로그인 함수
-  Future<void> kakaoLogin() async {
-    try {
-      OAuthToken token;
-
-      bool isInstalled = await isKakaoTalkInstalled();
-      if (isInstalled) {
-        try {
-          token = await UserApi.instance.loginWithKakaoTalk();
-          print('카카오톡으로 로그인 성공: ${token.accessToken}');
-        } catch (error) {
-          print('카카오톡 로그인 실패, WebView로 로그인 시도');
-          token = await UserApi.instance.loginWithKakaoAccount();
-          print('카카오 계정으로 로그인 성공: ${token.accessToken}');
-        }
-      } else {
-        token = await UserApi.instance.loginWithKakaoAccount();
-        print('카카오 계정으로 로그인 성공: ${token.accessToken}');
-      }
-
-      // 사용자 정보 가져오기
-      final user = await UserApi.instance.me();
-      print('유저 이메일: ${user.kakaoAccount?.email}');
-
-      // 로그인 후 이동할 때, 무슨 화면 뜨게 할 건지
-      if (mounted) {
-        Navigator.of(context).pushAndRemoveUntil(
-          MaterialPageRoute(builder: (context) => const MainmenuScreen()),
-              (Route<dynamic> route) => false,
-        );
-      }
-
-    } catch (e) {
-      print('카카오 로그인 실패: $e');
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('카카오 로그인 실패: $e')),
-        );
-      }
-    }
-  }
-
-
-
-  // 네이버 로그인 함수
-  void naverLogin() {
-    // 네이버 api 승인되면 구현
-    print('네이버 로그인 버튼 눌림 확인용 출력문');
-  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: buildCommonAppBar(context),
       backgroundColor: Colors.white,
+      appBar: buildCommonAppBar(context),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(24),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
             children: [
-              const SizedBox(height: 40),
+              const SizedBox(height: 100),
               const LogoTitle(),
-              const SizedBox(height: 40),
-              TextField(
-                controller: idController,
-                decoration: const InputDecoration(
-                  prefixIcon: Icon(Icons.person),
-                  hintText: '아이디',
-                  border: OutlineInputBorder(),
-                ),
-              ),
-              const SizedBox(height: 12),
-              TextField(
-                controller: pwController,
-                obscureText: true,
-                decoration: const InputDecoration(
-                  prefixIcon: Icon(Icons.lock),
-                  hintText: '비밀번호',
-                  border: OutlineInputBorder(),
-                ),
-              ),
-              Row(
-                children: [
-                  // 로그인 상태 유지 체크 시, DB 저장 절차 구현 필요
-                  Checkbox(
-                    value: stayLoggedIn,
-                    onChanged: (value) {
-                      setState(() {
-                        stayLoggedIn = value!;
-                      });
-                    },
-                  ),
-                  const Text('로그인 상태 유지'),
-                ],
-              ),
-              const SizedBox(height: 8),
-              ElevatedButton(
-                onPressed: handleLogin,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFFD9C189),
-                  foregroundColor: Colors.white,
-                  minimumSize: const Size.fromHeight(50),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  elevation: 4,
-                ),
-                child: const Text('로그인', style: TextStyle(fontSize: 20)),
-              ),
-              const SizedBox(height: 25),
-
-              // 각각 버튼 눌렸을 때, 기능 구현 필요
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  TextActionButton(
-                    label: '아이디 찾기',
-                    onTap: () => print('아이디 찾기 눌림'),
-                  ),
-                  const Text(' | ', style: TextStyle(color: Colors.grey)),
-                  TextActionButton(
-                    label: '비밀번호 찾기',
-                    onTap: () => print('비밀번호 찾기 눌림'),
-                  ),
-                  const Text(' | ', style: TextStyle(color: Colors.grey)),
-                  TextActionButton(
-                    label: '회원가입',
-                    onTap: () => print('회원가입 눌림'),
-                  ),
-                ],
-              ),
-
-              const SizedBox(height: 10),
-
-              TextActionButton(
-                label: '비회원 로그인',
-                onTap: () => print('비회원 로그인 눌림'),
-              ),
-
-              const SizedBox(height: 20),
-              KakaoLoginButton(onTap: kakaoLogin),
-
-              const SizedBox(height: 0),
-              NaverLoginButton(onTap: naverLogin),
+              const SizedBox(height: 150),
+              const KakaoLoginButton(),
+              const GuestLoginButton(),
             ],
           ),
         ),
