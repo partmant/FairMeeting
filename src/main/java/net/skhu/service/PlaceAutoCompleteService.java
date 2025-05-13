@@ -16,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import net.skhu.dto.CoordinateDto;
 import net.skhu.dto.PlaceAutoCompleteResponse;
 
 @Service
@@ -44,7 +45,7 @@ public class PlaceAutoCompleteService {
             List<Map<String, Object>> sorted = documents.stream()
                 .sorted(Comparator.comparing((Map<String, Object> doc) -> {
                     Object category = doc.get("category_group_code");
-                    return "SW8".equals(category) ? 0 : 1; // SW8이면 먼저
+                    return "SW8".equals(category) ? 0 : 1;
                 }))
                 .collect(Collectors.toList());
 
@@ -64,5 +65,19 @@ public class PlaceAutoCompleteService {
         }
 
         return Collections.emptyList();
+    }
+
+    /**
+     * 자동완성 결과 리스트에서 가장 첫 번째 결과의 좌표를 CoordinateDto로 반환
+     */
+    public CoordinateDto getCoordinate(String query) {
+        List<PlaceAutoCompleteResponse> results = getAutoComplete(query);
+
+        if (results != null && !results.isEmpty()) {
+            PlaceAutoCompleteResponse first = results.get(0);
+            return new CoordinateDto(first.getLatitude(), first.getLongitude());
+        }
+
+        throw new RuntimeException("좌표를 찾을 수 없습니다: " + query);
     }
 }

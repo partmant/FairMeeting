@@ -31,6 +31,70 @@ public class OdsayService {
     private final RestTemplate restTemplate = new RestTemplate();
     private final ObjectMapper objectMapper = new ObjectMapper();
 
+    // 검색 결과 하나만 출력
+    public OdsayRouteResponse fetchRoute(double sx, double sy, double ex, double ey) {
+        try {
+            String url = UriComponentsBuilder.fromUriString("https://api.odsay.com/v1/api/searchPubTransPathT")
+                    .queryParam("SX", sx)
+                    .queryParam("SY", sy)
+                    .queryParam("EX", ex)
+                    .queryParam("EY", ey)
+                    .queryParam("apiKey", apiKey)
+                    .toUriString();
+
+            ResponseEntity<String> response = restTemplate.exchange(
+                    url,
+                    HttpMethod.GET,
+                    new HttpEntity<>(new HttpHeaders()),
+                    String.class
+            );
+
+            if (!response.getStatusCode().is2xxSuccessful() || response.getBody() == null) {
+                throw new RuntimeException("ODsay API 응답 오류: " + response.getStatusCode());
+            }
+
+            JsonNode root = objectMapper.readTree(response.getBody());
+            JsonNode paths = root.path("result").path("path");
+
+            if (!paths.isArray() || paths.isEmpty()) {
+                throw new RuntimeException("ODsay API 경로 없음");
+            }
+
+            JsonNode path = paths.get(0); // 첫 번째 경로만 사용
+            JsonNode info = path.path("info");
+
+            int totalBusTime = 0;
+            int totalSubwayTime = 0;
+            int totalWalkTime = 0;
+
+            for (JsonNode subPath : path.path("subPath")) {
+                int trafficType = subPath.path("trafficType").asInt();
+                int sectionTime = subPath.path("sectionTime").asInt();
+
+                switch (trafficType) {
+                    case 1 -> totalSubwayTime += sectionTime;
+                    case 2 -> totalBusTime += sectionTime;
+                    case 3 -> totalWalkTime += sectionTime;
+                }
+            }
+
+            OdsayRouteResponse route = new OdsayRouteResponse();
+            route.setRouteNumber(1);
+            route.setTotalTime(info.path("totalTime").asInt());
+            route.setPayment(info.path("payment").asInt());
+            route.setSubwayTransitCount(info.path("subwayTransitCount").asInt());
+            route.setBusTransitCount(info.path("busTransitCount").asInt());
+            route.setTotalBusTime(totalBusTime);
+            route.setTotalSubwayTime(totalSubwayTime);
+            route.setTotalWalkTime(totalWalkTime);
+
+            return route;
+        } catch (Exception e) {
+            throw new RuntimeException("ODsay API 호출 또는 파싱 실패: " + e.getMessage(), e);
+        }
+    }
+
+    // 검색 결과 전체 출력
     public List<OdsayRouteResponse> fetchRoutes(double sx, double sy, double ex, double ey) {
         try {
             String url = UriComponentsBuilder.fromUriString("https://api.odsay.com/v1/api/searchPubTransPathT")
@@ -131,6 +195,7 @@ public class OdsayService {
 
                 detail.setSubPaths(subPaths);
                 detailedRoutes.add(detail);
+
             }
 
             // 콘솔 출력
