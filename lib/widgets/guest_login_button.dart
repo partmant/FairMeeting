@@ -30,7 +30,7 @@ class GuestLoginButton extends StatelessWidget {
           border: Border.all(color: Colors.grey.shade300),
           boxShadow: [
             BoxShadow(
-              color: Colors.black,
+              color: Colors.black.withAlpha(13),
               blurRadius: 4,
               offset: const Offset(0, 2),
             ),
