@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../models/place_autocomplete_response.dart';
 
+// 주소 자동완성 화면의 하단 주소 리스트
 class AddressSuggestionList extends StatelessWidget {
   final List<PlaceAutoCompleteResponse> suggestions;
   final void Function(PlaceAutoCompleteResponse) onSelect;

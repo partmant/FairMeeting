@@ -13,11 +13,12 @@ class LocationList extends StatelessWidget {
 
     if (addresses.isEmpty) return const SizedBox.shrink();
 
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 10),
-      height: 150,
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 10),
       child: ListView.builder(
         itemCount: addresses.length,
+        shrinkWrap: true, // 리스트 높이만큼만 차지하도록 제한
+        padding: EdgeInsets.zero, // 기본 패딩 제거
         itemBuilder: (context, index) {
           final address = addresses[index];
           final String name = address.placeName;

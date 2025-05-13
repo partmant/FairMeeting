@@ -9,6 +9,8 @@ import '../models/geocoding_response.dart';
 class LocationController with ChangeNotifier {
   KakaoMapController? mapController;
 
+  List<PlaceAutoCompleteResponse> get locations => selectedAddresses;
+
   final List<PlaceAutoCompleteResponse> selectedAddresses = [];
   final Set<Marker> markers = {};
   int? selectedAddressIndex;
