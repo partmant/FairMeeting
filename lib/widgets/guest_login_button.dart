@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:fair_front/controllers/user_controller.dart';
-import 'package:fair_front/screens/main_menu_screen.dart';
+import 'package:fair_front/screens/guest_info_screen.dart';
 
 class GuestLoginButton extends StatelessWidget {
   const GuestLoginButton({super.key});
@@ -15,11 +15,12 @@ class GuestLoginButton extends StatelessWidget {
         // 상태 변경
         context.read<UserController>().setGuest();
 
-        // 메인 화면으로 이동 (이전 화면 모두 제거)
-        Navigator.of(context).pushAndRemoveUntil(
-          MaterialPageRoute(builder: (_) => const MainmenuScreen()),
-              (route) => false,
+        // 화면 이동
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const GuestInfoPage()),
         );
+
       },
       child: Container(
         height: 50,

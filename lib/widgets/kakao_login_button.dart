@@ -14,13 +14,6 @@ class KakaoLoginButton extends StatelessWidget {
 
         final userController = context.read<UserController>();
 
-        /* 이미 로그인 한 사람 처리 시
-        if (!userController.isGuest) {
-          print('이미 로그인된 사용자입니다.');
-          return;
-        }
-         */
-
         try {
           OAuthToken token;
 
@@ -45,9 +38,9 @@ class KakaoLoginButton extends StatelessWidget {
           // 회원으로 변경
           userController.setLoggedIn();
 
-          Navigator.of(context).pushAndRemoveUntil(
-            MaterialPageRoute(builder: (context) => const MainmenuScreen()),
-                (Route<dynamic> route) => false,
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const MainmenuScreen()),
           );
         } catch (e) {
           print('카카오 로그인 실패: $e');

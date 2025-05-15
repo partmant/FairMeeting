@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 class UserController extends ChangeNotifier {
 
   // 기본적으로 비회원인 상태
-  bool _isGuest = false;
+  bool _isGuest = true;
 
   bool get isGuest => _isGuest;
 

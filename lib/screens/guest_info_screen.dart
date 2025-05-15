@@ -1,13 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:fair_front/controllers/user_controller.dart';
-import 'package:provider/provider.dart';
+import 'package:fair_front/screens/login_screen.dart';
 
-class MyInfoPage extends StatelessWidget {
-  const MyInfoPage({super.key});
+class GuestInfoPage extends StatelessWidget {
+  const GuestInfoPage({super.key});
 
   void _onButtonPressed(String title, BuildContext context) {
     print('$title 버튼 클릭됨');
 
+    if (title == "로그인") {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const LoginScreen()),
+      );
+    }
   }
 
   @override
@@ -65,43 +70,14 @@ class MyInfoPage extends StatelessWidget {
                     borderRadius: BorderRadius.circular(8),
                   ),
                 ),
-                onPressed: () {
-                  showDialog(
-                    context: context,
-                    builder: (BuildContext context) {
-                      return AlertDialog(
-                        title: const Text('로그아웃'),
-                        content: const Text('로그아웃하시겠습니까?'),
-                        actions: [
-                          TextButton(
-                            child: const Text('취소'),
-                            onPressed: () {
-                              Navigator.of(context).pop(); // 알림창 닫기만
-                            },
-                          ),
-                          TextButton(
-                            child: const Text('확인'),
-                            onPressed: () {
-                              Navigator.of(context).pop(); // 알림창 먼저 닫기
-
-                              final userController = context.read<UserController>();
-                              userController.setGuest();              // 상태를 비회원으로 전환
-                              Navigator.pop(context);                 // 이전 화면(MyInfoPage) 닫기
-                            },
-                          ),
-                        ],
-                      );
-                    },
-                  );
-                },
-
+                onPressed: () => _onButtonPressed("로그인", context),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: const [
                     Icon(Icons.login_rounded, color: Colors.black, size: 24,),
                     SizedBox(width: 10),
                     Text(
-                      '로그아웃',
+                      '로그인',
                       style: TextStyle(
                         fontSize: 22,
                         fontWeight: FontWeight.w700,
@@ -113,41 +89,7 @@ class MyInfoPage extends StatelessWidget {
               ),
             ),
 
-            const SizedBox(height: 20),
-
-            // 친구 목록 보기
-            Padding(
-              padding: const EdgeInsets.only(top: 2, right: 4),
-              child: Align(
-                alignment: Alignment.centerRight,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    TextButton.icon(
-                      onPressed: () => _onButtonPressed("친구 목록 보기", context),
-                      icon: const Icon(Icons.people, color: Colors.black, size: 16),
-                      label: const Text(
-                        '친구 목록 보기',
-                        style: TextStyle(fontSize: 14, color: Colors.black),
-                      ),
-                      style: TextButton.styleFrom(
-                        padding: EdgeInsets.zero,
-                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                        minimumSize: Size.zero,
-                      ),
-                    ),
-                    Container(
-                      height: 1.5,
-                      width: 115,
-                      color: const Color(0xFFD9C189),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-
-            const SizedBox(height: 30),
+            const SizedBox(height: 50),
 
             // 메뉴 리스트
             SizedBox(

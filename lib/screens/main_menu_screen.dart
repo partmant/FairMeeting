@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:fair_front/controllers/user_controller.dart';
 import 'put_location_screen.dart';
 import 'calender_screen.dart';
 import 'my_info_screen.dart';
+import 'guest_info_screen.dart';
 import 'settings_screen.dart';
 import '../widgets/logo_title.dart';
 import '../widgets/main_menu_button.dart';
@@ -35,7 +38,15 @@ class MainmenuScreen extends StatelessWidget {
         'icon': Icons.person,
         'color': Colors.white,
         'textColor': Colors.black,
-        'onTap': () => Navigator.push(context, MaterialPageRoute(builder: (_) => const MyInfoPage())),
+        'onTap': () {
+          final isGuest = context.read<UserController>().isGuest;
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => isGuest ? const GuestInfoPage() : const MyInfoPage(),
+            ),
+          );
+        }
       },
       {
         'label': '환경설정',
