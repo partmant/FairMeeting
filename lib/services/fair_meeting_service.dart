@@ -1,27 +1,28 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import '../models/fair_location_response.dart';
+import '../services/api_config.dart';
 
-Future<Map<String, dynamic>?> requestFairLocation(List<Map<String, double>> startPoints) async {
-  const url = 'http://localhost:8088/api/fair-location'; // 실제 IP 또는 도메인으로 변경 필요
+class FairMeetingService {
+  static Future<FairLocationResponse?> requestFairLocation(List<Map<String, double>> startPoints) async {
+    final uri = Uri.parse('${ApiConfig.baseUrl}/api/fair_location');
 
-  try {
-    final response = await http.post(
-      Uri.parse(url),
-      headers: {'Content-Type': 'application/json'},
-      body: json.encode({
-        'startPoints': startPoints,
-      }),
-    );
+    try {
+      final response = await http.post(
+        uri,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({'startPoints': startPoints}),
+      );
 
-    if (response.statusCode == 200) {
-      final data = json.decode(response.body);
-      return data; // 중간지점 응답 데이터 반환
-    } else {
-      print('서버 오류: ${response.statusCode}');
+      if (response.statusCode == 200) {
+        final json = jsonDecode(utf8.decode(response.bodyBytes));
+        return FairLocationResponse.fromJson(json);
+      } else {
+        throw Exception("공정 위치 계산 실패: ${response.statusCode}");
+      }
+    } catch (e) {
+      print('요청 실패: $e');
+      return null;
     }
-  } catch (e) {
-    print('요청 실패: $e');
   }
-
-  return null;
 }

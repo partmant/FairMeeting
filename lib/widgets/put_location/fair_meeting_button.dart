@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:fair_front/controllers/location_controller.dart';
 import 'package:fair_front/services/fair_meeting_service.dart';
 import 'package:fair_front/screens/fair_result_screen.dart';
+import 'package:kakao_map_plugin/kakao_map_plugin.dart'; // LatLng 사용을 위해 필요
 
 class FairMeetingButton extends StatelessWidget {
   const FairMeetingButton({super.key});
@@ -15,6 +16,7 @@ class FairMeetingButton extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 16),
       child: OutlinedButton(
         onPressed: () async {
+          // 출발지 리스트 구성
           final startPoints = locationController.locations.map((loc) => {
             'latitude': loc.latitude,
             'longitude': loc.longitude,
@@ -27,16 +29,28 @@ class FairMeetingButton extends StatelessWidget {
             return;
           }
 
-          final result = await requestFairLocation(startPoints);
-          if (result != null && result['station'] != null) {
-            final midpoint = result['station'];
-            final lat = midpoint['latitude'];
-            final lng = midpoint['longitude'];
+          // 서버로 요청
+          final result = await FairMeetingService.requestFairLocation(startPoints);
 
+          if (result != null && result.midpointStation != null) {
+            // 중간 지점 및 출발지 마커 좌표 리스트 구성
+            final midpoint = result.midpointStation;
+            final midpointLatLng = LatLng(midpoint.latitude, midpoint.longitude);
+
+            final startLatLngs = locationController.locations
+                .map((loc) => LatLng(loc.latitude, loc.longitude))
+                .toList();
+
+            final allCoordinates = [...startLatLngs, midpointLatLng];
+
+            // 결과 화면 이동
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (_) => FairResultMapScreen(latitude: lat, longitude: lng),
+                builder: (_) => FairResultMapScreen(
+                  coordinates: allCoordinates,
+                  center: midpointLatLng, // 중심 위치 지정
+                ),
               ),
             );
           } else {
