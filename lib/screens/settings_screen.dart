@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import '../buttons/notifications_button.dart';
+
 
 class SettingsScreen extends StatelessWidget {
   final List<_SettingsItem> items = [
@@ -108,9 +110,16 @@ class SettingsScreen extends StatelessWidget {
             elevation: 0,
           ),
           onPressed: () {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('${item.title} 버튼 클릭됨')),
-            );
+            if (item.title == '알림') {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => NotificationSettingsPage()),
+              );
+            } else {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text('${item.title} 버튼 클릭됨')),
+              );
+            }
           },
           child: Row(
             children: [
