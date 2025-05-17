@@ -11,7 +11,6 @@ import 'screens/loading_screen.dart';
 import 'screens/kakao_map_screen.dart';
 import 'package:intl/date_symbol_data_local.dart';
 
-
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
@@ -51,6 +50,7 @@ class FairMeetingApp extends StatelessWidget {
     return MaterialApp(
       title: 'Fair Meeting',
       debugShowCheckedModeBanner: false,
+      themeMode: ThemeMode.system, //  시스템 설정에 따라 라이트/다크 전환
       theme: ThemeData(
         scaffoldBackgroundColor: Colors.white,
         appBarTheme: const AppBarTheme(
@@ -68,6 +68,29 @@ class FairMeetingApp extends StatelessWidget {
             statusBarBrightness: Brightness.light,
           ),
         ),
+      ),
+      darkTheme: ThemeData.dark().copyWith(
+        scaffoldBackgroundColor: const Color(0xFF121212),
+        appBarTheme: const AppBarTheme(
+          backgroundColor: Color(0xFF121212),
+          elevation: 0,
+          iconTheme: IconThemeData(color: Colors.white),
+          titleTextStyle: TextStyle(
+            color: Colors.white,
+            fontSize: 20,
+            fontWeight: FontWeight.w600,
+          ),
+          systemOverlayStyle: SystemUiOverlayStyle(
+            statusBarColor: Color(0xFF121212),
+            statusBarIconBrightness: Brightness.light,
+            statusBarBrightness: Brightness.dark,
+          ),
+        ),
+        textTheme: const TextTheme(
+          bodyLarge: TextStyle(color: Colors.white),
+          bodyMedium: TextStyle(color: Colors.white70),
+        ),
+        iconTheme: const IconThemeData(color: Colors.white),
       ),
       home: const AppStart(),
       routes: {

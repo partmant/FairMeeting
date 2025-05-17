@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../buttons/notifications_button.dart';
+import '../buttons/brightness_button.dart';
 
 
 class SettingsScreen extends StatelessWidget {
@@ -109,18 +110,23 @@ class SettingsScreen extends StatelessWidget {
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
             elevation: 0,
           ),
-          onPressed: () {
-            if (item.title == '알림') {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => NotificationSettingsPage()),
-              );
-            } else {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('${item.title} 버튼 클릭됨')),
-              );
-            }
-          },
+            onPressed: () {
+              if (item.title == '알림') {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => NotificationSettingsPage()),
+                );
+              } else if (item.title == '화면') {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => BrightnessSettingsPage()),
+                );
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('${item.title} 버튼 클릭됨')),
+                );
+              }
+            },
           child: Row(
             children: [
               Icon(item.icon, color: Colors.black),
