@@ -37,7 +37,8 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-            signingConfig = signingConfigs.getByName("debug")
+            // 실제 앱 배포 시에는 signingConfigs에서 release 키를 설정하고 사용
+            signingConfig = signingConfigs.getByName("debug")   // 임시 코드
         }
     }
 }
