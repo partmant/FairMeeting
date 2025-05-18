@@ -33,9 +33,10 @@ class KakaoLoginService {
       }
 
       final user = await UserApi.instance.me();
-      print('카카오 로그인 성공: ${user.kakaoAccount?.email}');
+      final name = user.kakaoAccount?.profile?.nickname ?? '이름 없음';
+      final profileUrl = user.kakaoAccount?.profile?.profileImageUrl ?? '';
 
-      userController.setLoggedIn();
+      userController.setLoggedIn(name: name, profileUrl: profileUrl);
       return true;
 
     } catch (e) {

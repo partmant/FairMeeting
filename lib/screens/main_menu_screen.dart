@@ -7,7 +7,7 @@ import 'my_info_screen.dart';
 import 'guest_info_screen.dart';
 import 'settings_screen.dart';
 import '../widgets/logo_title.dart';
-import '../widgets/main_menu_button.dart';
+import '../buttons/main_menu_button.dart';
 
 class MainmenuScreen extends StatelessWidget {
   const MainmenuScreen({super.key});

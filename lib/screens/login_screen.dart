@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fair_front/widgets/logo_title.dart';
-import 'package:fair_front/widgets/kakao_login_button.dart';
-import 'package:fair_front/widgets/guest_login_button.dart';
+import 'package:fair_front/buttons/kakao_login_button.dart';
+import 'package:fair_front/buttons/guest_login_button.dart';
 import 'package:fair_front/widgets/go_back.dart';
 
 class LoginScreen extends StatelessWidget {

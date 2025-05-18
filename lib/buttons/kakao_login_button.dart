@@ -32,11 +32,13 @@ class KakaoLoginButton extends StatelessWidget {
             print('카카오 계정으로 로그인 성공: ${token.accessToken}');
           }
 
-          final user = await UserApi.instance.me();
-          print('카카오 로그인 성공: ${user.kakaoAccount?.email}');
+          User user = await UserApi.instance.me();
+          String name = user.kakaoAccount?.profile?.nickname ?? '사용자';
+          String imageUrl = user.kakaoAccount?.profile?.profileImageUrl ?? '';
 
-          // 회원으로 변경
-          userController.setLoggedIn();
+
+          userController.setLoggedIn(name: name, profileUrl: imageUrl);
+
 
           Navigator.push(
             context,

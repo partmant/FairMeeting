@@ -1,22 +1,31 @@
 import 'package:flutter/material.dart';
 
-// 비회원 여부 관리 Provider
 class UserController extends ChangeNotifier {
 
-  // 기본적으로 비회원인 상태
+  // 기본 비회원
   bool _isGuest = true;
 
-  bool get isGuest => _isGuest;
+  // 사용자 정보 가져올 변수
+  String _userName = '';
+  String _profileImageUrl = '';
 
-  // 비회원으로 설정
+  bool get isGuest => _isGuest;
+  String get userName => _userName;
+  String get profileImageUrl => _profileImageUrl;
+
+  // 비회원 설정
   void setGuest() {
     _isGuest = true;
+    _userName = '';
+    _profileImageUrl = '';
     notifyListeners();
   }
 
-  // 카카오 로그인 성공 시
-  void setLoggedIn() {
+  // 사용자 설정
+  void setLoggedIn({required String name, required String profileUrl}) {
     _isGuest = false;
+    _userName = name;
+    _profileImageUrl = profileUrl;
     notifyListeners();
   }
 }

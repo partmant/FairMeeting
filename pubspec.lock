@@ -280,6 +280,22 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.9.7+3"
+  kakao_flutter_sdk_talk:
+    dependency: "direct main"
+    description:
+      name: kakao_flutter_sdk_talk
+      sha256: "5c61373beb9a3d5a8d7425cb0af13ba443c5077f7bbca09376c799a63c83e4c3"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.9.7+3"
+  kakao_flutter_sdk_template:
+    dependency: transitive
+    description:
+      name: kakao_flutter_sdk_template
+      sha256: ee330ad9a4ebed85ec214a7f58dd25eca0d0e5680168db5a04426a217973ac9f
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.9.7+3"
   kakao_flutter_sdk_user:
     dependency: "direct main"
     description:
