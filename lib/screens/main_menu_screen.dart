@@ -64,8 +64,8 @@ class MainmenuScreen extends StatelessWidget {
         decoration: BoxDecoration(
           gradient: LinearGradient(
             colors: [
-              Color(0xFFFFF8E1).withOpacity(0.4), // 연한 노란색, 40% 투명도 적용
-              Color(0xFFFFD54F).withOpacity(0.4), // 좀 더 진한 노란색, 40% 투명도 적용
+              Color(0xFFFFF8E1).withAlpha(102),     // 연한 노란색, 40% 투명도 적용
+              Color(0xFFFFD54F).withAlpha(102),     // 좀 더 진한 노란색, 40% 투명도 적용
             ],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,

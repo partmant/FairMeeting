@@ -49,7 +49,8 @@ class FairMeetingApp extends StatelessWidget {
     return MaterialApp(
       title: 'Fair Meeting',
       debugShowCheckedModeBanner: false,
-      themeMode: ThemeMode.system, //  시스템 설정에 따라 라이트/다크 전환
+      // 배경색 변경에 따라서, 라이트 모드 고정 수정
+      themeMode: ThemeMode.light,
       theme: ThemeData(
         scaffoldBackgroundColor: Colors.white,
         appBarTheme: const AppBarTheme(

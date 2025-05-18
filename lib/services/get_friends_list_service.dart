@@ -2,23 +2,39 @@ import 'package:flutter/material.dart';
 import 'package:kakao_flutter_sdk_talk/kakao_flutter_sdk_talk.dart';
 
 class GetFriendsListService {
-  /// 친구 목록 가져오기
   static Future<List<Friend>> fetchFriends() async {
     try {
       final friends = await TalkApi.instance.friends();
       return friends.elements ?? [];
     } catch (e) {
       print('친구 목록 불러오기 실패: $e');
-      rethrow;
+      return []; // 오류 발생 시 빈 리스트 반환
     }
   }
 
-  /// 친구 목록 다이얼로그 표시
   static Future<void> showFriendsDialog(BuildContext context) async {
     try {
       final friends = await fetchFriends();
 
       if (!context.mounted) return;
+
+      if (friends.isEmpty) {
+        showDialog(
+          context: context,
+          builder: (_) => AlertDialog(
+            backgroundColor: Colors.white,
+            title: const Text('친구 목록', style: TextStyle(color: Colors.black)),
+            content: const Text('표시할 친구가 없습니다.', style: TextStyle(color: Colors.black)),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('닫기', style: TextStyle(color: Colors.black)),
+              ),
+            ],
+          ),
+        );
+        return;
+      }
 
       showDialog(
         context: context,
@@ -55,7 +71,7 @@ class GetFriendsListService {
     } catch (e) {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('친구 목록을 불러오지 못했습니다.')),
+          const SnackBar(content: Text('친구 목록을 불러오지 못했습니다.')),
         );
       }
     }
