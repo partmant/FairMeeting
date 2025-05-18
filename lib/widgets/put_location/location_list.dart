@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:fair_front/controllers/location_controller.dart';
 import 'package:fair_front/models/place_autocomplete_response.dart';
+import '../../controllers/map_controller.dart';
 
 class LocationList extends StatelessWidget {
-  final LocationController controller;
+  final MapController controller;
 
   const LocationList({super.key, required this.controller});
 
@@ -40,7 +40,7 @@ class LocationList extends StatelessWidget {
               ),
               onTap: () async {
                 controller.selectedAddressIndex = index;
-                await controller.moveMapCenter(lat, lng);
+                await controller.moveCameraTo(lat, lng);
               },
             ),
           );

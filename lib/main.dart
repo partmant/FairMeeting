@@ -2,13 +2,12 @@ import 'package:fair_front/screens/main_menu_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
-import 'package:kakao_map_plugin/kakao_map_plugin.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:kakao_map_sdk/kakao_map_sdk.dart';
 import 'package:provider/provider.dart';
-import 'controllers/location_controller.dart';
+import 'controllers/map_controller.dart';
 import 'controllers/user_controller.dart';
 import 'screens/loading_screen.dart';
-import 'screens/kakao_map_screen.dart';
 import 'package:intl/date_symbol_data_local.dart';
 
 void main() async {
@@ -21,8 +20,8 @@ void main() async {
     nativeAppKey: dotenv.env['KAKAO_NATIVE_APP_KEY'] ?? '',
   );
 
-  AuthRepository.initialize(
-    appKey: dotenv.env['KAKAO_MAP_APP_KEY'] ?? '',
+  await KakaoMapSdk.instance.initialize(
+    dotenv.env['KAKAO_NATIVE_APP_KEY'] ?? '',
   );
 
   SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
@@ -34,7 +33,7 @@ void main() async {
   runApp(
     MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => LocationController()),    // Provider 등록
+        ChangeNotifierProvider(create: (_) => MapController()),         // Provider 등록
         ChangeNotifierProvider(create: (_) => UserController()),        // 사용자 로그인 여부 확인
       ],
       child: const FairMeetingApp(),
@@ -95,7 +94,6 @@ class FairMeetingApp extends StatelessWidget {
       home: const AppStart(),
       routes: {
         '/main': (context) => MainmenuScreen(),
-        '/map': (context) => const KakaoMapScreen(),
       },
     );
   }

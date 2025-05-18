@@ -10,7 +10,6 @@ class AddressService {
       'lat': lat.toString(),
       'lng': lng.toString(),
     });
-
     final response = await http.get(uri);
     if (response.statusCode == 200) {
       final json = jsonDecode(utf8.decode(response.bodyBytes));

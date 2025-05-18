@@ -1,20 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:fair_front/widgets/go_back.dart';
-import 'package:fair_front/widgets/put_location/location_map.dart';
 import 'package:fair_front/widgets/put_location/location_list.dart';
 import 'package:fair_front/widgets/put_location/location_button.dart';
 import 'package:fair_front/widgets/put_location/fair_meeting_button.dart';
-import 'package:fair_front/controllers/location_controller.dart';
+import 'package:fair_front/widgets/kakao_map.dart';
+import 'package:fair_front/controllers/map_controller.dart';
 
 class PutLocationScreen extends StatelessWidget {
-  const PutLocationScreen({super.key});
+  const PutLocationScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final locationController = Provider.of<LocationController>(context);
-    double mapWidth = MediaQuery.of(context).size.width - 20;
-    const double sidePadding = 10;
+    final mapController = Provider.of<MapController>(context);
+    final mapWidth = MediaQuery.of(context).size.width - 20;
+    const sidePadding = 10.0;
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -22,20 +22,25 @@ class PutLocationScreen extends StatelessWidget {
       body: Column(
         children: [
           const SizedBox(height: sidePadding),
-          LocationMap(
-            controller: locationController,
+
+          // mapController 매개변수 없이 호출
+          SizedBox(
             width: mapWidth,
             height: mapWidth,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(20),
+              child: KakaoMapScreen(),
+            ),
           ),
-          const SizedBox(height: sidePadding),
-          LocationButton(controller: locationController),
-          Expanded(child: Padding(
-            padding: const EdgeInsets.only(top: 12.0),  // 상하 여백
-            child: LocationList(controller: locationController),
-          ),
+
+          LocationButton(controller: mapController),
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.only(top: 3.0),
+              child: LocationList(controller: mapController),
+            ),
           ),
           const FairMeetingButton(),
-          const SizedBox(height: 10),
         ],
       ),
     );
