@@ -21,9 +21,6 @@ import net.skhu.util.OdsayDetailedRoute;
 import net.skhu.util.OdsayRouteFormatter;
 import net.skhu.util.OdsaySubPath;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-
 @Service
 @RequiredArgsConstructor
 public class OdsayService {
@@ -42,7 +39,7 @@ public class OdsayService {
                     .queryParam("SY", sy)
                     .queryParam("EX", ex)
                     .queryParam("EY", ey)
-                    .queryParam("apiKey", URLEncoder.encode(apiKey, StandardCharsets.UTF_8))
+                    .queryParam("apiKey", apiKey)
                     .toUriString();
             
             // 로그 확인
@@ -108,7 +105,7 @@ public class OdsayService {
                     .queryParam("SY", sy)
                     .queryParam("EX", ex)
                     .queryParam("EY", ey)
-                    .queryParam("apiKey", URLEncoder.encode(apiKey, StandardCharsets.UTF_8))
+                    .queryParam("apiKey", apiKey)
                     .toUriString();
             
             // 로그 확인
