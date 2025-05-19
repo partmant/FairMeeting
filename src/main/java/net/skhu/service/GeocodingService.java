@@ -62,7 +62,7 @@ public class GeocodingService {
                         : road != null ? road.get("address_name").toString()
                         : addr != null ? addr.get("address_name").toString()
                         : "주소 정보 없음";
-
+                    System.out.println(name);
                     return new GeocodingResponse(name);
                 }
             }

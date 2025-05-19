@@ -14,7 +14,7 @@ import net.skhu.service.FairLocationService;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/fair-location")
+@RequestMapping("/api/fair_location")
 public class FairLocationController {
 
     private final FairLocationService fairLocationService;

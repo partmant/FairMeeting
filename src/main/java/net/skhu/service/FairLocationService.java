@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 import org.neo4j.driver.exceptions.NoSuchRecordException;
 import org.springframework.stereotype.Service;
 
+import lombok.Data;
 import net.skhu.dto.CoordinateDto;
 import net.skhu.dto.FairLocationRequest;
 import net.skhu.dto.FairLocationResponse;
@@ -15,6 +16,7 @@ import net.skhu.dto.StationDto;
 import net.skhu.dto.StationMidpointResponse;
 
 @Service
+@Data
 public class FairLocationService {
 
     private final StationSearchService stationSearchService;
@@ -22,28 +24,20 @@ public class FairLocationService {
     private final OdsayService odsayService;
     private final PlaceAutoCompleteService coordinateSearchService;
 
-    public FairLocationService(
-        StationSearchService stationSearchService,
-        StationMidpointService stationMidpointService,
-        OdsayService odsayService,
-        PlaceAutoCompleteService coordinateSearchService
-    ) {
-        this.stationSearchService = stationSearchService;
-        this.stationMidpointService = stationMidpointService;
-        this.odsayService = odsayService;
-        this.coordinateSearchService = coordinateSearchService;
-    }
-
     public FairLocationResponse calculateFairLocation(FairLocationRequest request) {
         // 1. 각 좌표 → 가장 가까운 역
         List<StationDto> nearestStations = request.getStartPoints().stream()
             .map(coord -> stationSearchService.findNearestStation(coord.getLatitude(), coord.getLongitude()))
             .collect(Collectors.toList());
 
+        System.out.println(nearestStations);
+
         // 2. 이름 정제
         List<String> stationNames = nearestStations.stream()
             .map(this::normalizeStationName)
             .collect(Collectors.toList());
+
+        System.out.println(stationNames);
 
         // 3. 중간역 이름 계산
         StationMidpointResponse midpointResponse;

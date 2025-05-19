@@ -39,8 +39,6 @@ public class PlaceAutoCompleteService {
         if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
             List<Map<String, Object>> documents = (List<Map<String, Object>>) response.getBody().get("documents");
 
-            System.out.println(documents);
-
             // 1. category_group_code가 SW8인 항목을 우선 정렬
             List<Map<String, Object>> sorted = documents.stream()
                 .sorted(Comparator.comparing((Map<String, Object> doc) -> {

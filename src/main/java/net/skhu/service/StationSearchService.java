@@ -29,7 +29,7 @@ public class StationSearchService {
      */
     public StationDto findNearestStation(double latitude, double longitude) {
         String categoryGroupCode = "SW8";
-        int radius = 2000;
+        int radius = 3000;
 
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", "KakaoAK " + restApiKey);
