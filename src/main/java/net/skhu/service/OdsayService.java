@@ -44,6 +44,9 @@ public class OdsayService {
                     .queryParam("EY", ey)
                     .queryParam("apiKey", URLEncoder.encode(apiKey, StandardCharsets.UTF_8))
                     .toUriString();
+            
+            // 로그 확인
+            System.out.println("테스트용 ODsay 호출 URL: " + url);
 
             ResponseEntity<String> response = restTemplate.exchange(
                     url,
@@ -107,6 +110,9 @@ public class OdsayService {
                     .queryParam("EY", ey)
                     .queryParam("apiKey", URLEncoder.encode(apiKey, StandardCharsets.UTF_8))
                     .toUriString();
+            
+            // 로그 확인
+            System.out.println("테스트용 ODsay 호출 URL: " + url);
 
             ResponseEntity<String> response = restTemplate.exchange(
                     url,
