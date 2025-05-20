@@ -200,13 +200,17 @@ class MapController with ChangeNotifier {
   }
 
   Future<void> clearAll() async {
+    // POI·주소 모두 삭제
     for (final poi in _pois) {
       await poi.remove();
     }
     _pois.clear();
     selectedAddresses.clear();
     selectedAddressIndex = null;
-    // _hasInitialized 은 그대로 두어 권한/스트림 유지
+
+    // 마지막 결과 초기화, forward 버튼 숨기기
+    _lastCoordinates = null;
+    _lastCenter      = null;
 
     // 최신 currentCenter 로 카메라 이동
     await moveCameraTo(

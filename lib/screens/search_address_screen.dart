@@ -48,9 +48,6 @@ class _SearchAddressScreenState extends State<SearchAddressScreen> {
     } catch (e) {
       if (!mounted) return;
       setState(() => _isLoading = false);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('주소 검색 실패: $e')),
-      );
     }
   }
 
