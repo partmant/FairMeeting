@@ -39,7 +39,7 @@ class LocationButton extends StatelessWidget {
           child: TextButton(
             onPressed: () => controller.clearAll(),
             child: const Text(
-              '전체 삭제',
+              '초기화',
               style: TextStyle(
                 fontSize: 14,
                 color: Colors.grey,

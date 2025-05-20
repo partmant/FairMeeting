@@ -42,9 +42,16 @@ class FairMeetingButton extends StatelessWidget {
 
             final allCoordinates = [...startLatLngs, midpointLatLng];
 
+            // 마지막 결과 저장
+            mapController.saveLastResult(
+              coordinates: allCoordinates,
+              center:      midpointLatLng,
+            );
+
             Navigator.push(
               context,
               MaterialPageRoute(
+                settings: const RouteSettings(name: '/fair-result'),
                 builder: (_) => FairResultMapScreen(
                   coordinates: allCoordinates,
                   center: midpointLatLng,

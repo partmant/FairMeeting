@@ -25,8 +25,6 @@ class _KakaoMapScreenState extends State<KakaoMapScreen> {
 
   Future<void> _onCameraMoveEnd(
       CameraPosition position, GestureType gestureType) async {
-    // position.position: LatLng
-    // position.zoomLevel: int
     _mapCtrl.updateCameraPosition(
       position.position,
       position.zoomLevel,

@@ -1,15 +1,15 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.example.fair_front">
 
     <uses-permission android:name="android.permission.INTERNET" />  <!--인터넷 사용 권한 추가-->
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />    <!--GPS 기반 위치-->
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />  <!--GPS 기반 위치-->
     <uses-permission android:name="android.permission.WRITE_SETTINGS" />
 
 
     <application
         android:label="fair_front"
         android:icon="@mipmap/ic_launcher"
-        android:usesCleartextTraffic="true">    <!-- 추가 -->>
+        android:usesCleartextTraffic="true">    <!-- 추가 -->
 
         <meta-data
             android:name="com.kakao.sdk.AppKey"

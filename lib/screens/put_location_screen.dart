@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:fair_front/widgets/go_back.dart';
+import 'package:fair_front/widgets/common_appbar.dart';
 import 'package:fair_front/widgets/put_location/location_list.dart';
 import 'package:fair_front/widgets/put_location/location_button.dart';
 import 'package:fair_front/widgets/put_location/fair_meeting_button.dart';
@@ -18,7 +18,7 @@ class PutLocationScreen extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: buildCommonAppBar(context, title: '위치 입력하기'),
+      appBar: common_appbar(context, title: '위치 입력하기'),
       body: Column(
         children: [
           const SizedBox(height: sidePadding),

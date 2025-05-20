@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:kakao_map_sdk/kakao_map_sdk.dart';
 import '../controllers/map_controller.dart';
 import '../models/place_autocomplete_response.dart';
+import '../widgets/common_appbar.dart';
 
 class FairResultMapScreen extends StatefulWidget {
   final List<LatLng> coordinates;
@@ -29,7 +30,7 @@ class _FairResultMapScreenState extends State<FairResultMapScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('공정한 만남 위치')),
+      appBar: common_appbar(context, title: '결과 화면'),
       body: KakaoMap(
         option: KakaoMapOption(
           position: widget.center,

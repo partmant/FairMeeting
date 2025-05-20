@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:fair_front/widgets/logo_title.dart';
 import 'package:fair_front/buttons/kakao_login_button.dart';
 import 'package:fair_front/buttons/guest_login_button.dart';
-import 'package:fair_front/widgets/go_back.dart';
+import 'package:fair_front/widgets/common_appbar.dart';
 
 class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});
@@ -11,7 +11,7 @@ class LoginScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: buildCommonAppBar(context),
+      appBar: common_appbar(context),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(24),

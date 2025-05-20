@@ -17,23 +17,37 @@ class _SearchAddressScreenState extends State<SearchAddressScreen> {
   List<PlaceAutoCompleteResponse> _suggestions = [];
   bool _isLoading = false;
 
+  @override
+  void initState() {
+    super.initState();
+    _searchController.addListener(_onSearchTextChanged);
+  }
+
+  void _onSearchTextChanged() {
+    _searchAddress(_searchController.text);
+  }
+
   Future<void> _searchAddress(String query) async {
     if (query.trim().isEmpty) {
+      if (!mounted) return;
       setState(() => _suggestions = []);
       return;
     }
 
+    if (!mounted) return;
     setState(() => _isLoading = true);
 
     try {
       final results = await AddressService.fetchAddressSuggestions(query);
+
+      if (!mounted) return;
       setState(() {
         _suggestions = results;
         _isLoading = false;
       });
     } catch (e) {
+      if (!mounted) return;
       setState(() => _isLoading = false);
-      // 에러 핸들링 (optional)
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('주소 검색 실패: $e')),
       );
@@ -41,15 +55,8 @@ class _SearchAddressScreenState extends State<SearchAddressScreen> {
   }
 
   @override
-  void initState() {
-    super.initState();
-    _searchController.addListener(() {
-      _searchAddress(_searchController.text);
-    });
-  }
-
-  @override
   void dispose() {
+    _searchController.removeListener(_onSearchTextChanged); // 필수
     _searchController.dispose();
     super.dispose();
   }
@@ -72,7 +79,7 @@ class _SearchAddressScreenState extends State<SearchAddressScreen> {
             const SizedBox(height: 10),
             if (_isLoading) const LinearProgressIndicator(),
             const SizedBox(height: 10),
-            AddressSuggestionList(  // 하단 주소 리스트
+            AddressSuggestionList(
               suggestions: _suggestions,
               onSelect: (selected) {
                 Navigator.pop(context, selected);
@@ -84,3 +91,4 @@ class _SearchAddressScreenState extends State<SearchAddressScreen> {
     );
   }
 }
+

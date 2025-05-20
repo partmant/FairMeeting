@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:kakao_map_sdk/kakao_map_sdk.dart';
@@ -24,17 +26,34 @@ class MapController with ChangeNotifier {
   final KImage _poiIcon = KImage.fromAsset('assets/mapMarker.png', 35, 35);
   late PoiStyle _poiStyle;
 
-  /// 화면 복귀 시 카메라 상태(센터+줌)만 갱신하고 리스너 통지
+  // 마지막 결과 저장용 필드
+  List<LatLng>? _lastCoordinates;
+  LatLng?      _lastCenter;
+
+  bool get hasLastResult     => _lastCoordinates != null && _lastCenter != null;
+  List<LatLng> get lastCoordinates => _lastCoordinates!;
+  LatLng       get lastCenter      => _lastCenter!;
+
+  void saveLastResult({
+    required List<LatLng> coordinates,
+    required LatLng       center,
+  }) {
+    _lastCoordinates = coordinates;
+    _lastCenter      = center;
+  }
+
+  StreamSubscription<Position>? _positionSub;
+
   void updateCameraPosition(LatLng center, int zoomLevel) {
     currentCenter = center;
-    currentZoom = zoomLevel;
+    currentZoom   = zoomLevel;
     notifyListeners();
   }
 
   Future<void> onMapCreated(KakaoMapController controller) async {
     mapController = controller;
 
-    // 스타일 초기화 & 등록
+    // POI 스타일 초기화
     _poiStyle = PoiStyle(icon: _poiIcon);
     final styleId = await mapController!
         .labelLayer
@@ -42,13 +61,13 @@ class MapController with ChangeNotifier {
         .addPoiStyle(_poiStyle);
     _poiStyle = PoiStyle(id: styleId, icon: _poiIcon);
 
-    // 최초 진입 시 현위치 설정
+    // 최초 진입 시 위치 설정
     if (!_hasInitialized) {
       await _setCurrentLocationAsCenter();
       _hasInitialized = true;
     }
 
-    // 저장된 center+zoom 복원
+    // 카메라 복원
     await moveCameraTo(
       currentCenter.latitude,
       currentCenter.longitude,
@@ -57,6 +76,16 @@ class MapController with ChangeNotifier {
 
     // POI 복원
     await showMarkersForSelectedLocations();
+
+    // 위치 스트림 구독 (10m 이동 시마다 currentCenter 갱신)
+    _positionSub = Geolocator.getPositionStream(
+      locationSettings: const LocationSettings(
+        accuracy: LocationAccuracy.high,
+        distanceFilter: 10,
+      ),
+    ).listen((pos) {
+      currentCenter = LatLng(pos.latitude, pos.longitude);
+    });
   }
 
   Future<void> showMarkersForSelectedLocations() async {
@@ -85,7 +114,7 @@ class MapController with ChangeNotifier {
         currentCenter,
         zoomLevel: zoomLevel,
       ),
-      animation: const CameraAnimation(200),
+      animation: const CameraAnimation(400),
     );
   }
 
@@ -177,8 +206,9 @@ class MapController with ChangeNotifier {
     _pois.clear();
     selectedAddresses.clear();
     selectedAddressIndex = null;
-    _hasInitialized = false;
-    await _setCurrentLocationAsCenter();
+    // _hasInitialized 은 그대로 두어 권한/스트림 유지
+
+    // 최신 currentCenter 로 카메라 이동
     await moveCameraTo(
       currentCenter.latitude,
       currentCenter.longitude,
@@ -197,7 +227,8 @@ class MapController with ChangeNotifier {
       if (perm == LocationPermission.whileInUse ||
           perm == LocationPermission.always) {
         final pos = await Geolocator.getCurrentPosition(
-            desiredAccuracy: LocationAccuracy.high);
+          desiredAccuracy: LocationAccuracy.high,
+        );
         currentCenter = LatLng(pos.latitude, pos.longitude);
       } else {
         currentCenter = _defaultCenter;
@@ -209,6 +240,7 @@ class MapController with ChangeNotifier {
 
   @override
   void dispose() {
+    _positionSub?.cancel();
     super.dispose();
   }
 }

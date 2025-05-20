@@ -12,7 +12,7 @@ dependencies:
   flutter:
     sdk: flutter
 
-  geolocator: ^10.0.0 # 카카오 GPS
+  geolocator: ^14.0.0 # GPS
 
   cupertino_icons: ^1.0.8
 

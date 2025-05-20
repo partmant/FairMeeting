@@ -22,7 +22,7 @@ class MainmenuScreen extends StatelessWidget {
         'color': Color(0xFFD9C189),
         'textColor': Colors.white,
         'subTextColor': Colors.black,
-        'onTap': () => Navigator.push(context, MaterialPageRoute(builder: (_) => const PutLocationScreen())),
+        'onTap': () => Navigator.push(context,MaterialPageRoute(builder: (_) => const PutLocationScreen(),settings: const RouteSettings(name: '/put-location'),),)
       },
       {
         'label': '약속 캘린더',
