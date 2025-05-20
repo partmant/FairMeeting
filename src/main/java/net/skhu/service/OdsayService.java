@@ -1,5 +1,7 @@
 package net.skhu.service;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,14 +36,16 @@ public class OdsayService {
     // 검색 결과 하나만 출력
     public OdsayRouteResponse fetchRoute(double sx, double sy, double ex, double ey) {
         try {
+            // URL 인코딩된 API 키 적용
+            String encodedKey = URLEncoder.encode(apiKey, StandardCharsets.UTF_8);
+
             String url = UriComponentsBuilder.fromUriString("https://api.odsay.com/v1/api/searchPubTransPathT")
                     .queryParam("SX", sx)
                     .queryParam("SY", sy)
                     .queryParam("EX", ex)
                     .queryParam("EY", ey)
-                    .queryParam("apiKey", apiKey)
-                    .toUriString();
-            
+                    .toUriString() + "&apiKey=" + encodedKey;
+
             // 로그 확인
             System.out.println("테스트용 ODsay 호출 URL: " + url);
 
@@ -100,14 +104,16 @@ public class OdsayService {
     // 검색 결과 전체 출력
     public List<OdsayRouteResponse> fetchRoutes(double sx, double sy, double ex, double ey) {
         try {
+            // URL 인코딩된 API 키 적용
+            String encodedKey = URLEncoder.encode(apiKey, StandardCharsets.UTF_8);
+
             String url = UriComponentsBuilder.fromUriString("https://api.odsay.com/v1/api/searchPubTransPathT")
                     .queryParam("SX", sx)
                     .queryParam("SY", sy)
                     .queryParam("EX", ex)
                     .queryParam("EY", ey)
-                    .queryParam("apiKey", apiKey)
-                    .toUriString();
-            
+                    .toUriString() + "&apiKey=" + encodedKey;
+
             // 로그 확인
             System.out.println("테스트용 ODsay 호출 URL: " + url);
 
@@ -119,8 +125,8 @@ public class OdsayService {
             );
 
             if (!response.getStatusCode().is2xxSuccessful() || response.getBody() == null) {
-				throw new RuntimeException("ODsay API 응답 오류: " + response.getStatusCode());
-			}
+                throw new RuntimeException("ODsay API 응답 오류: " + response.getStatusCode());
+            }
 
             JsonNode root = objectMapper.readTree(response.getBody());
             JsonNode paths = root.path("result").path("path");
@@ -201,7 +207,6 @@ public class OdsayService {
 
                 detail.setSubPaths(subPaths);
                 detailedRoutes.add(detail);
-
             }
 
             // 콘솔 출력
@@ -220,3 +225,4 @@ public class OdsayService {
         return "(" + latNode.asText() + ", " + lngNode.asText() + ")";
     }
 }
+
