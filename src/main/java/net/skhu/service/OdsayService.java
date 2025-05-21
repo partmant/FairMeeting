@@ -44,7 +44,8 @@ public class OdsayService {
                     .queryParam("SY", sy)
                     .queryParam("EX", ex)
                     .queryParam("EY", ey)
-                    .toUriString() + "&apiKey=" + encodedKey;
+                    .queryParam("apiKey", apiKey) // 이 방식 사용
+                    .toUriString();
 
             // 로그 확인
             System.out.println("테스트용 ODsay 호출 URL: " + url);
@@ -117,7 +118,8 @@ public class OdsayService {
                     .queryParam("SY", sy)
                     .queryParam("EX", ex)
                     .queryParam("EY", ey)
-                    .toUriString() + "&apiKey=" + encodedKey;
+                    .queryParam("apiKey", apiKey) // 이 방식 사용
+                    .toUriString();
 
             // 로그 확인
             System.out.println("테스트용 ODsay 호출 URL: " + url);
