@@ -1,6 +1,7 @@
 import 'package:fair_front/screens/main_menu_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:kakao_map_sdk/kakao_map_sdk.dart';
@@ -16,14 +17,10 @@ void main() async {
 
   await dotenv.load();
   await initializeDateFormatting('ko_KR', null);
+  await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);      // 세로 고정
 
-  KakaoSdk.init(
-    nativeAppKey: dotenv.env['KAKAO_NATIVE_APP_KEY'] ?? '',
-  );
-
-  await KakaoMapSdk.instance.initialize(
-    dotenv.env['KAKAO_NATIVE_APP_KEY'] ?? '',
-  );
+  await KakaoMapSdk.instance.initialize(dotenv.env['KAKAO_NATIVE_APP_KEY'] ?? '',);
+  KakaoSdk.init(nativeAppKey: dotenv.env['KAKAO_NATIVE_APP_KEY'] ?? '',);
 
   SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
     statusBarColor: Colors.white,
@@ -55,7 +52,15 @@ class FairMeetingApp extends StatelessWidget {
     return MaterialApp(
       title: 'Fair Meeting',
       debugShowCheckedModeBanner: false,
-      // 배경색 변경에 따라서, 라이트 모드 고정 수정
+      locale: const Locale('ko'),
+      supportedLocales: const [
+        Locale('ko'),
+      ],
+      localizationsDelegates: const [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
       themeMode: ThemeMode.light,
       theme: ThemeData(
         scaffoldBackgroundColor: Colors.white,
@@ -105,3 +110,4 @@ class FairMeetingApp extends StatelessWidget {
     );
   }
 }
+

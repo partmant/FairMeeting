@@ -1,9 +1,3 @@
-/*
-Fair Meeting 로고
-통일을 위해서 위젯 만듦
-추후 상의 후 디자인 변경
- */
-
 import 'package:flutter/material.dart';
 
 class LogoTitle extends StatelessWidget {
@@ -17,7 +11,7 @@ class LogoTitle extends StatelessWidget {
           'FAIR',
           style: TextStyle(
             fontFamily: 'Itim', // 폰트 수정
-            fontSize: 40,
+            fontSize: 50,
             fontWeight: FontWeight.bold,
             color: Color(0xFFD9C189),
           ),
@@ -26,7 +20,7 @@ class LogoTitle extends StatelessWidget {
           'MEETING',
           style: TextStyle(
             fontFamily: 'Itim', // 폰트 수정
-            fontSize: 40,
+            fontSize: 50,
             fontWeight: FontWeight.bold,
             color: Color(0xFFD9C189),
           ),

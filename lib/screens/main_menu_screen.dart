@@ -17,19 +17,19 @@ class MainmenuScreen extends StatelessWidget {
     final menuItems = [
       {
         'label': '약속 만들기',
-        'sub': '간편하게\n약속 장소 정하기',
+        'sub': '약속 장소 정하기',
         'icon': Icons.calendar_today,
         'color': Color(0xFFD9C189),
         'textColor': Colors.white,
-        'subTextColor': Colors.black,
+        'subTextColor': Colors.grey[700],
         'onTap': () => Navigator.push(context,MaterialPageRoute(builder: (_) => const PutLocationScreen(),settings: const RouteSettings(name: '/put-location'),),)
       },
       {
         'label': '약속 캘린더',
-        'sub': '내 약속\n확인하기',
+        'sub': '약속 확인하기',
         'icon': Icons.event_available,
         'color': Colors.white,
-        'textColor': Colors.black,
+        'textColor': Colors.grey[700],
         'onTap': () => Navigator.push(context, MaterialPageRoute(builder: (_) =>  AppointmentCalendarScreen())),
       },
       {
@@ -37,7 +37,7 @@ class MainmenuScreen extends StatelessWidget {
         'sub': '개인정보 수정',
         'icon': Icons.person,
         'color': Colors.white,
-        'textColor': Colors.black,
+        'textColor': Colors.grey[700],
         'onTap': () {
           final isGuest = context.read<UserController>().isGuest;
           Navigator.push(
@@ -54,7 +54,7 @@ class MainmenuScreen extends StatelessWidget {
         'icon': Icons.settings,
         'color': Color(0xFFD9C189),
         'textColor': Colors.white,
-        'subTextColor': Colors.black,
+        'subTextColor': Colors.grey[700],
         'onTap': () => Navigator.push(context, MaterialPageRoute(builder: (_) => SettingsScreen())),
       },
     ];
@@ -73,12 +73,11 @@ class MainmenuScreen extends StatelessWidget {
         ),
         child: Column(
           children: [
-            const SizedBox(height: 60),
+            const SizedBox(height: 150),
             const Center(child: LogoTitle()),
-            const SizedBox(height: 20),
             Expanded(
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 15.0),
+                padding: const EdgeInsets.symmetric(horizontal: 8.0),
                 child: GridView.count(
                   crossAxisCount: 2,
                   crossAxisSpacing: 20,

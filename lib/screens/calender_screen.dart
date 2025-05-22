@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
 void main() {
   runApp(const MyApp());
@@ -12,6 +13,15 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      locale: const Locale('ko'), // 한국어 고정
+      supportedLocales: const [
+        Locale('ko'), // 지원하는 로케일 목록
+      ],
+      localizationsDelegates: const [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
       theme: ThemeData.light(),
       home: const AppointmentCalendarScreen(),
     );
@@ -270,6 +280,7 @@ class _AppointmentCalendarScreenState
           ),
           Container(height: 1, color: Colors.grey[300]),
           TableCalendar(
+            locale: 'ko_KR',
             firstDay: DateTime(2020),
             lastDay: DateTime(2030),
             focusedDay: _focusedDay,

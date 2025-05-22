@@ -32,7 +32,7 @@ class MainMenuButton extends StatelessWidget {
                 Shadow(
                   offset: const Offset(1.5, 1.5),
                   blurRadius: 1,
-                  color: Colors.black.withOpacity(0.2),
+                  color: Colors.black.withAlpha(51),
                 ),
               ],
             ),
@@ -51,7 +51,7 @@ class MainMenuButton extends StatelessWidget {
                   Shadow(
                     offset: const Offset(2, 2),
                     blurRadius: 2,
-                    color: Colors.black.withOpacity(0.2),
+                    color: Colors.black.withAlpha(51),
                   ),
                 ],
               ),
@@ -72,7 +72,7 @@ class MainMenuButton extends StatelessWidget {
                   Shadow(
                     offset: const Offset(1.5, 1.5),
                     blurRadius: 3,
-                    color: Colors.black.withOpacity(0.25),
+                    color: Colors.black.withAlpha(55),
                   ),
                 ],
               ),

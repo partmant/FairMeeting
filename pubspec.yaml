@@ -11,6 +11,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  flutter_localizations:
+    sdk: flutter  # ← 이 줄 추가 (반드시 flutter와 같은 수준에 있어야 함)
 
   geolocator: ^14.0.0 # GPS
 
@@ -26,9 +28,9 @@ dependencies:
 
   dotted_border: ^2.0.0                    # 점선 사용
 
-  intl: ^0.18.1 # cal 패키지
+  intl: ^0.19.0                            # cal 패키지
 
-  table_calendar: ^3.0.9 # 피그마용 달력 ^3.0.9
+  table_calendar: ^3.0.9                   # 피그마용 달력 ^3.0.9
 
   flutter_dotenv: ^5.0.2                   # .env 생성 관리
 
