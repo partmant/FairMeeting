@@ -44,13 +44,14 @@ public class OdsayService {
                     .queryParam("SY", sy)
                     .queryParam("EX", ex)
                     .queryParam("EY", ey)
-                    .queryParam("apiKey", apiKey) // 이 방식 사용
+                    .queryParam("apiKey", apiKey)
                     .toUriString();
 
-            // 로그 확인
+            /* 로그 확인
             System.out.println("테스트용 ODsay 호출 URL: " + url);
             System.out.println("사용 중인 API Key: " + apiKey);
-
+            */
+            
             ResponseEntity<String> response = restTemplate.exchange(
                     url,
                     HttpMethod.GET,
@@ -65,10 +66,11 @@ public class OdsayService {
             JsonNode root = objectMapper.readTree(response.getBody());
             JsonNode paths = root.path("result").path("path");
 
-            // 디버깅용 로그
+            /* 로그 확인
             System.out.println("path 노드 isArray(): " + paths.isArray());
             System.out.println("path 노드 size(): " + paths.size());
-
+			*/
+            
             if (!paths.isArray() || paths.size() == 0) {
                 throw new RuntimeException("ODsay API 경로 없음");
             }
@@ -118,12 +120,13 @@ public class OdsayService {
                     .queryParam("SY", sy)
                     .queryParam("EX", ex)
                     .queryParam("EY", ey)
-                    .queryParam("apiKey", apiKey) // 이 방식 사용
+                    .queryParam("apiKey", apiKey)
                     .toUriString();
 
-            // 로그 확인
+            /* 로그 확인
             System.out.println("테스트용 ODsay 호출 URL: " + url);
             System.out.println("사용 중인 API Key: " + apiKey);
+            */
 
             ResponseEntity<String> response = restTemplate.exchange(
                     url,
@@ -139,9 +142,10 @@ public class OdsayService {
             JsonNode root = objectMapper.readTree(response.getBody());
             JsonNode paths = root.path("result").path("path");
 
-            // 디버깅용 로그
+            /* 로그 확인
             System.out.println("path 노드 isArray(): " + paths.isArray());
             System.out.println("path 노드 size(): " + paths.size());
+			*/
 
             if (!paths.isArray() || paths.size() == 0) {
                 throw new RuntimeException("ODsay API 경로 없음");
