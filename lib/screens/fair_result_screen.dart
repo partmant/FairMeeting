@@ -1,60 +1,85 @@
 import 'package:flutter/material.dart';
 import 'package:kakao_map_sdk/kakao_map_sdk.dart';
-import '../controllers/map_controller.dart';
-import '../models/place_autocomplete_response.dart';
-import '../widgets/common_appbar.dart';
+import 'package:fair_front/controllers/map_controller.dart';
+import 'package:fair_front/models/place_autocomplete_response.dart';
+import 'package:fair_front/models/fair_location_response.dart';
+import 'package:fair_front/widgets/common_appbar.dart';
+import 'package:fair_front/widgets/result_bottom_sheet.dart';
 
 class FairResultMapScreen extends StatefulWidget {
   final List<LatLng> coordinates;
   final LatLng center;
+  final FairLocationResponse fairLocationResponse;
 
   const FairResultMapScreen({
-    super.key,
+    Key? key,
     required this.coordinates,
     required this.center,
-  });
+    required this.fairLocationResponse,
+  }) : super(key: key);
 
   @override
   State<FairResultMapScreen> createState() => _FairResultMapScreenState();
 }
 
 class _FairResultMapScreenState extends State<FairResultMapScreen> {
-  late MapController controller;
+  late final MapController _controller;
+  bool _loading = true;
 
   @override
   void initState() {
     super.initState();
-    controller = MapController(); // 새 인스턴스 생성 or Provider 사용
+    _controller = MapController();
+  }
+
+  Future<void> _onMapReady(KakaoMapController mapCtrl) async {
+    await _controller.onMapCreated(mapCtrl);
+
+    for (final coord in widget.coordinates) {
+      await _controller.addLocation(
+        PlaceAutoCompleteResponse(
+          placeName: '중간지점',
+          roadAddress: '',
+          latitude: coord.latitude,
+          longitude: coord.longitude,
+        ),
+      );
+    }
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      setState(() => _loading = false);
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: common_appbar(context, title: '결과 화면'),
-      body: KakaoMap(
-        option: KakaoMapOption(
-          position: widget.center,
-          zoomLevel: 17,
-        ),
-        onMapReady: (mapCtrl) async {
-          // MapController 내부에 controller 저장
-          await controller.onMapCreated(mapCtrl);
+      body: Stack(
+        children: [
+          KakaoMap(
+            option: KakaoMapOption(
+              position: widget.center,
+              zoomLevel: 17,
+            ),
+            onMapReady: _onMapReady,
+          ),
 
-          // 기존 POI 초기화
-          await controller.clearAll();
-
-          // 전달받은 좌표들로 POI 추가
-          for (final coord in widget.coordinates) {
-            await controller.addLocation(
-              PlaceAutoCompleteResponse(
-                placeName: "중간지점",
-                roadAddress: "",
-                latitude: coord.latitude,
-                longitude: coord.longitude,
+          if (_loading)
+            Container(
+              color: Colors.white.withOpacity(0.5),
+              child: const Center(
+                child: CircularProgressIndicator(
+                  color: Color(0xFFD9C189),
+                ),
               ),
-            );
-          }
-        },
+            ),
+
+          if (!_loading)
+            FairLocationBottomSheet(
+              fairLocationResponse: widget.fairLocationResponse,
+            ),
+        ],
       ),
     );
   }

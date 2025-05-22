@@ -1,17 +1,19 @@
 import 'package:flutter/material.dart';
 
-void showLoadingDialog(BuildContext context) {
+void showLoadingDialog(BuildContext ctx) {
   showDialog(
-    context: context,
+    context: ctx,
     barrierDismissible: false,
-    barrierColor: Colors.black.withOpacity(0.5),
+    barrierColor: Colors.white.withOpacity(0.5),
+    useRootNavigator: true,
     builder: (_) => const Center(
-      child: CircularProgressIndicator(),
+      child: CircularProgressIndicator(
+        color: Color(0xFFD9C189),
+      ),
     ),
   );
 }
 
-/// 로딩 다이얼로그를 닫습니다
-void hideLoadingDialog(BuildContext context) {
-  Navigator.of(context, rootNavigator: true).pop();
+void hideLoadingDialog(BuildContext ctx) {
+  Navigator.of(ctx, rootNavigator: true).pop();
 }

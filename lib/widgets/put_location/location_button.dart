@@ -4,6 +4,8 @@ import 'package:fair_front/screens/search_address_screen.dart';
 import 'package:fair_front/models/place_autocomplete_response.dart';
 import 'package:dotted_border/dotted_border.dart';
 
+import '../loading_dialog.dart';
+
 class LocationButton extends StatelessWidget {
   final MapController controller;
 
@@ -37,7 +39,14 @@ class LocationButton extends StatelessWidget {
         Align(
           alignment: Alignment.centerRight,
           child: TextButton(
-            onPressed: () => controller.clearAll(),
+            onPressed: () async {
+              showLoadingDialog(context);
+              try {
+                await controller.clearAll();
+              } finally {
+                hideLoadingDialog(context);
+              }
+            },
             child: const Text(
               '초기화',
               style: TextStyle(

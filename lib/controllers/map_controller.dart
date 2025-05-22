@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:kakao_map_sdk/kakao_map_sdk.dart';
+import '../models/fair_location_response.dart';
 import '../services/address_service.dart';
 import '../models/place_autocomplete_response.dart';
 
@@ -26,34 +27,39 @@ class MapController with ChangeNotifier {
   final KImage _poiIcon = KImage.fromAsset('assets/mapMarker.png', 35, 35);
   late PoiStyle _poiStyle;
 
+  StreamSubscription<Position>? _positionSub;
+
   // 마지막 결과 저장용 필드
   List<LatLng>? _lastCoordinates;
-  LatLng?      _lastCenter;
+  LatLng? _lastCenter;
+  FairLocationResponse? _lastResponse;  // 추가된 응답 저장 필드
 
-  bool get hasLastResult     => _lastCoordinates != null && _lastCenter != null;
+  bool get hasLastResult => _lastCoordinates != null && _lastCenter != null && _lastResponse != null;
   List<LatLng> get lastCoordinates => _lastCoordinates!;
-  LatLng       get lastCenter      => _lastCenter!;
+  LatLng get lastCenter => _lastCenter!;
+  FairLocationResponse get lastFairLocationResponse => _lastResponse!;
 
+  /// 마지막 결과 저장: 좌표, 중심, 그리고 API 응답 전체 모델을 함께 저장
   void saveLastResult({
     required List<LatLng> coordinates,
-    required LatLng       center,
+    required LatLng center,
+    required FairLocationResponse response,
   }) {
     _lastCoordinates = coordinates;
-    _lastCenter      = center;
+    _lastCenter = center;
+    _lastResponse = response;
+    notifyListeners();
   }
-
-  StreamSubscription<Position>? _positionSub;
 
   void updateCameraPosition(LatLng center, int zoomLevel) {
     currentCenter = center;
-    currentZoom   = zoomLevel;
+    currentZoom = zoomLevel;
     notifyListeners();
   }
 
   Future<void> onMapCreated(KakaoMapController controller) async {
     mapController = controller;
 
-    // POI 스타일 초기화
     _poiStyle = PoiStyle(icon: _poiIcon);
     final styleId = await mapController!
         .labelLayer
@@ -61,23 +67,19 @@ class MapController with ChangeNotifier {
         .addPoiStyle(_poiStyle);
     _poiStyle = PoiStyle(id: styleId, icon: _poiIcon);
 
-    // 최초 진입 시 위치 설정
     if (!_hasInitialized) {
       await _setCurrentLocationAsCenter();
       _hasInitialized = true;
     }
 
-    // 카메라 복원
     await moveCameraTo(
       currentCenter.latitude,
       currentCenter.longitude,
       zoomLevel: currentZoom,
     );
 
-    // POI 복원
     await showMarkersForSelectedLocations();
 
-    // 위치 스트림 구독 (10m 이동 시마다 currentCenter 갱신)
     _positionSub = Geolocator.getPositionStream(
       locationSettings: const LocationSettings(
         accuracy: LocationAccuracy.high,
@@ -200,24 +202,27 @@ class MapController with ChangeNotifier {
   }
 
   Future<void> clearAll() async {
-    // POI·주소 모두 삭제
     for (final poi in _pois) {
       await poi.remove();
     }
     _pois.clear();
+
     selectedAddresses.clear();
     selectedAddressIndex = null;
 
-    // 마지막 결과 초기화, forward 버튼 숨기기
     _lastCoordinates = null;
     _lastCenter      = null;
+    _lastResponse    = null;
+    notifyListeners();
 
-    // 최신 currentCenter 로 카메라 이동
+    await _setCurrentLocationAsCenter();
+
     await moveCameraTo(
       currentCenter.latitude,
       currentCenter.longitude,
       zoomLevel: currentZoom,
     );
+
     notifyListeners();
   }
 
