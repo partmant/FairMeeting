@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import '../buttons/notifications_button.dart';
 import '../buttons/brightness_button.dart';
+import '../buttons/Location_Permission_button.dart';
+
 
 
 class SettingsScreen extends StatelessWidget {
@@ -120,6 +122,11 @@ class SettingsScreen extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => BrightnessSettingsPage()),
+                );
+              } else if (item.title == '위치 권한 관리') {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => LocationPermissionSettingsPage()),
                 );
               } else {
                 ScaffoldMessenger.of(context).showSnackBar(
