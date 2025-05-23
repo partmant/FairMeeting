@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import '../buttons/notifications_button.dart';
 import '../buttons/brightness_button.dart';
 import '../buttons/Location_Permission_button.dart';
+import '../buttons/customer_center_button.dart';
+
 
 
 
@@ -127,6 +129,11 @@ class SettingsScreen extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => LocationPermissionSettingsPage()),
+                );
+              }else if (item.title == '고객센터') {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => CustomerCenterSettingsPage()),
                 );
               } else {
                 ScaffoldMessenger.of(context).showSnackBar(
