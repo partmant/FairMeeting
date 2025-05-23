@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class NotificationSettingsPage extends StatefulWidget {
   const NotificationSettingsPage({Key? key}) : super(key: key);
@@ -8,11 +9,35 @@ class NotificationSettingsPage extends StatefulWidget {
   State<NotificationSettingsPage> createState() => _NotificationSettingsPageState();
 }
 
-class _NotificationSettingsPageState extends State<NotificationSettingsPage> {       //알림 설정 여부 저장 변수
+class _NotificationSettingsPageState extends State<NotificationSettingsPage> {
+  // 알림 설정 여부 저장 변수
   bool basicNotification = false;
   bool friendNotification = false;
   bool noticeNotification = false;
   bool updateNotification = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadSettings(); // 저장된 알림 설정 불러오기
+  }
+
+  // SharedPreferences로부터 알림 설정 불러오기
+  Future<void> _loadSettings() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      basicNotification = prefs.getBool('basicNotification') ?? false;
+      friendNotification = prefs.getBool('friendNotification') ?? false;
+      noticeNotification = prefs.getBool('noticeNotification') ?? false;
+      updateNotification = prefs.getBool('updateNotification') ?? false;
+    });
+  }
+
+  // 알림 설정 값을 SharedPreferences에 저장
+  Future<void> _saveSetting(String key, bool value) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(key, value);
+  }
 
   Widget buildSectionTitle(String title, bool value, ValueChanged<bool> onChanged) {
     return Padding(
@@ -69,6 +94,7 @@ class _NotificationSettingsPageState extends State<NotificationSettingsPage> {  
           const SizedBox(height: 20),
           buildSectionTitle("기본 알림", basicNotification, (value) {
             setState(() => basicNotification = value); // 상태 업데이트
+            _saveSetting('basicNotification', value); // 저장
           }),
           const Padding(
             padding: EdgeInsets.symmetric(horizontal: 16),
@@ -84,14 +110,17 @@ class _NotificationSettingsPageState extends State<NotificationSettingsPage> {  
           buildDivider(),
           buildSectionTitle("친구 추가 알림", friendNotification, (value) {
             setState(() => friendNotification = value);
+            _saveSetting('friendNotification', value); // 저장
           }),
           buildDivider(),
           buildSectionTitle("공지 알림", noticeNotification, (value) {
             setState(() => noticeNotification = value);
+            _saveSetting('noticeNotification', value);
           }),
           buildDivider(),
           buildSectionTitle("업데이트 알림", updateNotification, (value) {
             setState(() => updateNotification = value);
+            _saveSetting('updateNotification', value);
           }),
           buildDivider(),
         ],
