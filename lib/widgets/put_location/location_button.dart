@@ -79,7 +79,7 @@ class LocationButton extends StatelessWidget {
               child: TextButton(
                 onPressed: () => _onTap(context),
                 style: TextButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  padding: const EdgeInsets.symmetric(vertical: 12),
                   foregroundColor: Colors.black,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10),

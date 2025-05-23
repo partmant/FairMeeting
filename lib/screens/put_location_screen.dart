@@ -44,7 +44,11 @@ class PutLocationScreen extends StatelessWidget {
                 child: KakaoMapScreen(),
               ),
             ),
-            LocationButton(controller: mapController),
+            FractionallySizedBox(
+              widthFactor: 0.95,
+              child: LocationButton(controller: mapController),
+            ),
+            const SizedBox(height: 8),
             Expanded(
               child: Padding(
                 padding: const EdgeInsets.only(top: 3.0),

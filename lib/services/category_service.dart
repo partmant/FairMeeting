@@ -12,20 +12,26 @@ class CategoryService {
   }) async {
     final uri = Uri.parse('${ApiConfig.baseUrl}/api/category/search').replace(
       queryParameters: {
-        'categoryCode': categoryCode,
+        'category': categoryCode,
         'x': lon.toString(),
         'y': lat.toString(),
       },
     );
 
-    final response = await http.get(uri);
-    if (response.statusCode == 200) {
-      final List<dynamic> jsonList = jsonDecode(utf8.decode(response.bodyBytes));
-      return jsonList
-          .map((item) => CategoryResponse.fromJson(item as Map<String, dynamic>))
-          .toList();
-    } else {
-      throw Exception('카테고리 조회 실패: ${response.statusCode}');
+    try {
+      final response = await http.get(uri);
+      if (response.statusCode == 200) {
+        final List<dynamic> jsonList =
+        jsonDecode(utf8.decode(response.bodyBytes));
+        return jsonList
+            .map((item) =>
+            CategoryResponse.fromJson(item as Map<String, dynamic>))
+            .toList();
+      } else {
+        throw Exception('카테고리 조회 실패: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('카테고리 조회 중 오류가 발생했습니다: $e');
     }
   }
 }

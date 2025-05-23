@@ -1,5 +1,3 @@
-// screens/search_address_screen.dart
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import '../services/address_service.dart';
 import '../models/place_autocomplete_response.dart';
@@ -53,7 +51,7 @@ class _SearchAddressScreenState extends State<SearchAddressScreen> {
 
   @override
   void dispose() {
-    _searchController.removeListener(_onSearchTextChanged); // 필수
+    _searchController.removeListener(_onSearchTextChanged);
     _searchController.dispose();
     super.dispose();
   }
@@ -61,31 +59,36 @@ class _SearchAddressScreenState extends State<SearchAddressScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      // 키보드 올라올 때 body 리사이즈 허용
+      resizeToAvoidBottomInset: true,
       appBar: AppBar(title: const Text("주소 검색")),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            TextField(
-              controller: _searchController,
-              decoration: const InputDecoration(
-                labelText: "주소 입력",
-                border: OutlineInputBorder(),
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            children: [
+              TextField(
+                controller: _searchController,
+                decoration: const InputDecoration(
+                  labelText: "주소 입력",
+                  border: OutlineInputBorder(),
+                ),
               ),
-            ),
-            const SizedBox(height: 10),
-            if (_isLoading) const LinearProgressIndicator(),
-            const SizedBox(height: 10),
-            AddressSuggestionList(
-              suggestions: _suggestions,
-              onSelect: (selected) {
-                Navigator.pop(context, selected);
-              },
-            ),
-          ],
+              const SizedBox(height: 10),
+              if (_isLoading) const LinearProgressIndicator(),
+              const SizedBox(height: 10),
+              Expanded(
+                child: AddressSuggestionList(
+                  suggestions: _suggestions,
+                  onSelect: (selected) {
+                    Navigator.pop(context, selected);
+                  },
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 }
-

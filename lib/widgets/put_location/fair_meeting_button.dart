@@ -72,7 +72,7 @@ class FairMeetingButton extends StatelessWidget {
         style: OutlinedButton.styleFrom(
           side: const BorderSide(color: Color(0xFFD9C189), width: 2),
           foregroundColor: const Color(0xFFD9C189),
-          padding: const EdgeInsets.symmetric(vertical: 16),
+          padding: const EdgeInsets.symmetric(vertical: 14),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10),
           ),

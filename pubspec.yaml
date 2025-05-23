@@ -16,6 +16,8 @@ dependencies:
 
   geolocator: ^14.0.0 # GPS
 
+  url_launcher: ^6.3.1
+
   cupertino_icons: ^1.0.8
 
   http: ^0.13.5         # HTTP 요청을 위해 사용
@@ -52,7 +54,7 @@ flutter:
   uses-material-design: true
   assets:
     - assets/kakaoOauth.png
-    - assets/markers/map_marker.png
+    - assets/markers/
     - .env
 
   fonts:
