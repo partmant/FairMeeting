@@ -43,11 +43,10 @@ class _FairResultMapScreenState extends State<FairResultMapScreen> {
     showLoadingDialog(context);
 
     await _lodPoiController.initWithMapController(mapCtrl);
-
     _controller.mapController = mapCtrl;
-
     await _poiController.initStyle(mapCtrl);
 
+    // 출발지 마커
     final origins = widget.fairLocationResponse.routes.map((detail) {
       final st = detail.fromStation;
       return PlaceAutoCompleteResponse(
@@ -59,7 +58,7 @@ class _FairResultMapScreenState extends State<FairResultMapScreen> {
     }).toList();
     await _poiController.showMarkers(mapCtrl, origins);
 
-    // 중간지점 마커 표시
+    // 중간지점 마커
     final mid = widget.fairLocationResponse.midpointStation;
     final midMarker = PlaceAutoCompleteResponse(
       placeName: mid.name,
@@ -69,7 +68,7 @@ class _FairResultMapScreenState extends State<FairResultMapScreen> {
     );
     await _poiController.showMarkers(mapCtrl, [...origins, midMarker]);
 
-    // 결과 화면 중심 이동
+    // 카메라 이동
     await mapCtrl.moveCamera(
       CameraUpdate.newCenterPosition(widget.center, zoomLevel: 17),
       animation: const CameraAnimation(400),
@@ -95,42 +94,40 @@ class _FairResultMapScreenState extends State<FairResultMapScreen> {
         },
         child: Scaffold(
           appBar: common_appbar(context, title: '결과 화면'),
-          body: Column(
-            children: [
-              // 상단 카테고리 바
-              Consumer<LodPoiController>(
-                builder: (_, lodCtrl, __) => CategoryBar(
-                  state: lodCtrl.categoryState,
-                  onTap: (code, nowOn) async {
-                    final isFirst = !lodCtrl.hasCache(code);
-                    if (isFirst) showLoadingDialog(context);
-                    await lodCtrl.toggleCategory(code, widget.center);
-                    if (isFirst) hideLoadingDialog(context);
-                  },
+          body: Expanded(
+            child: Stack(
+              children: [
+                KakaoMap(
+                  option: KakaoMapOption(
+                    position: widget.center,
+                    zoomLevel: 17,
+                  ),
+                  onMapReady: _onMapReady,
                 ),
-              ),
-              // 지도 및 결과 바텀시트
-              Expanded(
-                child: Stack(
-                  children: [
-                    KakaoMap(
-                      option: KakaoMapOption(
-                        position: widget.center,
-                        zoomLevel: 17,
-                      ),
-                      onMapReady: _onMapReady,
+                Consumer<LodPoiController>(
+                  builder: (_, lodCtrl, __) => Positioned(
+                    top: 4,
+                    left: 16,
+                    right: 16,
+                    child: CategoryBar(
+                      state: lodCtrl.categoryState,
+                      onTap: (code, nowOn) async {
+                        final isFirst = !lodCtrl.hasCache(code);
+                        if (isFirst) showLoadingDialog(context);
+                        await lodCtrl.toggleCategory(code, widget.center);
+                        if (isFirst) hideLoadingDialog(context);
+                      },
                     ),
-                    // 바텀 시트
-                    Align(
-                      alignment: Alignment.bottomCenter,
-                      child: FairLocationBottomSheet(
-                        fairLocationResponse: widget.fairLocationResponse,
-                      ),
-                    ),
-                  ],
+                  ),
                 ),
-              ),
-            ],
+                Align(
+                  alignment: Alignment.bottomCenter,
+                  child: FairLocationBottomSheet(
+                    fairLocationResponse: widget.fairLocationResponse,
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
