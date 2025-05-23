@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../screens/main_menu_screen.dart';
-import '../screens/put_location_screen.dart';
-import '../screens/fair_result_screen.dart';
-import '../controllers/map_controller.dart';
-import '../models/fair_location_response.dart';
+import 'package:fair_front/screens/main_menu_screen.dart';
+import 'package:fair_front/screens/put_location_screen.dart';
+import 'package:fair_front/screens/fair_result_screen.dart';
+import 'package:fair_front/controllers/map_controller.dart';
 
 PreferredSizeWidget common_appbar(BuildContext context, {String? title}) {
-  final currentRoute  = ModalRoute.of(context)?.settings.name;
+  final currentRoute = ModalRoute.of(context)?.settings.name;
   final mapController = Provider.of<MapController>(context, listen: false);
 
   // 뒤로가기 버튼
@@ -15,17 +14,15 @@ PreferredSizeWidget common_appbar(BuildContext context, {String? title}) {
     icon: const Icon(Icons.arrow_back, color: Colors.black),
     onPressed: () {
       if (currentRoute == '/put-location') {
-        // 위치 입력 화면 → 메인 메뉴
         Navigator.of(context).pushReplacement(
           PageRouteBuilder(
             settings: const RouteSettings(name: '/main-menu'),
-            pageBuilder: (_, __, ___) => const MainmenuScreen(),
+            pageBuilder: (_, __, ___) => const MainmenuScreen(),  // ← pageBuilder
             transitionDuration: Duration.zero,
             reverseTransitionDuration: Duration.zero,
           ),
         );
       } else if (currentRoute == '/fair-result') {
-        // 결과 화면 → 위치 입력 화면으로 복귀
         Navigator.of(context).pushReplacement(
           PageRouteBuilder(
             settings: const RouteSettings(name: '/put-location'),
@@ -51,8 +48,7 @@ PreferredSizeWidget common_appbar(BuildContext context, {String? title}) {
             PageRouteBuilder(
               settings: const RouteSettings(name: '/fair-result'),
               pageBuilder: (_, __, ___) => FairResultMapScreen(
-                coordinates: mapController.lastCoordinates,
-                center:      mapController.lastCenter,
+                center: mapController.lastCenter,
                 fairLocationResponse: mapController.lastFairLocationResponse,
               ),
               transitionDuration: Duration.zero,

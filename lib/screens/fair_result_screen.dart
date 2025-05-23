@@ -1,20 +1,21 @@
+// lib/screens/fair_result_map_screen.dart
+
 import 'package:flutter/material.dart';
 import 'package:kakao_map_sdk/kakao_map_sdk.dart';
-import 'package:fair_front/controllers/map_controller.dart';
 import 'package:fair_front/models/place_autocomplete_response.dart';
 import 'package:fair_front/models/fair_location_response.dart';
 import 'package:fair_front/widgets/common_appbar.dart';
 import 'package:fair_front/widgets/result_bottom_sheet.dart';
+import '../controllers/poi_controller.dart';
+import '../controllers/map_controller.dart';
 import '../screens/put_location_screen.dart';
 
 class FairResultMapScreen extends StatefulWidget {
-  final List<LatLng> coordinates;
   final LatLng center;
   final FairLocationResponse fairLocationResponse;
 
   const FairResultMapScreen({
     Key? key,
-    required this.coordinates,
     required this.center,
     required this.fairLocationResponse,
   }) : super(key: key);
@@ -24,37 +25,61 @@ class FairResultMapScreen extends StatefulWidget {
 }
 
 class _FairResultMapScreenState extends State<FairResultMapScreen> {
+  late final PoiController _poiController;
   late final MapController _controller;
   bool _loading = true;
 
   @override
   void initState() {
     super.initState();
-    _controller = MapController();
+    // 결과 화면 전용 컨트롤러 인스턴스 생성
+    _poiController = PoiController();
+    _controller = MapController(poiController: _poiController);
   }
 
   Future<void> _onMapReady(KakaoMapController mapCtrl) async {
-    await _controller.onMapCreated(mapCtrl);
-    for (final coord in widget.coordinates) {
-      await _controller.addLocation(
-        PlaceAutoCompleteResponse(
-          placeName: '중간지점',
-          roadAddress: '',
-          latitude: coord.latitude,
-          longitude: coord.longitude,
-        ),
+    // 1) POI 스타일만 초기화 (MapController.onMapCreated 호출하지 않음)
+    await _poiController.initStyle(mapCtrl);
+
+    // 2) 출발지점(fromStation) 마커 표시
+    final origins = widget.fairLocationResponse.routes.map((detail) {
+      final st = detail.fromStation;
+      return PlaceAutoCompleteResponse(
+        placeName: st.name,
+        roadAddress: '',
+        latitude: st.latitude,
+        longitude: st.longitude,
       );
-    }
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      setState(() => _loading = false);
-    });
+    }).toList();
+    await _poiController.showMarkers(mapCtrl, origins);
+
+    // 3) 중간지점(midpointStation) 마커 추가
+    final mid = widget.fairLocationResponse.midpointStation;
+    final allMarkers = [
+      ...origins,
+      PlaceAutoCompleteResponse(
+        placeName: mid.name,
+        roadAddress: '',
+        latitude: mid.latitude,
+        longitude: mid.longitude,
+      ),
+    ];
+    await _poiController.showMarkers(mapCtrl, allMarkers);
+
+    // 4) 결과 화면의 중심을 중간지점으로 강제 설정
+    await mapCtrl.moveCamera(
+      CameraUpdate.newCenterPosition(widget.center, zoomLevel: 17),
+      animation: const CameraAnimation(400),
+    );
+
+    // 로딩 해제
+    if (mounted) setState(() => _loading = false);
   }
 
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
-        // 앱바 뒤로가기와 동일한 동작: PutLocationScreen 으로 교체
         Navigator.of(context).pushReplacement(
           PageRouteBuilder(
             settings: const RouteSettings(name: '/put-location'),
@@ -78,12 +103,8 @@ class _FairResultMapScreenState extends State<FairResultMapScreen> {
             ),
             if (_loading)
               Container(
-                color: Colors.white.withOpacity(0.5),
-                child: const Center(
-                  child: CircularProgressIndicator(
-                    color: Color(0xFFD9C189),
-                  ),
-                ),
+                color: Colors.white.withOpacity(0.6),
+                child: const Center(child: CircularProgressIndicator()),
               ),
             if (!_loading)
               FairLocationBottomSheet(

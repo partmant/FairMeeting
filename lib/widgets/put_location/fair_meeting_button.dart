@@ -26,18 +26,21 @@ class FairMeetingButton extends StatelessWidget {
             return;
           }
 
-          final startPoints = sel
-              .map((a) => {'latitude': a.latitude, 'longitude': a.longitude})
-              .toList();
+          final startPoints =
+              sel
+                  .map(
+                    (a) => {'latitude': a.latitude, 'longitude': a.longitude},
+                  )
+                  .toList();
 
           // 1) API 호출 (await)
           final FairLocationResponse? result =
-          await FairMeetingService.requestFairLocation(startPoints);
+              await FairMeetingService.requestFairLocation(startPoints);
 
           if (result == null || result.midpointStation == null) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('중간 지점을 찾을 수 없습니다.')),
-            );
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(const SnackBar(content: Text('중간 지점을 찾을 수 없습니다.')));
             return;
           }
 
@@ -58,11 +61,11 @@ class FairMeetingButton extends StatelessWidget {
           Navigator.of(context).pushReplacement(
             MaterialPageRoute(
               settings: const RouteSettings(name: '/fair-result'),
-              builder: (_) => FairResultMapScreen(
-                coordinates: allCoords,
-                center: midLatLng,
-                fairLocationResponse: result,
-              ),
+              builder:
+                  (_) => FairResultMapScreen(
+                    center: midLatLng,
+                    fairLocationResponse: result,
+                  ),
             ),
           );
         },
@@ -70,8 +73,9 @@ class FairMeetingButton extends StatelessWidget {
           side: const BorderSide(color: Color(0xFFD9C189), width: 2),
           foregroundColor: const Color(0xFFD9C189),
           padding: const EdgeInsets.symmetric(vertical: 16),
-          shape:
-          RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
         ),
         child: const SizedBox(
           width: double.infinity,

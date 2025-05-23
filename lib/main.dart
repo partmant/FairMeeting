@@ -6,6 +6,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:kakao_map_sdk/kakao_map_sdk.dart';
 import 'package:provider/provider.dart';
 import 'controllers/map_controller.dart';
+import 'controllers/poi_controller.dart';
 import 'controllers/user_controller.dart';
 import 'screens/loading_screen.dart';
 import 'package:intl/date_symbol_data_local.dart';
@@ -33,8 +34,13 @@ void main() async {
   runApp(
     MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => MapController()),         // Provider 등록
-        ChangeNotifierProvider(create: (_) => UserController()),        // 사용자 로그인 여부 확인
+        ChangeNotifierProvider(create: (_) => PoiController()),
+        ChangeNotifierProvider(
+          create: (context) => MapController(
+            poiController: context.read<PoiController>(),
+          ),
+        ),
+        ChangeNotifierProvider(create: (_) => UserController()),
       ],
       child: const FairMeetingApp(),
     ),

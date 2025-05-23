@@ -1,19 +1,16 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:kakao_map_sdk/kakao_map_sdk.dart';
 import '../models/fair_location_response.dart';
 import '../services/address_service.dart';
 import '../models/place_autocomplete_response.dart';
+import 'poi_controller.dart';
 
 class MapController with ChangeNotifier {
   KakaoMapController? mapController;
 
   final List<PlaceAutoCompleteResponse> selectedAddresses = [];
-  final List<Poi> _pois = [];
-  List<Poi> get pois => List.unmodifiable(_pois);
-
   int? selectedAddressIndex;
 
   static const LatLng _defaultCenter = LatLng(37.5651, 126.9784);
@@ -23,23 +20,30 @@ class MapController with ChangeNotifier {
   int currentZoom = _defaultZoom;
 
   bool _hasInitialized = false;
-
-  final KImage _poiIcon = KImage.fromAsset('assets/mapMarker.png', 35, 35);
-  late PoiStyle _poiStyle;
-
   StreamSubscription<Position>? _positionSub;
 
-  // 마지막 결과 저장용 필드
   List<LatLng>? _lastCoordinates;
   LatLng? _lastCenter;
-  FairLocationResponse? _lastResponse;  // 추가된 응답 저장 필드
+  FairLocationResponse? _lastResponse;
 
-  bool get hasLastResult => _lastCoordinates != null && _lastCenter != null && _lastResponse != null;
+  bool get hasLastResult =>
+      _lastCoordinates != null && _lastCenter != null && _lastResponse != null;
   List<LatLng> get lastCoordinates => _lastCoordinates!;
   LatLng get lastCenter => _lastCenter!;
   FairLocationResponse get lastFairLocationResponse => _lastResponse!;
 
-  /// 마지막 결과 저장: 좌표, 중심, 그리고 API 응답 전체 모델을 함께 저장
+  /// POI(마커) 전담 컨트롤러
+  final PoiController poiController;
+
+  MapController({required this.poiController}) {
+    // POI 클릭 이벤트 처리
+    poiController.onMarkerSelected = (idx) {
+      selectedAddressIndex = idx;
+      notifyListeners();
+    };
+  }
+
+  /// 마지막 결과 저장
   void saveLastResult({
     required List<LatLng> coordinates,
     required LatLng center,
@@ -51,21 +55,20 @@ class MapController with ChangeNotifier {
     notifyListeners();
   }
 
+  /// 카메라 위치 정보 업데이트
   void updateCameraPosition(LatLng center, int zoomLevel) {
     currentCenter = center;
     currentZoom = zoomLevel;
     notifyListeners();
   }
 
+  /// 지도 생성 시 초기화
   Future<void> onMapCreated(KakaoMapController controller) async {
     mapController = controller;
 
-    _poiStyle = PoiStyle(icon: _poiIcon);
-    final styleId = await mapController!
-        .labelLayer
-        .manager
-        .addPoiStyle(_poiStyle);
-    _poiStyle = PoiStyle(id: styleId, icon: _poiIcon);
+    // POI 스타일 초기화 및 기존 마커 표시
+    await poiController.initStyle(controller);
+    await poiController.showMarkers(controller, selectedAddresses);
 
     if (!_hasInitialized) {
       await _setCurrentLocationAsCenter();
@@ -78,8 +81,7 @@ class MapController with ChangeNotifier {
       zoomLevel: currentZoom,
     );
 
-    await showMarkersForSelectedLocations();
-
+    // 사용자 위치 스트림 시작
     _positionSub = Geolocator.getPositionStream(
       locationSettings: const LocationSettings(
         accuracy: LocationAccuracy.high,
@@ -90,19 +92,14 @@ class MapController with ChangeNotifier {
     });
   }
 
+  /// 선택된 주소에 따른 마커(POI) 갱신
   Future<void> showMarkersForSelectedLocations() async {
     if (mapController == null) return;
-    for (final poi in _pois) {
-      await poi.remove();
-    }
-    _pois.clear();
-    for (final addr in selectedAddresses) {
-      final poi = await _createPoi(addr.latitude, addr.longitude);
-      if (poi != null) _pois.add(poi);
-    }
+    await poiController.showMarkers(mapController!, selectedAddresses);
     notifyListeners();
   }
 
+  /// 카메라 이동
   Future<void> moveCameraTo(
       double lat,
       double lng, {
@@ -116,59 +113,32 @@ class MapController with ChangeNotifier {
         currentCenter,
         zoomLevel: zoomLevel,
       ),
-      animation: const CameraAnimation(400),
+      animation: const CameraAnimation(300),
     );
   }
 
+  /// 지도 클릭 핸들링
   Future<void> handleMapClick(LatLng pos) async {
     await moveCameraTo(pos.latitude, pos.longitude);
-    await moveSelectedMarker(pos);
-  }
-
-  Future<Poi?> _createPoi(double lat, double lng) async {
-    try {
-      final poi = await mapController!.labelLayer.addPoi(
-        LatLng(lat, lng),
-        style: _poiStyle,
-      );
-      poi.onClick = () {
-        final idx = _pois.indexOf(poi);
-        if (idx != -1) selectAddress(idx);
-      };
-      return poi;
-    } catch (e) {
-      debugPrint('❗ POI 생성 실패: $e');
-      return null;
+    if (selectedAddressIndex != null) {
+      await moveSelectedMarker(pos);
     }
   }
 
-  void selectAddress(int index) {
-    if (index < 0 || index >= selectedAddresses.length) return;
-    selectedAddressIndex = index;
-    notifyListeners();
-  }
-
+  /// 주소 추가
   Future<void> addLocation(PlaceAutoCompleteResponse address) async {
     selectedAddresses.add(address);
     selectedAddressIndex = selectedAddresses.length - 1;
-    final poi = await _createPoi(address.latitude, address.longitude);
-    if (poi != null) {
-      _pois.add(poi);
-      await moveCameraTo(
-        address.latitude,
-        address.longitude,
-        zoomLevel: currentZoom,
-      );
-      notifyListeners();
-    }
+    await poiController.showMarkers(mapController!, selectedAddresses);
+    await moveCameraTo(address.latitude, address.longitude);
+    notifyListeners();
   }
 
+  /// 선택된 마커 이동 후 주소명 갱신
   Future<void> moveSelectedMarker(LatLng newLatLng) async {
     if (selectedAddressIndex == null) return;
     final idx = selectedAddressIndex!;
-    if (idx < 0 || idx >= selectedAddresses.length) return;
-    final poi = _pois[idx];
-    await poi.move(newLatLng);
+    await poiController.moveMarker(idx, newLatLng);
     try {
       final geo = await AddressService.fetchAddressName(
         newLatLng.latitude,
@@ -187,10 +157,10 @@ class MapController with ChangeNotifier {
     notifyListeners();
   }
 
+  /// 주소 삭제
   Future<void> deleteAddressAt(int index) async {
     if (index < 0 || index >= selectedAddresses.length) return;
-    await _pois[index].remove();
-    _pois.removeAt(index);
+    await poiController.removeMarker(index);
     selectedAddresses.removeAt(index);
     if (selectedAddressIndex == index) {
       selectedAddressIndex = null;
@@ -201,31 +171,25 @@ class MapController with ChangeNotifier {
     notifyListeners();
   }
 
+  /// 모두 초기화
   Future<void> clearAll() async {
-    for (final poi in _pois) {
-      await poi.remove();
-    }
-    _pois.clear();
-
+    await poiController.clearMarkers();
     selectedAddresses.clear();
     selectedAddressIndex = null;
-
     _lastCoordinates = null;
-    _lastCenter      = null;
-    _lastResponse    = null;
-    notifyListeners();
+    _lastCenter = null;
+    _lastResponse = null;
 
     await _setCurrentLocationAsCenter();
-
     await moveCameraTo(
       currentCenter.latitude,
       currentCenter.longitude,
-      zoomLevel: currentZoom,
+      zoomLevel: _defaultZoom,
     );
-
     notifyListeners();
   }
 
+  /// 현재 위치를 기본 중심으로 설정
   Future<void> _setCurrentLocationAsCenter() async {
     try {
       var perm = await Geolocator.checkPermission();
