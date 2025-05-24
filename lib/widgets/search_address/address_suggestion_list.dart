@@ -24,7 +24,8 @@ class AddressSuggestionList extends StatelessWidget {
         itemBuilder: (context, index) {
           final suggestion = suggestions[index];
           return ListTile(
-            title: Text(suggestion.placeName), // ✅ 이름만 출력
+            /// todo: 도로명주소 및 아이콘 추가
+            title: Text(suggestion.placeName), // 이름만 출력
             onTap: () => onSelect(suggestion),
           );
         },

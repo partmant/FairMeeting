@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import '../services/address_service.dart';
 import '../models/place_autocomplete_response.dart';
+import '../utils/keyboard_utils.dart';
+import '../widgets/loading_dialog.dart';
 import '../widgets/search_address/address_suggestion_list.dart';
 
 class SearchAddressScreen extends StatefulWidget {
@@ -80,9 +82,13 @@ class _SearchAddressScreenState extends State<SearchAddressScreen> {
               Expanded(
                 child: AddressSuggestionList(
                   suggestions: _suggestions,
-                  onSelect: (selected) {
-                    Navigator.pop(context, selected);
-                  },
+                    onSelect: (selected) async {
+                      showLoadingDialog(context);
+                      FocusScope.of(context).unfocus(); // 자판 내리기
+                      await waitForKeyboardToDismiss(context); // 완전히 내려갈 때까지 대기
+                      hideLoadingDialog(context);
+                      Navigator.pop(context, selected);
+                    },
                 ),
               ),
             ],
