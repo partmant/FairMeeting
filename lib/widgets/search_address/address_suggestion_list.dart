@@ -18,18 +18,17 @@ class AddressSuggestionList extends StatelessWidget {
       return const Center(child: Text("검색 결과가 없습니다."));
     }
 
-    return Expanded(
-      child: ListView.builder(
-        itemCount: suggestions.length,
-        itemBuilder: (context, index) {
-          final suggestion = suggestions[index];
-          return ListTile(
-            /// todo: 도로명주소 및 아이콘 추가
-            title: Text(suggestion.placeName), // 이름만 출력
-            onTap: () => onSelect(suggestion),
-          );
-        },
-      ),
+    // Expanded 제거
+    return ListView.builder(
+      itemCount: suggestions.length,
+      itemBuilder: (context, index) {
+        final suggestion = suggestions[index];
+        return ListTile(
+          /// todo: 도로명주소 및 아이콘 추가
+          title: Text(suggestion.placeName), // 이름만 출력
+          onTap: () => onSelect(suggestion),
+        );
+      },
     );
   }
 }

@@ -16,16 +16,22 @@ class LodPoiController with ChangeNotifier {
     _mapCtrl.mapController = mapCtrl;
 
     // 2) 레이어가 아직 없으면 생성, 있으면 기존 컨트롤러 사용
+    try {
+      // 무조건 레이어를 생성하여 초기화 보장
+      _lodController = await mapCtrl.addLodLabelLayer(
+        LodLabelController.defaultId,
+        radius: LodLabelController.defaultRadius,
+      );
+    } on DuplicatedOverlayException {
+      // 이미 생성된 레이어가 있다면, 기본 레이어 컨트롤러를 가져오기
+      _lodController = mapCtrl.lodLabelLayer;
+
+      // 내부 초기화가 지연될 수 있으므로 약간의 대기 추가
+      await Future.delayed(const Duration(milliseconds: 200));
+    }
+
     if (_lodController == null) {
-      try {
-        _lodController = await mapCtrl.addLodLabelLayer(
-          LodLabelController.defaultId,
-          radius: LodLabelController.defaultRadius,
-        );
-      } on DuplicatedOverlayException {
-        // 이미 생성된 레이어가 있다면, 기본 레이어 컨트롤러를 가져오기
-        _lodController = mapCtrl.lodLabelLayer;
-      }
+      throw StateError('LodLabelLayer 초기화에 실패했습니다.');
     }
   }
 
@@ -51,6 +57,7 @@ class LodPoiController with ChangeNotifier {
     if (_lodController == null) {
       throw StateError('initWithMapController()를 먼저 호출해주세요.');
     }
+
     final lod = _lodController!;
 
     // 이미 활성화된 카테고리이면 숨기고 리턴
@@ -101,8 +108,7 @@ class LodPoiController with ChangeNotifier {
           onClick: () async {
             final uri = Uri.parse(place.placeUrl);
             if (await canLaunchUrl(uri)) {
-              await launchUrl(uri,
-                  mode: LaunchMode.externalApplication);
+              await launchUrl(uri, mode: LaunchMode.externalApplication);
             }
           },
           visible: true,
