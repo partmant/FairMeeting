@@ -30,11 +30,15 @@ build/
 !**/src/test/**/build/
 
 ### VS Code ###
+.DS_Store
+*/.DS_Store
+
+
 .vscode/
 
 
 # macOS
-.DS_Store
+**/.DS_Store
 
 # Eclipse / STS 
 .metadata/ 
