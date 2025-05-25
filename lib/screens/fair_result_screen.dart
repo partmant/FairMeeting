@@ -44,7 +44,10 @@ class _FairResultMapScreenState extends State<FairResultMapScreen> {
 
     await _lodPoiController.initWithMapController(mapCtrl);
     _controller.mapController = mapCtrl;
+
+    // POI 스타일 초기화 (출발지 마커 + 중간지점 마커)
     await _poiController.initStyle(mapCtrl);
+    await _poiController.initMidpointStyle(mapCtrl);
 
     // 출발지 마커
     final origins = widget.fairLocationResponse.routes.map((detail) {
@@ -60,19 +63,14 @@ class _FairResultMapScreenState extends State<FairResultMapScreen> {
 
     // 중간지점 마커
     final mid = widget.fairLocationResponse.midpointStation;
-    final midMarker = PlaceAutoCompleteResponse(
-      placeName: mid.name,
-      roadAddress: '',
-      latitude: mid.latitude,
-      longitude: mid.longitude,
-    );
-    await _poiController.showMarkers(mapCtrl, [...origins, midMarker]);
+    await _poiController.showMidpoint(mapCtrl, mid.latitude, mid.longitude);
 
     // 카메라 이동
     await mapCtrl.moveCamera(
       CameraUpdate.newCenterPosition(widget.center, zoomLevel: 17),
       animation: const CameraAnimation(400),
     );
+
     hideLoadingDialog(context);
   }
 
@@ -94,40 +92,39 @@ class _FairResultMapScreenState extends State<FairResultMapScreen> {
         },
         child: Scaffold(
           appBar: common_appbar(context, title: '결과 화면'),
-          body: Expanded(
-            child: Stack(
-              children: [
-                KakaoMap(
-                  option: KakaoMapOption(
-                    position: widget.center,
-                    zoomLevel: 17,
-                  ),
-                  onMapReady: _onMapReady,
+          // Expanded 제거: Scaffold.body에는 바로 Stack을 넣어야 합니다.
+          body: Stack(
+            children: [
+              KakaoMap(
+                option: KakaoMapOption(
+                  position: widget.center,
+                  zoomLevel: 17,
                 ),
-                Consumer<LodPoiController>(
-                  builder: (_, lodCtrl, __) => Positioned(
-                    top: 4,
-                    left: 16,
-                    right: 16,
-                    child: CategoryBar(
-                      state: lodCtrl.categoryState,
-                      onTap: (code, nowOn) async {
-                        final isFirst = !lodCtrl.hasCache(code);
-                        if (isFirst) showLoadingDialog(context);
-                        await lodCtrl.toggleCategory(code, widget.center);
-                        if (isFirst) hideLoadingDialog(context);
-                      },
-                    ),
-                  ),
-                ),
-                Align(
-                  alignment: Alignment.bottomCenter,
-                  child: FairLocationBottomSheet(
-                    fairLocationResponse: widget.fairLocationResponse,
+                onMapReady: _onMapReady,
+              ),
+              Consumer<LodPoiController>(
+                builder: (_, lodCtrl, __) => Positioned(
+                  top: 4,
+                  left: 16,
+                  right: 16,
+                  child: CategoryBar(
+                    state: lodCtrl.categoryState,
+                    onTap: (code, nowOn) async {
+                      final isFirst = !lodCtrl.hasCache(code);
+                      if (isFirst) showLoadingDialog(context);
+                      await lodCtrl.toggleCategory(code, widget.center);
+                      if (isFirst) hideLoadingDialog(context);
+                    },
                   ),
                 ),
-              ],
-            ),
+              ),
+              Align(
+                alignment: Alignment.bottomCenter,
+                child: FairLocationBottomSheet(
+                  fairLocationResponse: widget.fairLocationResponse,
+                ),
+              ),
+            ],
           ),
         ),
       ),

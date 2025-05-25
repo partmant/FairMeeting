@@ -8,14 +8,26 @@ class PoiController with ChangeNotifier {
   late PoiStyle _poiStyle;
   final KImage _poiIcon = KImage.fromAsset('assets/markers/map_marker.png', 35, 35);
 
+  /// 중간지점 POI 관리용
+  Poi? _midpointPoi;
+  late PoiStyle _midpointStyle;
+  final KImage _midpointIcon = KImage.fromAsset('assets/markers/middle_marker.png', 50, 50);
+
   /// 클릭된 마커 인덱스를 MapController에 전달할 콜백
   void Function(int index)? onMarkerSelected;
 
-  /// 초기 설정: 스타일 등록
+  /// 초기 POI 스타일 등록
   Future<void> initStyle(KakaoMapController mapController) async {
     _poiStyle = PoiStyle(icon: _poiIcon);
     final styleId = await mapController.labelLayer.manager.addPoiStyle(_poiStyle);
     _poiStyle = PoiStyle(id: styleId, icon: _poiIcon);
+  }
+
+  /// 초기 중간지점 스타일 등록
+  Future<void> initMidpointStyle(KakaoMapController mapController) async {
+    _midpointStyle = PoiStyle(icon: _midpointIcon);
+    final styleId = await mapController.labelLayer.manager.addPoiStyle(_midpointStyle);
+    _midpointStyle = PoiStyle(id: styleId, icon: _midpointIcon);
   }
 
   /// 선택된 주소에 맞춰 마커 보여주기
@@ -28,6 +40,27 @@ class PoiController with ChangeNotifier {
       final poi = await _createPoi(mapController, addr.latitude, addr.longitude);
       if (poi != null) _pois.add(poi);
     }
+    notifyListeners();
+  }
+
+  /// 중간지점에 POI 하나만 표시
+  Future<void> showMidpoint(
+      KakaoMapController mapController,
+      double lat,
+      double lng,
+      ) async {
+    // 기존 중간지점 제거
+    if (_midpointPoi != null) {
+      await _midpointPoi!.remove();
+      _midpointPoi = null;
+    }
+
+    // 중간지점 POI 생성
+    _midpointPoi = await mapController.labelLayer.addPoi(
+      LatLng(lat, lng),
+      style: _midpointStyle,
+    );
+
     notifyListeners();
   }
 
@@ -81,5 +114,6 @@ class PoiController with ChangeNotifier {
     _pois.clear();
   }
 
+  /// 기존 POI 리스트 반환
   List<Poi> get pois => List.unmodifiable(_pois);
 }
