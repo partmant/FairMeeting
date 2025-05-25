@@ -51,13 +51,13 @@ class _LocationPermissionSettingsPageState
             mainAxisSize: MainAxisSize.min,
             children: [
               Icon(
-                Icons.settings,
+                Icons.near_me_outlined,
                 color: Colors.black,
                 size: 28, // 아이콘 크기
               ),
               SizedBox(width: 8),
               Text(
-                '설정   ',
+                '위치 권한 관리',
                 style: TextStyle(
                   color: Colors.black,
                   fontSize: 25, // 텍스트 크기

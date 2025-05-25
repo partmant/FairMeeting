@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../buttons/notifications_button.dart';
 import '../buttons/brightness_button.dart';
-import '../buttons/Location_Permission_button.dart';
+import '../buttons/location_permission_button.dart';
 import '../buttons/customer_center_button.dart';
 
 
