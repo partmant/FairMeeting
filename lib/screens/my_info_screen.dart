@@ -53,7 +53,9 @@ class MyInfoPage extends StatelessWidget {
                     InfoMenuButton(
                       icon: Icons.lock,
                       title: '개인 정보 및 보안',
-                      onPressed: () { print("개인 정보 및 보안 클릭");},
+                      onPressed: () {
+                        print("개인 정보 및 보안 클릭, 유저 ID: ${userController.userId}");
+                      },
                     ),
                     InfoMenuButton(
                       icon: Icons.campaign,

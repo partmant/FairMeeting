@@ -35,10 +35,9 @@ class KakaoLoginButton extends StatelessWidget {
           User user = await UserApi.instance.me();
           String name = user.kakaoAccount?.profile?.nickname ?? '사용자';
           String imageUrl = user.kakaoAccount?.profile?.profileImageUrl ?? '';
+          String id = user.id.toString();
 
-
-          userController.setLoggedIn(name: name, profileUrl: imageUrl);
-
+          userController.setLoggedIn(name: name, profileUrl: imageUrl, userId: id);
 
           Navigator.push(
             context,
