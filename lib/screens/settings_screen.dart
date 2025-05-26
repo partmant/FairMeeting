@@ -3,7 +3,7 @@ import '../buttons/notifications_button.dart';
 import '../buttons/brightness_button.dart';
 import '../buttons/location_permission_button.dart';
 import '../buttons/customer_center_button.dart';
-
+import '../buttons/app_information_button.dart';
 
 
 
@@ -134,6 +134,11 @@ class SettingsScreen extends StatelessWidget {
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => CustomerCenterSettingsPage()),
+              );
+            } else if (item.title == 'FAIR-MEETING 정보') {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const FairMeetingInfoScreen()),
               );
             } else {
               ScaffoldMessenger.of(context).showSnackBar(
