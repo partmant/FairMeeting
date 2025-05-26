@@ -58,12 +58,15 @@ class FairMeetingButton extends StatelessWidget {
           );
 
           Navigator.of(context).push(
-            MaterialPageRoute(
+            PageRouteBuilder(
               settings: const RouteSettings(name: '/fair-result'),
-              builder: (_) => FairResultMapScreen(
-                center: midLatLng,
-                fairLocationResponse: result,
-              ),
+              pageBuilder:
+                  (_, __, ___) => FairResultMapScreen(
+                    center: midLatLng,
+                    fairLocationResponse: result,
+                  ),
+              transitionDuration: Duration.zero,
+              reverseTransitionDuration: Duration.zero,
             ),
           );
         },
