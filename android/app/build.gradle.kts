@@ -46,3 +46,12 @@ android {
 flutter {
     source = "../.."
 }
+
+dependencies {
+    // Flutter 기본 설정 (자동 포함)
+    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk7")
+
+    // Kakao Android SDK 명시적으로 추가
+    implementation("com.kakao.sdk:v2-user:2.18.0")
+}
+

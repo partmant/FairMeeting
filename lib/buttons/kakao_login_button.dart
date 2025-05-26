@@ -45,7 +45,6 @@ class KakaoLoginButton extends StatelessWidget {
           );
         } catch (e) {
           print('카카오 로그인 실패: $e');
-
         }
       },
       child: Container(

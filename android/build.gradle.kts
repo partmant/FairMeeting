@@ -3,6 +3,11 @@ allprojects {
         google()
         jcenter()
         mavenCentral()
+        maven {
+            url = uri("https://devrepo.kakao.com/nexus/content/groups/public/")
+        }
+
+
     }
 }
 
