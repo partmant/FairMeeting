@@ -17,20 +17,11 @@ class PutLocationScreen extends StatelessWidget {
     final mapWidth = MediaQuery.of(context).size.width - 20;
     const sidePadding = 10.0;
 
-    return PopScope(
-      canPop: false,
-      onPopInvokedWithResult: (didPop, result) {
+    return WillPopScope(
+      onWillPop: () async {
         // 앱바 뒤로가기와 동일한 동작: MainmenuScreen 으로 교체
-        if (!didPop) {
-          Navigator.of(context).pushReplacement(
-            PageRouteBuilder(
-              settings: const RouteSettings(name: '/main-menu'),
-              pageBuilder: (_, __, ___) => const MainmenuScreen(),
-              transitionDuration: Duration.zero,
-              reverseTransitionDuration: Duration.zero,
-            ),
-          );
-        }
+        Navigator.of(context).pop();
+        return false;
       },
       child: Scaffold(
         backgroundColor: Colors.white,

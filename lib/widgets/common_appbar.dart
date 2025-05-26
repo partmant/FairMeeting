@@ -13,27 +13,7 @@ PreferredSizeWidget common_appbar(BuildContext context, {String? title}) {
   final leading = IconButton(
     icon: const Icon(Icons.arrow_back, color: Colors.black),
     onPressed: () {
-      if (currentRoute == '/put-location') {
-        Navigator.of(context).pushReplacement(
-          PageRouteBuilder(
-            settings: const RouteSettings(name: '/main-menu'),
-            pageBuilder: (_, __, ___) => const MainmenuScreen(),  // ← pageBuilder
-            transitionDuration: Duration.zero,
-            reverseTransitionDuration: Duration.zero,
-          ),
-        );
-      } else if (currentRoute == '/fair-result') {
-        Navigator.of(context).pushReplacement(
-          PageRouteBuilder(
-            settings: const RouteSettings(name: '/put-location'),
-            pageBuilder: (_, __, ___) => const PutLocationScreen(),
-            transitionDuration: Duration.zero,
-            reverseTransitionDuration: Duration.zero,
-          ),
-        );
-      } else {
-        Navigator.of(context).pop();
-      }
+      Navigator.of(context).pop();
     },
   );
 
@@ -44,7 +24,7 @@ PreferredSizeWidget common_appbar(BuildContext context, {String? title}) {
       IconButton(
         icon: const Icon(Icons.arrow_forward, color: Colors.black),
         onPressed: () {
-          Navigator.of(context).pushReplacement(
+          Navigator.of(context).push(
             PageRouteBuilder(
               settings: const RouteSettings(name: '/fair-result'),
               pageBuilder: (_, __, ___) => FairResultMapScreen(

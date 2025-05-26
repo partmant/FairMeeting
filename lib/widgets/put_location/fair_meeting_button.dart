@@ -57,15 +57,13 @@ class FairMeetingButton extends StatelessWidget {
             response: result,
           );
 
-          // 2) pushReplacement (결과 화면은 내부 스피너로 로딩)
-          Navigator.of(context).pushReplacement(
+          Navigator.of(context).push(
             MaterialPageRoute(
               settings: const RouteSettings(name: '/fair-result'),
-              builder:
-                  (_) => FairResultMapScreen(
-                    center: midLatLng,
-                    fairLocationResponse: result,
-                  ),
+              builder: (_) => FairResultMapScreen(
+                center: midLatLng,
+                fairLocationResponse: result,
+              ),
             ),
           );
         },

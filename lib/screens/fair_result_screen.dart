@@ -80,14 +80,7 @@ class _FairResultMapScreenState extends State<FairResultMapScreen> {
       value: _lodPoiController,
       child: WillPopScope(
         onWillPop: () async {
-          Navigator.of(context).pushReplacement(
-            PageRouteBuilder(
-              settings: const RouteSettings(name: '/put-location'),
-              pageBuilder: (_, __, ___) => const PutLocationScreen(),
-              transitionDuration: Duration.zero,
-              reverseTransitionDuration: Duration.zero,
-            ),
-          );
+          Navigator.of(context).pop();
           return false;
         },
         child: Scaffold(
