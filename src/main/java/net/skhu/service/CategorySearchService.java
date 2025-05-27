@@ -27,7 +27,7 @@ public class CategorySearchService {
     private String restApiKey;
 
     private final RestTemplate restTemplate = new RestTemplate();
-    private static final int FIXED_RADIUS = 20000; // 고정 반경
+    private static final int FIXED_RADIUS = 300; // 고정 반경
 
     public List<CategoryResponse> searchByCategory(String categoryCode, double x, double y) {
         String url = "https://dapi.kakao.com/v2/local/search/category.json";
@@ -50,6 +50,8 @@ public class CategorySearchService {
         );
 
         Object documents = response.getBody().get("documents");
+
+        System.out.println(documents);
 
         return new ObjectMapper().convertValue(documents, new TypeReference<List<CategoryResponse>>() {});
     }
