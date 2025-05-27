@@ -1,6 +1,6 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
-import '../models/fair_location_response.dart';
+import '../../models/fair_location_response.dart';
 
 class FairLocationBottomSheet extends StatefulWidget {
   final FairLocationResponse fairLocationResponse;

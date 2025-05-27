@@ -6,7 +6,6 @@ import 'package:fair_front/widgets/put_location/location_button.dart';
 import 'package:fair_front/widgets/put_location/fair_meeting_button.dart';
 import 'package:fair_front/widgets/kakao_map.dart';
 import 'package:fair_front/controllers/map_controller.dart';
-import '../screens/main_menu_screen.dart';
 
 class PutLocationScreen extends StatelessWidget {
   const PutLocationScreen({Key? key}) : super(key: key);

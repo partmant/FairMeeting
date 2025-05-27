@@ -4,13 +4,12 @@ import 'package:kakao_map_sdk/kakao_map_sdk.dart';
 import 'package:fair_front/models/place_autocomplete_response.dart';
 import 'package:fair_front/models/fair_location_response.dart';
 import 'package:fair_front/widgets/common_appbar.dart';
-import 'package:fair_front/widgets/category_bar.dart';
-import 'package:fair_front/widgets/result_bottom_sheet.dart';
+import 'package:fair_front/widgets/fair_result/category_bar.dart';
+import 'package:fair_front/widgets/fair_result/result_bottom_sheet.dart';
 import 'package:fair_front/widgets/loading_dialog.dart';
 import '../controllers/lod_poi_controller.dart';
 import '../controllers/map_controller.dart';
 import '../controllers/poi_controller.dart';
-import '../screens/put_location_screen.dart';
 
 class FairResultMapScreen extends StatefulWidget {
   final LatLng center;
@@ -85,7 +84,6 @@ class _FairResultMapScreenState extends State<FairResultMapScreen> {
         },
         child: Scaffold(
           appBar: common_appbar(context, title: '결과 화면'),
-          // Expanded 제거: Scaffold.body에는 바로 Stack을 넣어야 합니다.
           body: Stack(
             children: [
               KakaoMap(

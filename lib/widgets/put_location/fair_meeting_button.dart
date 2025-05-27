@@ -4,7 +4,6 @@ import 'package:kakao_map_sdk/kakao_map_sdk.dart';
 import 'package:fair_front/controllers/map_controller.dart';
 import 'package:fair_front/services/fair_meeting_service.dart';
 import 'package:fair_front/models/fair_location_response.dart';
-
 import '../../screens/fair_result_screen.dart';
 
 class FairMeetingButton extends StatelessWidget {
