@@ -22,13 +22,21 @@ jobs:
           command_timeout: 666s
           script: |
             cd ~/fair_back
-            git pull origin main
-
+          
+            echo "로컬 수정사항 임시 저장"
+            git stash || true
+          
+            echo "최신 코드 가져오기 (rebase)"
+            git pull origin main --rebase || true
+          
+            echo "임시 저장 복원 (충돌 나도 무시)"
+            git stash pop || true
+          
             echo "JAR 빌드 시작"
             ./mvnw clean package -DskipTests
-
+          
             echo "기존 컨테이너 종료 및 정리"
             docker-compose down || true
-
+          
             echo "Docker 이미지 빌드 및 컨테이너 실행"
             docker-compose up -d --build

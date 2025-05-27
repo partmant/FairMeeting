@@ -1,5 +1,7 @@
 package net.skhu.service;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,6 +36,9 @@ public class OdsayService {
     // 검색 결과 하나만 출력
     public OdsayRouteResponse fetchRoute(double sx, double sy, double ex, double ey) {
         try {
+            // URL 인코딩된 API 키 적용
+            String encodedKey = URLEncoder.encode(apiKey, StandardCharsets.UTF_8);
+
             String url = UriComponentsBuilder.fromUriString("https://api.odsay.com/v1/api/searchPubTransPathT")
                     .queryParam("SX", sx)
                     .queryParam("SY", sy)
@@ -55,8 +60,8 @@ public class OdsayService {
 
             JsonNode root = objectMapper.readTree(response.getBody());
             JsonNode paths = root.path("result").path("path");
-
-            if (!paths.isArray() || paths.isEmpty()) {
+            
+            if (!paths.isArray() || paths.size() == 0) {
                 throw new RuntimeException("ODsay API 경로 없음");
             }
 
@@ -97,6 +102,9 @@ public class OdsayService {
     // 검색 결과 전체 출력
     public List<OdsayRouteResponse> fetchRoutes(double sx, double sy, double ex, double ey) {
         try {
+            // URL 인코딩된 API 키 적용
+            String encodedKey = URLEncoder.encode(apiKey, StandardCharsets.UTF_8);
+
             String url = UriComponentsBuilder.fromUriString("https://api.odsay.com/v1/api/searchPubTransPathT")
                     .queryParam("SX", sx)
                     .queryParam("SY", sy)
@@ -113,11 +121,15 @@ public class OdsayService {
             );
 
             if (!response.getStatusCode().is2xxSuccessful() || response.getBody() == null) {
-				throw new RuntimeException("ODsay API 응답 오류: " + response.getStatusCode());
-			}
+                throw new RuntimeException("ODsay API 응답 오류: " + response.getStatusCode());
+            }
 
             JsonNode root = objectMapper.readTree(response.getBody());
             JsonNode paths = root.path("result").path("path");
+            
+            if (!paths.isArray() || paths.size() == 0) {
+                throw new RuntimeException("ODsay API 경로 없음");
+            }
 
             List<OdsayRouteResponse> routeResponses = new ArrayList<>();
             List<OdsayDetailedRoute> detailedRoutes = new ArrayList<>();
@@ -195,7 +207,6 @@ public class OdsayService {
 
                 detail.setSubPaths(subPaths);
                 detailedRoutes.add(detail);
-
             }
 
             // 콘솔 출력
