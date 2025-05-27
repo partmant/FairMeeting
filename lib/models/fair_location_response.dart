@@ -1,8 +1,8 @@
-import 'package:fair_front/models/station_dto.dart';
+import 'package:fair_front/models/location_dto.dart';
 import 'fair_location_route_detail.dart';
 
 class FairLocationResponse {
-  final StationDto midpointStation;
+  final LocationDto midpointStation;
   final List<FairLocationRouteDetail> routes;
 
   FairLocationResponse({
@@ -12,7 +12,7 @@ class FairLocationResponse {
 
   factory FairLocationResponse.fromJson(Map<String, dynamic> json) {
     return FairLocationResponse(
-      midpointStation: StationDto.fromJson(json['midpointStation']),
+      midpointStation: LocationDto.fromJson(json['midpointStation']),
       routes: (json['routes'] as List<dynamic>)
           .map((e) => FairLocationRouteDetail.fromJson(e))
           .toList(),

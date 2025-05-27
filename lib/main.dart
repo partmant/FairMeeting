@@ -9,6 +9,7 @@ import 'package:provider/provider.dart';
 import 'controllers/map_controller.dart';
 import 'controllers/poi_controller.dart';
 import 'controllers/user_controller.dart';
+import 'providers/fair_result_provider.dart';
 import 'screens/loading_screen.dart';
 import 'package:intl/date_symbol_data_local.dart';
 
@@ -19,14 +20,20 @@ void main() async {
   await initializeDateFormatting('ko_KR', null);
   await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);      // 세로 고정
 
-  await KakaoMapSdk.instance.initialize(dotenv.env['KAKAO_NATIVE_APP_KEY'] ?? '',);
-  KakaoSdk.init(nativeAppKey: dotenv.env['KAKAO_NATIVE_APP_KEY'] ?? '',);
+  await KakaoMapSdk.instance.initialize(
+    dotenv.env['KAKAO_NATIVE_APP_KEY'] ?? '',
+  );
+  KakaoSdk.init(
+    nativeAppKey: dotenv.env['KAKAO_NATIVE_APP_KEY'] ?? '',
+  );
 
-  SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
-    statusBarColor: Colors.white,
-    statusBarIconBrightness: Brightness.dark,
-    statusBarBrightness: Brightness.light,
-  ));
+  SystemChrome.setSystemUIOverlayStyle(
+    const SystemUiOverlayStyle(
+      statusBarColor: Colors.white,
+      statusBarIconBrightness: Brightness.dark,
+      statusBarBrightness: Brightness.light,
+    ),
+  );
 
   runApp(
     MultiProvider(
@@ -38,6 +45,7 @@ void main() async {
           ),
         ),
         ChangeNotifierProvider(create: (_) => UserController()),
+        ChangeNotifierProvider(create: (_) => FairResultProvider()),
       ],
       child: const FairMeetingApp(),
     ),
@@ -53,9 +61,7 @@ class FairMeetingApp extends StatelessWidget {
       title: 'Fair Meeting',
       debugShowCheckedModeBanner: false,
       locale: const Locale('ko'),
-      supportedLocales: const [
-        Locale('ko'),
-      ],
+      supportedLocales: const [Locale('ko')],
       localizationsDelegates: const [
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,
@@ -110,4 +116,3 @@ class FairMeetingApp extends StatelessWidget {
     );
   }
 }
-

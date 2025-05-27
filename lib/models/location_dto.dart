@@ -1,16 +1,16 @@
-class StationDto {
+class LocationDto {
   final double latitude;
   final double longitude;
   final String name;
 
-  StationDto({
+  LocationDto({
     required this.latitude,
     required this.longitude,
     required this.name,
   });
 
-  factory StationDto.fromJson(Map<String, dynamic> json) {
-    return StationDto(
+  factory LocationDto.fromJson(Map<String, dynamic> json) {
+    return LocationDto(
       latitude: json['latitude'],
       longitude: json['longitude'],
       name: json['name'],

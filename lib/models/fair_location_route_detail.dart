@@ -1,8 +1,8 @@
-import 'package:fair_front/models/station_dto.dart';
+import 'package:fair_front/models/location_dto.dart';
 import 'odsay_route_response.dart';
 
 class FairLocationRouteDetail {
-  final StationDto fromStation;
+  final LocationDto fromStation;
   final OdsayRouteResponse route;
 
   FairLocationRouteDetail({
@@ -12,7 +12,7 @@ class FairLocationRouteDetail {
 
   factory FairLocationRouteDetail.fromJson(Map<String, dynamic> json) {
     return FairLocationRouteDetail(
-      fromStation: StationDto.fromJson(json['fromStation']),
+      fromStation: LocationDto.fromJson(json['fromStation']),
       route: OdsayRouteResponse.fromJson(json['route']),
     );
   }

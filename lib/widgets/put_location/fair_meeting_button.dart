@@ -4,6 +4,7 @@ import 'package:kakao_map_sdk/kakao_map_sdk.dart';
 import 'package:fair_front/controllers/map_controller.dart';
 import 'package:fair_front/services/fair_meeting_service.dart';
 import 'package:fair_front/models/fair_location_response.dart';
+import 'package:fair_front/providers/fair_result_provider.dart';
 import '../../screens/fair_result_screen.dart';
 
 class FairMeetingButton extends StatelessWidget {
@@ -25,21 +26,21 @@ class FairMeetingButton extends StatelessWidget {
             return;
           }
 
-          final startPoints =
-              sel
-                  .map(
-                    (a) => {'latitude': a.latitude, 'longitude': a.longitude},
-                  )
-                  .toList();
+          final startPoints = sel
+              .map((a) => {
+            'latitude': a.latitude,
+            'longitude': a.longitude,
+          })
+              .toList();
 
-          // 1) API 호출 (await)
+          // 1) API 호출
           final FairLocationResponse? result =
-              await FairMeetingService.requestFairLocation(startPoints);
+          await FairMeetingService.requestFairLocation(startPoints);
 
           if (result == null || result.midpointStation == null) {
-            ScaffoldMessenger.of(
-              context,
-            ).showSnackBar(const SnackBar(content: Text('중간 지점을 찾을 수 없습니다.')));
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('중간 지점을 찾을 수 없습니다.')),
+            );
             return;
           }
 
@@ -50,20 +51,24 @@ class FairMeetingButton extends StatelessWidget {
             midLatLng,
           ];
 
+          // 2) MapController에 저장
           mapController.saveLastResult(
             coordinates: allCoords,
             center: midLatLng,
             response: result,
           );
 
+          // 3) Provider에도 반영
+          context.read<FairResultProvider>().updateResponse(result);
+
+          // 4) 결과 화면으로 이동
           Navigator.of(context).push(
             PageRouteBuilder(
               settings: const RouteSettings(name: '/fair-result'),
-              pageBuilder:
-                  (_, __, ___) => FairResultMapScreen(
-                    center: midLatLng,
-                    fairLocationResponse: result,
-                  ),
+              pageBuilder: (_, __, ___) => FairResultMapScreen(
+                initialCenter: midLatLng,
+                initialResponse: result,
+              ),
               transitionDuration: Duration.zero,
               reverseTransitionDuration: Duration.zero,
             ),
