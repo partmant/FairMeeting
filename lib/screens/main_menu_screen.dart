@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:fair_front/controllers/user_controller.dart';
 import 'put_location_screen.dart';
-import 'calender_screen.dart';
+import 'calendar_screen.dart';
 import 'my_info_screen.dart';
 import 'guest_info_screen.dart';
 import 'settings_screen.dart';
