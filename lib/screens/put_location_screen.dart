@@ -32,7 +32,7 @@ class PutLocationScreen extends StatelessWidget {
               width: mapWidth,
               height: mapWidth,
               child: ClipRRect(
-                borderRadius: BorderRadius.circular(20),
+                borderRadius: BorderRadius.circular(10),
                 child: KakaoMapScreen(),
               ),
             ),
@@ -47,7 +47,10 @@ class PutLocationScreen extends StatelessWidget {
                 child: LocationList(controller: mapController),
               ),
             ),
-            const FairMeetingButton(),
+            Padding(
+              padding: const EdgeInsets.only(bottom: 24.0), // 원하는 만큼 조절 가능
+              child: FairMeetingButton(),
+            )
           ],
         ),
       ),

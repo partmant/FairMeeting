@@ -17,6 +17,8 @@ dependencies:
   geolocator: ^14.0.0 # GPS
 
   url_launcher: ^6.3.1
+  url_launcher_android: ^6.2.5 #앱으로 연동하도록 사용
+  url_launcher_ios: ^6.2.5
 
   cupertino_icons: ^1.0.8
 
