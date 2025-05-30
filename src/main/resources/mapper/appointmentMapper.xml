@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="net.skhu.mapper.AppointmentMapper">
+
+	<!-- 유저의 모든 약속 -->
+	<select id="findByUserId" parameterType="int"
+		resultType="net.skhu.dto.AppointmentDto">
+		SELECT
+		id,
+		user_id AS userId,
+		date,
+		time,
+		location
+		FROM
+		appointment
+		WHERE user_id = #{userId}
+	</select>
+
+	<!-- 유저+날짜로 단건 조회 -->
+	<select id="findByUserIdAndDate" parameterType="map"
+		resultType="net.skhu.dto.AppointmentDto">
+		SELECT
+		id,
+		user_id AS userId,
+		date,
+		time,
+		location
+		FROM
+		appointment
+		WHERE user_id = #{userId}
+		AND date = #{date}
+	</select>
+
+	<!-- id 로 단일 약속 조회 -->
+	<select id="findById" parameterType="int"
+		resultType="net.skhu.dto.AppointmentDto">
+		SELECT
+		id,
+		user_id AS userId,
+		date,
+		time,
+		location
+		FROM appointment
+		WHERE id = #{id}
+	</select>
+
+	<!-- 삽입 시 useGeneratedKeys 로 PK(id) 리턴 -->
+	<insert id="insert" parameterType="net.skhu.dto.AppointmentDto"
+		useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO appointment (user_id,
+		date, time, location)
+		VALUES (#{userId}, #{date}, #{time}, #{location})
+	</insert>
+
+	<!-- 약속 수정하기 -->
+	<update id="update" parameterType="net.skhu.dto.AppointmentDto">
+		UPDATE appointment
+		SET date =
+		#{date},
+		time = #{time},
+		location = #{location}
+		WHERE id = #{id}
+	</update>
+
+	<!-- 약속 삭제하기 -->
+	<delete id="delete" parameterType="int">
+		DELETE FROM appointment WHERE
+		id = #{id}
+	</delete>
+
+</mapper>
