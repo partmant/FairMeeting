@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 import 'package:fair_front/controllers/user_controller.dart';
+import 'package:fair_front/services/kakao_login_service.dart';
 import 'package:fair_front/screens/main_menu_screen.dart';
 
 class KakaoLoginButton extends StatelessWidget {
@@ -9,42 +9,34 @@ class KakaoLoginButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final userCtrl = context.read<UserController>();
+
     return GestureDetector(
       onTap: () async {
-
-        final userController = context.read<UserController>();
-
         try {
-          OAuthToken token;
+          // 1) 로그인 + 서버 등록 (비동기)
+          final user = await KakaoLoginService.loginAndRegister();
 
-          bool isInstalled = await isKakaoTalkInstalled();
-          if (isInstalled) {
-            try {
-              token = await UserApi.instance.loginWithKakaoTalk();
-              print('카카오톡으로 로그인 성공: ${token.accessToken}');
-            } catch (error) {
-              print('카카오톡 로그인 실패, WebView로 로그인 시도');
-              token = await UserApi.instance.loginWithKakaoAccount();
-              print('카카오 계정으로 로그인 성공: ${token.accessToken}');
-            }
-          } else {
-            token = await UserApi.instance.loginWithKakaoAccount();
-            print('카카오 계정으로 로그인 성공: ${token.accessToken}');
-          }
-
-          User user = await UserApi.instance.me();
-          String name = user.kakaoAccount?.profile?.nickname ?? '사용자';
-          String imageUrl = user.kakaoAccount?.profile?.profileImageUrl ?? '';
-          String id = user.id.toString();
-
-          userController.setLoggedIn(name: name, profileUrl: imageUrl, userId: id);
-
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (_) => const MainmenuScreen()),
+          // 2) 로컬 상태 업데이트 (동기)
+          userCtrl.setLoggedIn(
+            userId:     user.kakaoId,
+            name:       user.nickname,
+            profileUrl: user.profileImageUrl,
           );
+          // 화면 전환
+          if (context.mounted) {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (_) => const MainmenuScreen()),
+            );
+          }
         } catch (e) {
-          print('카카오 로그인 실패: $e');
+          print('로그인/등록 오류: $e');
+          if (context.mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('로그인 중 오류가 발생했습니다.')),
+            );
+          }
         }
       },
       child: Container(
@@ -54,22 +46,12 @@ class KakaoLoginButton extends StatelessWidget {
           color: Colors.white,
           borderRadius: BorderRadius.circular(10),
           border: Border.all(color: Colors.grey.shade300),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withAlpha(13),
-              blurRadius: 4,
-              offset: const Offset(0, 2),
-            ),
-          ],
+          boxShadow: [BoxShadow(color: Colors.black.withAlpha(13), blurRadius: 4, offset: const Offset(0, 2))],
         ),
         child: const Center(
           child: Text(
             '카카오톡으로 로그인',
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 16,
-              color: Colors.black87,
-            ),
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.black87),
           ),
         ),
       ),

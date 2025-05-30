@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:fair_front/controllers/user_controller.dart';
-import 'package:fair_front/services/logout_service.dart';
 import 'package:fair_front/buttons/friendslist_button.dart';
 import 'package:fair_front/buttons/info_menu_button.dart';
 import 'package:fair_front/widgets/user_info_box.dart';
 import 'package:fair_front/widgets/info_appbar.dart';
+import 'package:fair_front/widgets/dialog_widget.dart';
 
 class MyInfoPage extends StatelessWidget {
   const MyInfoPage({super.key});
@@ -60,17 +60,34 @@ class MyInfoPage extends StatelessWidget {
                     InfoMenuButton(
                       icon: Icons.campaign,
                       title: '공지사항',
-                      onPressed: () {print("공지사항 클릭");},
+                      onPressed: () {
+                        print("공지사항 클릭");
+                      },
                     ),
                     InfoMenuButton(
                       icon: Icons.policy,
                       title: '약관 및 정책',
-                      onPressed: () { print("약관 및 정책 클릭");},
+                      onPressed: () {
+                        print("약관 및 정책 클릭");
+                      },
                     ),
                     InfoMenuButton(
                       icon: Icons.logout,
                       title: '로그아웃',
-                      onPressed: () => LogoutService.showLogoutDialog(context),
+                      onPressed: () {
+                        DialogService.showConfirmDialog(
+                          context: context,
+                          title: '로그아웃',
+                          message: '로그아웃하시겠습니까?',
+                          confirmLabel: '확인',
+                          onConfirm: () {
+                            final userController =
+                                context.read<UserController>();
+                            userController.setGuest();
+                            Navigator.of(context).pop();
+                          },
+                        );
+                      },
                       isLast: true,
                     ),
                   ],
