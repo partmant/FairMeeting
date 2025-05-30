@@ -25,7 +25,7 @@ class FairMeetingInfoScreen extends StatelessWidget {
                 'FAIR-MEETING 정보',
                 style: TextStyle(
                   color: Colors.black,
-                  fontSize: 25, // 텍스트 크기
+                  fontSize: 21, // 텍스트 크기
                   fontWeight: FontWeight.bold,
                 ),
               ),

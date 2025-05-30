@@ -45,6 +45,14 @@ class _CustomerCenterSettingsPageState extends State<CustomerCenterSettingsPage>
     _saveInquiryHistory();
   }
 
+  // 개별 문의내역 삭제
+  void _deleteInquiry(int index) {
+    setState(() {
+      inquiryHistory.removeAt(index);
+    });
+    _saveInquiryHistory();
+  }
+
   @override
   void dispose() {
     _tabController.dispose();
@@ -59,7 +67,7 @@ class _CustomerCenterSettingsPageState extends State<CustomerCenterSettingsPage>
       body: TabBarView(
         controller: _tabController,
         children: [
-          MyInquiriesTab(history: inquiryHistory), // 문의 내역 탭
+          MyInquiriesTab(history: inquiryHistory, onDelete: _deleteInquiry), // 문의 내역 탭
           InquiryTab(onInquirySent: _addInquiry),  // 문의하기 탭
         ],
       ),
@@ -99,11 +107,15 @@ class _CustomerCenterSettingsPageState extends State<CustomerCenterSettingsPage>
 }
 
 // 문의 내역 탭 위젯
-// SharedPreferences에서 불러온 문의 리스트를 출력
+// SharedPreferences에서 불러온 문의 리스트를 출력, 개별 삭제 기능 추가
 class MyInquiriesTab extends StatelessWidget {
   final List<String> history;
+  final void Function(int) onDelete;
 
-  const MyInquiriesTab({required this.history});
+  const MyInquiriesTab({
+    required this.history,
+    required this.onDelete,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -123,7 +135,16 @@ class MyInquiriesTab extends StatelessWidget {
             border: Border.all(color: Colors.black), // 테두리
             borderRadius: BorderRadius.circular(8),
           ),
-          child: Text(history[index]),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(child: Text(history[index])),
+              IconButton(
+                icon: Icon(Icons.close, color: Color(0xFFD9C189)),
+                onPressed: () => onDelete(index),
+              ),
+            ],
+          ),
         );
       },
     );

@@ -4,6 +4,7 @@ import '../buttons/brightness_button.dart';
 import '../buttons/location_permission_button.dart';
 import '../buttons/customer_center_button.dart';
 import '../buttons/app_information_button.dart';
+import '../buttons/language_button.dart';
 
 
 
@@ -139,6 +140,11 @@ class SettingsScreen extends StatelessWidget {
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => const FairMeetingInfoScreen()),
+              );
+            } else if (item.title == '언어 / language') {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const LanguageSettingsPage()),
               );
             } else {
               ScaffoldMessenger.of(context).showSnackBar(
