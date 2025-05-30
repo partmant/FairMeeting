@@ -49,23 +49,16 @@ class _FairResultMapScreenState extends State<FairResultMapScreen> {
     _currentResponse = widget.initialResponse;
   }
 
-  Future<void> _onMapReady(KakaoMapController mapCtrl) async {
+  /// 지도 초기화
+  Future<void> _initializeMap(KakaoMapController mapCtrl) async {
     _mapCtrl = mapCtrl;
     showLoadingDialog(context);
     try {
-      // MapController에 네이티브 컨트롤러 연결
       _mapController.mapController = mapCtrl;
-      // POI 스타일 초기화
       await _poiController.initStyle(mapCtrl);
       await _poiController.initMidpointStyle(mapCtrl);
-      // LOD POI 스타일 초기화
       await _lodPoiController.initWithMapController(mapCtrl);
-      // 첫 렌더링
-      await _drawAndPosition(
-        _currentCenter,
-        _currentResponse,
-        animate: false,
-      );
+      await _drawAndPosition(_currentCenter, _currentResponse, animate: false);
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('지도를 불러오는 중 오류가 발생했습니다.')),
@@ -75,15 +68,14 @@ class _FairResultMapScreenState extends State<FairResultMapScreen> {
     }
   }
 
+  /// 마커 및 카메라 갱신
   Future<void> _drawAndPosition(
       LatLng center,
       FairLocationResponse response, {
         required bool animate,
       }) async {
     final mapCtrl = _mapCtrl!;
-    // 마커 제거
     await _poiController.clearMarkers();
-    // 출발지 마커
     final origins = response.routes.map((detail) {
       final st = detail.fromStation;
       return PlaceAutoCompleteResponse(
@@ -94,126 +86,109 @@ class _FairResultMapScreenState extends State<FairResultMapScreen> {
       );
     }).toList();
     await _poiController.showMarkers(mapCtrl, origins);
-    // 중간지점 마커
-    await _poiController.showMidpoint(
-      mapCtrl,
-      center.latitude,
-      center.longitude,
-    );
-    // 카메라 이동
+    await _poiController.showMidpoint(mapCtrl, center.latitude, center.longitude);
     if (_lastDrawnCenter == null || _lastDrawnCenter != center) {
       await mapCtrl.moveCamera(
         CameraUpdate.newCenterPosition(center, zoomLevel: 17),
-        animation: animate
-            ? const CameraAnimation(400)
-            : const CameraAnimation(0),
+        animation: animate ? const CameraAnimation(400) : const CameraAnimation(0),
       );
       _lastDrawnCenter = center;
     }
   }
 
+  /// 편집 처리
+  Future<void> _handleEdit() async {
+    final newCenter = await Navigator.push<LatLng>(
+      context,
+      MaterialPageRoute(
+        builder: (_) => EditResultScreen(initialCenter: _currentCenter),
+      ),
+    );
+    if (newCenter == null) return;
+
+    // 캐시 비우기
+    _lodPoiController.clearCache();
+
+    showLoadingDialog(context);
+    final stationDtos = _currentResponse.routes.map((d) => d.fromStation).toList();
+    final response = await OdsayRouteService.requestFairLocationFromOdsay(
+      midpoint: newCenter,
+      startStations: stationDtos,
+    );
+    hideLoadingDialog(context);
+
+    if (response == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('경로 계산에 실패했습니다.')),
+      );
+      return;
+    }
+
+    setState(() {
+      _currentCenter = LatLng(
+        response.midpointStation.latitude,
+        response.midpointStation.longitude,
+      );
+      _currentResponse = response;
+    });
+    await _drawAndPosition(_currentCenter, _currentResponse, animate: true);
+
+    Provider.of<MapController>(context, listen: false).saveLastResult(
+      coordinates: [
+        ..._currentResponse.routes.map((d) => LatLng(d.fromStation.latitude, d.fromStation.longitude)),
+        _currentCenter,
+      ],
+      center: _currentCenter,
+      response: _currentResponse,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () async {
-        Navigator.of(context).pop();
-        return false;
-      },
-      child: Scaffold(
-        appBar: common_appbar(
-          context,
-          title: '결과 화면',
-          extraActions: [
-            IconButton(
-              icon: const Icon(Icons.edit, color: Colors.black),
-              onPressed: () async {
-                // 수정 화면 열기
-                final newCenter = await Navigator.push<LatLng>(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => EditResultScreen(
-                      initialCenter: _currentCenter,
-                    ),
+    return ChangeNotifierProvider<LodPoiController>.value(
+      value: _lodPoiController,
+      child: WillPopScope(
+        onWillPop: () async {
+          Navigator.of(context).pop();
+          return false;
+        },
+        child: Scaffold(
+          appBar: common_appbar(
+            context,
+            title: '결과 화면',
+            extraActions: [
+              IconButton(
+                icon: const Icon(Icons.edit, color: Colors.black),
+                onPressed: _handleEdit,
+              ),
+            ],
+          ),
+          body: Stack(
+            children: [
+              KakaoMap(
+                option: KakaoMapOption(position: _currentCenter, zoomLevel: 17),
+                onMapReady: _initializeMap,
+              ),
+              Positioned(
+                top: 4, left: 16, right: 16,
+                child: Consumer<LodPoiController>(
+                  builder: (ctx, lodCtrl, _) => CategoryBar(
+                    state: lodCtrl.categoryState,
+                    onTap: (code, nowOn) async {
+                      final isFirst = !lodCtrl.hasCache(code);
+                      if (isFirst) showLoadingDialog(context);
+                      await lodCtrl.toggleCategory(code, _currentCenter);
+                      if (isFirst) hideLoadingDialog(context);
+                    },
                   ),
-                );
-                if (newCenter == null) return;
-                // API 재호출
-                showLoadingDialog(context);
-                final stationDtos = _currentResponse.routes
-                    .map((d) => d.fromStation)
-                    .toList();
-                final response = await OdsayRouteService
-                    .requestFairLocationFromOdsay(
-                  midpoint: newCenter,
-                  startStations: stationDtos,
-                );
-                hideLoadingDialog(context);
-                if (response == null) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('경로 계산에 실패했습니다.')),
-                  );
-                  return;
-                }
-                // 상태 업데이트 및 재렌더링
-                setState(() {
-                  _currentCenter = LatLng(
-                    response.midpointStation.latitude,
-                    response.midpointStation.longitude,
-                  );
-                  _currentResponse = response;
-                });
-                // 맵 다시 그리기
-                await _drawAndPosition(_currentCenter, _currentResponse,
-                    animate: true);
-
-                Provider.of<MapController>(context, listen: false).saveLastResult(
-                  coordinates: [
-                    ..._currentResponse.routes.map((d) => LatLng(
-                      d.fromStation.latitude,
-                      d.fromStation.longitude,
-                    )),
-                    _currentCenter,
-                  ],
-                  center: _currentCenter,
-                  response: _currentResponse,
-                );
-              },
-            ),
-          ],
-        ),
-        body: Stack(
-          children: [
-            KakaoMap(
-              option: KakaoMapOption(
-                position: _currentCenter,
-                zoomLevel: 17,
+                ),
               ),
-              onMapReady: _onMapReady,
-            ),
-            Positioned(
-              top: 4,
-              left: 16,
-              right: 16,
-              child: CategoryBar(
-                state: _lodPoiController.categoryState,
-                onTap: (code, nowOn) async {
-                  final isFirst = !_lodPoiController.hasCache(code);
-                  if (isFirst) showLoadingDialog(context);
-                  await _lodPoiController.toggleCategory(
-                    code,
-                    _currentCenter,
-                  );
-                  if (isFirst) hideLoadingDialog(context);
-                },
+              Align(
+                alignment: Alignment.bottomCenter,
+                child: FairLocationBottomSheet(fairLocationResponse: _currentResponse),
               ),
-            ),
-            Align(
-              alignment: Alignment.bottomCenter,
-              child: FairLocationBottomSheet(
-                fairLocationResponse: _currentResponse,
-              ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

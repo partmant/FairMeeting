@@ -53,6 +53,21 @@ class LodPoiController with ChangeNotifier {
 
   bool hasCache(String code) => _responseCache.containsKey(code);
 
+  /// 전체 카테고리 캐시 & 표시된 POI를 비웁니다.
+  void clearCache() {
+    // 지도에서 남아 있는 POI 모두 숨기기
+    for (final pois in _poiCache.values) {
+      for (final poi in pois) {
+        poi.hide();
+      }
+    }
+    _responseCache.clear();
+    _poiCache.clear();
+    activeCategory = null;
+    categoryState.updateAll((_, __) => false);
+    notifyListeners();
+  }
+
   Future<void> toggleCategory(String code, LatLng center) async {
     if (_lodController == null) {
       throw StateError('initWithMapController()를 먼저 호출해주세요.');
