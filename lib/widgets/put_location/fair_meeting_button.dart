@@ -6,6 +6,7 @@ import 'package:fair_front/services/fair_meeting_service.dart';
 import 'package:fair_front/models/fair_location_response.dart';
 import 'package:fair_front/providers/fair_result_provider.dart';
 import '../../screens/fair_result_screen.dart';
+import '../loading_dialog.dart';
 
 class FairMeetingButton extends StatelessWidget {
   const FairMeetingButton({Key? key}) : super(key: key);
@@ -26,6 +27,8 @@ class FairMeetingButton extends StatelessWidget {
             return;
           }
 
+          showLoadingDialog(context);
+          FairLocationResponse? result;
           final startPoints = sel
               .map((a) => {
             'latitude': a.latitude,
@@ -33,41 +36,48 @@ class FairMeetingButton extends StatelessWidget {
           })
               .toList();
 
-          // 1) API 호출
-          final FairLocationResponse? result =
-          await FairMeetingService.requestFairLocation(startPoints);
+          try {
+            // 1) API 호출
+            result = await FairMeetingService.requestFairLocation(startPoints);
+            if (result == null || result.midpointStation == null) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('중간 지점을 찾을 수 없습니다.')),
+              );
+              return;
+            }
 
-          if (result == null || result.midpointStation == null) {
+            // 2) MapController에 저장
+            final mid = result.midpointStation!;
+            final midLatLng = LatLng(mid.latitude, mid.longitude);
+            final allCoords = [
+              ...sel.map((a) => LatLng(a.latitude, a.longitude)),
+              midLatLng,
+            ];
+            mapController.saveLastResult(
+              coordinates: allCoords,
+              center: midLatLng,
+              response: result,
+            );
+            context.read<FairResultProvider>().updateResponse(result);
+          } catch (e) {
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('중간 지점을 찾을 수 없습니다.')),
+              SnackBar(content: Text('오류 발생: $e')),
             );
             return;
+          } finally {
+            // 반드시 스피너 닫기
+            hideLoadingDialog(context);
           }
 
-          final mid = result.midpointStation!;
+          // 3) 화면 전환: 로딩 종료 후 수행
+          final mid = result!.midpointStation!;
           final midLatLng = LatLng(mid.latitude, mid.longitude);
-          final allCoords = [
-            ...sel.map((a) => LatLng(a.latitude, a.longitude)),
-            midLatLng,
-          ];
-
-          // 2) MapController에 저장
-          mapController.saveLastResult(
-            coordinates: allCoords,
-            center: midLatLng,
-            response: result,
-          );
-
-          // 3) Provider에도 반영
-          context.read<FairResultProvider>().updateResponse(result);
-
-          // 4) 결과 화면으로 이동
           Navigator.of(context).push(
             PageRouteBuilder(
               settings: const RouteSettings(name: '/fair-result'),
               pageBuilder: (_, __, ___) => FairResultMapScreen(
                 initialCenter: midLatLng,
-                initialResponse: result,
+                initialResponse: result!,
               ),
               transitionDuration: Duration.zero,
               reverseTransitionDuration: Duration.zero,

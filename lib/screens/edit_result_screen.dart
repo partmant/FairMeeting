@@ -91,11 +91,22 @@ class _EditResultScreenState extends State<EditResultScreen> {
             },
           ),
           // 화면 중앙 십자선
-          const Center(
-            child: Icon(
-              Icons.add,
-              size: 32,
-              color: Colors.redAccent,
+          Positioned.fill(  // 가로 실선 중앙 십자
+            child: Align(
+              alignment: Alignment.center,
+              child: Container(
+                height: 2,
+                color: Colors.redAccent.withOpacity(0.5),
+              ),
+            ),
+          ),
+          Positioned.fill(  // 세로 실선 중앙 십자
+            child: Align(
+              alignment: Alignment.center,
+              child: Container(
+                width: 2,
+                color: Colors.redAccent.withOpacity(0.5),
+              ),
             ),
           ),
         ],
