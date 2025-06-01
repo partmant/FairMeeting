@@ -98,10 +98,11 @@ class _FairResultMapScreenState extends State<FairResultMapScreen> {
 
   /// 편집 처리
   Future<void> _handleEdit() async {
-    final newCenter = await Navigator.push<LatLng>(
-      context,
-      MaterialPageRoute(
-        builder: (_) => EditResultScreen(initialCenter: _currentCenter),
+    final newCenter = await Navigator.of(context).push<LatLng>(
+      PageRouteBuilder(
+        pageBuilder: (_, __, ___) => EditResultScreen(initialCenter: _currentCenter),
+        transitionDuration: Duration.zero,
+        reverseTransitionDuration: Duration.zero,
       ),
     );
     if (newCenter == null) return;

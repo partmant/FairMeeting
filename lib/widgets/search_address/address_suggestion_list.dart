@@ -24,8 +24,11 @@ class AddressSuggestionList extends StatelessWidget {
       itemBuilder: (context, index) {
         final suggestion = suggestions[index];
         return ListTile(
-          /// todo: 도로명주소 및 아이콘 추가
-          title: Text(suggestion.placeName), // 이름만 출력
+          title: Text(suggestion.placeName),
+          subtitle: Text(
+            suggestion.roadAddress,
+            style: const TextStyle(fontSize: 12, color: Colors.grey),
+          ),
           onTap: () => onSelect(suggestion),
         );
       },
