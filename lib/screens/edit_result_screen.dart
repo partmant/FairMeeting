@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:kakao_map_sdk/kakao_map_sdk.dart';
 import '../widgets/common_appbar.dart';
+import '../widgets/dialog_widget.dart';
 
 class EditResultScreen extends StatefulWidget {
   final LatLng initialCenter; // 수정 전 원래 중간지점 좌표
@@ -32,28 +33,17 @@ class _EditResultScreenState extends State<EditResultScreen> {
         title: '중간지점 수정',
         extraActions: [
           TextButton(
-            onPressed: () async {
-              final shouldSubmit = await showDialog<bool>(
+            onPressed: () {
+              DialogService.showConfirmDialog(
                 context: context,
-                builder: (ctx) => AlertDialog(
-                  title: const Text('변경 사항 저장'),
-                  content: const Text('수정된 중간지점 좌표로 결과를 업데이트하시겠어요?'),
-                  actions: [
-                    TextButton(
-                      onPressed: () => Navigator.of(ctx).pop(false),
-                      child: const Text('취소'),
-                    ),
-                    TextButton(
-                      onPressed: () => Navigator.of(ctx).pop(true),
-                      child: const Text('확인'),
-                    ),
-                  ],
-                ),
+                title: '변경 사항 저장',
+                message: '중간지점을 수정하시겠습니까?',
+                cancelLabel: '취소',
+                confirmLabel: '확인',
+                onConfirm: () {
+                  Navigator.of(context).pop(_selectedCenter);
+                },
               );
-              // shouldSubmit가 true일 때만 pop
-              if (shouldSubmit == true) {
-                Navigator.of(context).pop(_selectedCenter);
-              }
             },
             child: const Text(
               '완료',
@@ -71,7 +61,7 @@ class _EditResultScreenState extends State<EditResultScreen> {
             ),
             onMapReady: (controller) async {
               _mapController = controller;
-              // 초기 위치 바로 이동
+              // 초기 위치 바로 이동 (애니메이션 없이)
               await controller.moveCamera(
                 CameraUpdate.newCenterPosition(
                   widget.initialCenter,
@@ -90,8 +80,8 @@ class _EditResultScreenState extends State<EditResultScreen> {
               debugPrint('수정 화면 지도 오류: $err');
             },
           ),
-          // 화면 중앙 십자선
-          Positioned.fill(  // 가로 실선 중앙 십자
+          // 화면 중앙 십자선 (가로)
+          Positioned.fill(
             child: Align(
               alignment: Alignment.center,
               child: Container(
@@ -100,7 +90,8 @@ class _EditResultScreenState extends State<EditResultScreen> {
               ),
             ),
           ),
-          Positioned.fill(  // 세로 실선 중앙 십자
+          // 화면 중앙 십자선 (세로)
+          Positioned.fill(
             child: Align(
               alignment: Alignment.center,
               child: Container(

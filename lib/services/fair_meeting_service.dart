@@ -4,7 +4,7 @@ import '../models/fair_location_response.dart';
 import '../services/api_config.dart';
 
 class FairMeetingService {
-  static Future<FairLocationResponse?> requestFairLocation(List<Map<String, double>> startPoints) async {
+  static Future<FairLocationResponse?> requestFairLocation(List<Map<String, dynamic>> startPoints) async {
     final uri = Uri.parse('${ApiConfig.baseUrl}/api/fair_location');
 
     try {

@@ -31,6 +31,7 @@ class FairMeetingButton extends StatelessWidget {
           FairLocationResponse? result;
           final startPoints = sel
               .map((a) => {
+            'name': a.placeName,
             'latitude': a.latitude,
             'longitude': a.longitude,
           })

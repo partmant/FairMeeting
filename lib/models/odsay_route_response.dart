@@ -19,6 +19,9 @@ class OdsayRouteResponse {
     required this.totalWalkTime,
   });
 
+  /// 버스 환승과 지하철 환승을 합산한 총 환승 횟수
+  int get totalTransitCount => busTransitCount + subwayTransitCount;
+
   factory OdsayRouteResponse.fromJson(Map<String, dynamic> json) {
     return OdsayRouteResponse(
       routeNumber: json['routeNumber'],
