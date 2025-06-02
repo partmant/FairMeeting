@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:fair_front/widgets/modify_button_row.dart';
+import 'package:fair_front/widgets/calendar/modify_button_row.dart';
 
 // 약속 추가 & 수정 시트
 class AddAppointmentSheet extends StatefulWidget {
@@ -41,16 +41,15 @@ void showAddAppointmentSheet({
 }) {
   showCupertinoModalPopup(
     context: context,
-    builder:
-        (_) => AddAppointmentSheet(
-          timeController: timeController,
-          locationController: locationController,
-          onCancel: onCancel,
-          onAdd: onAdd,
-          onDelete: onDelete,
-          title: title,
-          isEditing: isEditing,
-        ),
+    builder: (_) => AddAppointmentSheet(
+      timeController: timeController,
+      locationController: locationController,
+      onCancel: onCancel,
+      onAdd: onAdd,
+      onDelete: onDelete,
+      title: title,
+      isEditing: isEditing,
+    ),
   );
 }
 
@@ -69,15 +68,20 @@ class _AddAppointmentSheetState extends State<AddAppointmentSheet> {
 
   @override
   Widget build(BuildContext context) {
+    // 키보드가 올라온 높이만큼 확보할 padding
+    final bottomInset = MediaQuery.of(context).viewInsets.bottom;
+
     return ClipRRect(
       borderRadius: const BorderRadius.only(
         topLeft: Radius.circular(10),
         topRight: Radius.circular(10),
       ),
       child: Container(
-        height: 400,
+        // 화면 높이의 절반 + 키보드 높이 만큼 더 늘려줍니다.
+        height: MediaQuery.of(context).size.height * 0.5 + bottomInset,
         color: Colors.white,
-        padding: const EdgeInsets.fromLTRB(16, 16, 16, 40),
+        // 키보드 높이만큼 하단 여백 추가
+        padding: EdgeInsets.fromLTRB(16, 16, 16, 40 + bottomInset),
         child: Column(
           children: [
             // 제목
@@ -101,7 +105,7 @@ class _AddAppointmentSheetState extends State<AddAppointmentSheet> {
                 ),
               ),
               child: SizedBox(
-                height: 85,
+                height: 150,
                 child: CupertinoDatePicker(
                   mode: CupertinoDatePickerMode.time,
                   initialDateTime: _selectedTime,
@@ -109,9 +113,8 @@ class _AddAppointmentSheetState extends State<AddAppointmentSheet> {
                   onDateTimeChanged: (newTime) {
                     setState(() {
                       _selectedTime = newTime;
-                      widget.timeController.text = DateFormat(
-                        'HH:mm',
-                      ).format(newTime);
+                      widget.timeController.text =
+                          DateFormat('HH:mm').format(newTime);
                     });
                   },
                 ),
@@ -121,20 +124,22 @@ class _AddAppointmentSheetState extends State<AddAppointmentSheet> {
             const SizedBox(height: 10),
 
             // 장소 입력
+            // 이 TextField 아래로 키보드가 올라와도 가려지지 않도록
             CupertinoTextField(
               controller: widget.locationController,
               placeholder: '장소를 입력하세요',
-              padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 12),
+              padding:
+              const EdgeInsets.symmetric(vertical: 12, horizontal: 12),
               prefix: const Padding(
                 padding: EdgeInsets.only(left: 8),
-                child: Icon(Icons.place, size: 20, color: Color(0xFFD9C189)),
+                child:
+                Icon(Icons.place, size: 20, color: Color(0xFFD9C189)),
               ),
               decoration: BoxDecoration(
                 color: CupertinoColors.white,
                 border: Border.all(color: Color(0xFFD9C189)),
                 borderRadius: BorderRadius.circular(8),
               ),
-              // 여러 줄 입력 가능
               keyboardType: TextInputType.multiline,
               maxLines: null,
               minLines: 1,

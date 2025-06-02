@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+// 화면 하단 부 버튼 row : 현재 상태에 따라 달라짐
 class ModifyButtonRow extends StatelessWidget {
   final bool isEditing;
   final VoidCallback onAdd;
