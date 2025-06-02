@@ -6,7 +6,7 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class FairLocationRouteDetail {
-    private StationDto fromStation;
+    private PlaceDto fromStation;
     private OdsayRouteResponse route;
 }
 

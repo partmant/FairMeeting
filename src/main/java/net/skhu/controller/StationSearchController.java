@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import net.skhu.dto.StationDto;
+import net.skhu.dto.PlaceDto;
 import net.skhu.service.StationSearchService;
 
 @RestController
@@ -25,10 +25,10 @@ public class StationSearchController {
      * @return 인근 지하철역 목록
      */
     @GetMapping("/search")
-    public ResponseEntity<StationDto> getNearbyStations(
+    public ResponseEntity<PlaceDto> getNearbyStations(
             @RequestParam double lat,
             @RequestParam double lng) {
-        StationDto result = stationSearchService.findNearestStation(lat, lng);
+        PlaceDto result = stationSearchService.findNearestStation(lat, lng);
         return ResponseEntity.ok(result);
     }
 }

@@ -8,6 +8,6 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class FairLocationResponse {
-    private StationDto midpointStation;
+    private PlaceDto midpointStation;
     private List<FairLocationRouteDetail> routes;
 }

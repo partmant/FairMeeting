@@ -12,63 +12,69 @@ import net.skhu.dto.FairLocationRequest;
 import net.skhu.dto.FairLocationResponse;
 import net.skhu.dto.FairLocationRouteDetail;
 import net.skhu.dto.OdsayRouteResponse;
-import net.skhu.dto.StationDto;
+import net.skhu.dto.PlaceDto;
 import net.skhu.dto.StationMidpointResponse;
 
 @Service
 @Data
 public class FairLocationService {
 
-    private final StationSearchService stationSearchService;
-    private final StationMidpointService stationMidpointService;
-    private final OdsayService odsayService;
-    private final PlaceAutoCompleteService coordinateSearchService;
+	private final StationSearchService stationSearchService;
+	private final StationMidpointService stationMidpointService;
+	private final OdsayService odsayService;
+	private final PlaceAutoCompleteService coordinateSearchService;
 
-    public FairLocationResponse calculateFairLocation(FairLocationRequest request) {
-        // 1. 각 좌표 → 가장 가까운 역
-        List<StationDto> nearestStations = request.getStartPoints().stream()
-            .map(coord -> stationSearchService.findNearestStation(coord.getLatitude(), coord.getLongitude()))
-            .collect(Collectors.toList());
+	public FairLocationResponse calculateFairLocation(FairLocationRequest request) {
+		// 1. 각 좌표 → 가장 가까운 역
+		List<PlaceDto> originalPoints = request.getStartPoints();
+		List<PlaceDto> nearestStations = originalPoints.stream()
+				.map(p -> stationSearchService.findNearestStation(p.getLatitude(), p.getLongitude()))
+				.collect(Collectors.toList());
 
-        System.out.println(nearestStations);
+		System.out.println("nearestStations(역 이름): " + nearestStations);
 
-        // 2. 이름 정제
-        List<String> stationNames = nearestStations.stream()
-            .map(this::normalizeStationName)
-            .collect(Collectors.toList());
+		// 2. 이름 정제
+		List<String> stationNames = nearestStations.stream().map(this::normalizeStationName)
+				.collect(Collectors.toList());
 
-        System.out.println(stationNames);
+		System.out.println(stationNames);
 
-        // 3. 중간역 이름 계산
-        StationMidpointResponse midpointResponse;
-        try {
-            midpointResponse = stationMidpointService.findMidStation(stationNames);
-        } catch (NoSuchRecordException e) {
-            throw new RuntimeException("중간역을 찾을 수 없습니다. 입력된 역 정보가 충분한지 확인해주세요.", e);
+		// 3. 중간역 이름 계산
+		StationMidpointResponse midpointResponse;
+		try {
+			midpointResponse = stationMidpointService.findMidStation(stationNames);
+		} catch (NoSuchRecordException e) {
+			throw new RuntimeException("중간역을 찾을 수 없습니다. 입력된 역 정보가 충분한지 확인해주세요.", e);
+		}
+
+		String midpointName = midpointResponse.getBalancedMidpoint();
+
+		// 4. 중간역 좌표 조회
+		CoordinateDto midpointCoord = coordinateSearchService.getCoordinate(midpointName);
+		PlaceDto midpointStation = new PlaceDto(midpointName, midpointCoord.getLatitude(),
+				midpointCoord.getLongitude());
+
+		// 5. 각 출발역에서 중간역까지 단일 경로 계산
+		List<FairLocationRouteDetail> routes = nearestStations.stream().map(start -> {
+			OdsayRouteResponse route = odsayService.fetchRoute(start.getLongitude(), start.getLatitude(),
+					midpointStation.getLongitude(), midpointStation.getLatitude());
+			return new FairLocationRouteDetail(start, route);
+		}).collect(Collectors.toList());
+
+		// 요청으로 받은 출발지점 이름으로 덮어쓰기
+		for (int i = 0; i < routes.size(); i++) {
+            PlaceDto original = originalPoints.get(i);
+            FairLocationRouteDetail detail = routes.get(i);
+            detail.getFromStation().setLatitude(original.getLatitude());
+            detail.getFromStation().setLongitude(original.getLongitude());
+            detail.getFromStation().setName(original.getName());
         }
 
-        String midpointName = midpointResponse.getBalancedMidpoint();
+		return new FairLocationResponse(midpointStation, routes);
+	}
 
-        // 4. 중간역 좌표 조회
-        CoordinateDto midpointCoord = coordinateSearchService.getCoordinate(midpointName);
-        StationDto midpointStation = new StationDto(midpointName, midpointCoord.getLatitude(), midpointCoord.getLongitude());
-
-        // 5. 각 출발역에서 중간역까지 단일 경로 계산
-        List<FairLocationRouteDetail> routes = nearestStations.stream()
-            .map(start -> {
-                OdsayRouteResponse route = odsayService.fetchRoute(
-                    start.getLongitude(), start.getLatitude(),
-                    midpointStation.getLongitude(), midpointStation.getLatitude()
-                );
-                return new FairLocationRouteDetail(start, route);
-            })
-            .collect(Collectors.toList());
-
-        return new FairLocationResponse(midpointStation, routes);
-    }
-
-    private String normalizeStationName(StationDto stationDto) {
-        String name = stationDto.getName();
-        return name.substring(0, name.indexOf("역")+1);
-    }
+	private String normalizeStationName(PlaceDto stationDto) {
+		String name = stationDto.getName();
+		return name.substring(0, name.indexOf("역") + 1);
+	}
 }

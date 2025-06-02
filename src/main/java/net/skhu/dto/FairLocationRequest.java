@@ -11,5 +11,5 @@ import lombok.Data;
 public class FairLocationRequest {
 
 	@Size(min = 2, message = "최소 2개의 출발 지점이 필요합니다.")
-    private List<CoordinateDto> startPoints;
+    private List<PlaceDto> startPoints;
 }

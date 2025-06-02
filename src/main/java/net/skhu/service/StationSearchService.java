@@ -12,7 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import net.skhu.dto.StationDto;
+import net.skhu.dto.PlaceDto;
 
 @Service
 public class StationSearchService {
@@ -27,7 +27,7 @@ public class StationSearchService {
      * @param longitude 경도
      * @return 가장 가까운 역 정보
      */
-    public StationDto findNearestStation(double latitude, double longitude) {
+    public PlaceDto findNearestStation(double latitude, double longitude) {
         String categoryGroupCode = "SW8";
         int radius = 3000;
 
@@ -52,7 +52,7 @@ public class StationSearchService {
                     double x = Double.parseDouble(doc.get("x").toString());
                     double y = Double.parseDouble(doc.get("y").toString());
 
-                    return new StationDto(name, y, x);
+                    return new PlaceDto(name, y, x);
                 }
             }
         } catch (Exception e) {
