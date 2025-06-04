@@ -15,5 +15,9 @@ void showLoadingDialog(BuildContext ctx) {
 }
 
 void hideLoadingDialog(BuildContext ctx) {
-  Navigator.of(ctx, rootNavigator: true).pop();
+  try {
+    Navigator.of(ctx, rootNavigator: true).pop();
+  } catch (_) {
+    // 팝할 다이얼로그가 없을 경우 예외가 발생할 수 있으므로 무시
+  }
 }

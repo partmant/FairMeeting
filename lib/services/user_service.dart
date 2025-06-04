@@ -4,7 +4,7 @@ import 'package:fair_front/models/user_dto.dart';
 import 'package:fair_front/services/api_config.dart';
 
 class UserService {
-  // 서버에 사용자 정보 등록 : 성공 시 HTTP 200 또는 201 반환, 그 외는 예외 발생
+  // 서버에 사용자 정보 등록 : 햣성공 시 HTTP 200 또는 201 반환, 그 외는 예외 발생
   static Future<void> registerUser(UserDto user) async {
     final uri = Uri.parse('${ApiConfig.baseUrl}/api/users');
     final response = await http.post(

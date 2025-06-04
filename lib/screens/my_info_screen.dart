@@ -5,7 +5,7 @@ import 'package:fair_front/buttons/friendslist_button.dart';
 import 'package:fair_front/buttons/info_menu_button.dart';
 import 'package:fair_front/widgets/user_info_box.dart';
 import 'package:fair_front/widgets/info_appbar.dart';
-import 'package:fair_front/widgets/dialog_widget.dart';
+import 'package:fair_front/widgets/confirm_dialog.dart';
 
 class MyInfoPage extends StatelessWidget {
   const MyInfoPage({super.key});

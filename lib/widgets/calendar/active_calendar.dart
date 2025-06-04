@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:fair_front/widgets/info_appbar.dart';
-import 'package:fair_front/widgets/dialog_widget.dart';
+import 'package:fair_front/widgets/confirm_dialog.dart';
 import 'package:fair_front/widgets/calendar/month_year_picker.dart';
 import 'package:fair_front/widgets/calendar/share_button_row.dart';
 import 'package:fair_front/screens/login_screen.dart';

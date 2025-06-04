@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:kakao_map_sdk/kakao_map_sdk.dart';
 import '../widgets/common_appbar.dart';
-import '../widgets/dialog_widget.dart';
+import '../widgets/confirm_dialog.dart';
 
 class EditResultScreen extends StatefulWidget {
   final LatLng initialCenter; // 수정 전 원래 중간지점 좌표

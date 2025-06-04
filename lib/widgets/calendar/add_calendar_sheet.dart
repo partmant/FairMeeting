@@ -99,9 +99,13 @@ class _AddAppointmentSheetState extends State<AddAppointmentSheet> {
 
             // 시간 선택
             CupertinoTheme(
-              data: const CupertinoThemeData(
-                textTheme: CupertinoTextThemeData(
-                  dateTimePickerTextStyle: TextStyle(fontSize: 17),
+              // 시스템 다크모드와 무관하게 항상 밝은 테마로 고정
+              data: CupertinoTheme.of(context).copyWith(
+                brightness: Brightness.light,
+                textTheme: const CupertinoTextThemeData(
+                  // iOS-스타일 피커가 쓰는 두 스타일을 모두 지정
+                  dateTimePickerTextStyle: TextStyle(fontSize: 17, color: Colors.black),
+                  pickerTextStyle:        TextStyle(fontSize: 17, color: Colors.black),
                 ),
               ),
               child: SizedBox(
@@ -110,6 +114,8 @@ class _AddAppointmentSheetState extends State<AddAppointmentSheet> {
                   mode: CupertinoDatePickerMode.time,
                   initialDateTime: _selectedTime,
                   use24hFormat: false,
+                  // 배경이 투명하면 글자가 사라져 보일 수 있으므로 흰색으로 고정
+                  backgroundColor: Colors.white,
                   onDateTimeChanged: (newTime) {
                     setState(() {
                       _selectedTime = newTime;
@@ -120,6 +126,7 @@ class _AddAppointmentSheetState extends State<AddAppointmentSheet> {
                 ),
               ),
             ),
+
 
             const SizedBox(height: 10),
 
