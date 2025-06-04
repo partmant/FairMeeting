@@ -4,7 +4,7 @@ import 'package:kakao_flutter_sdk_template/kakao_flutter_sdk_template.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class KakaoShareService {
-  /// 카카오톡 공유 가능 여부 체크
+  // 카카오톡 공유 가능 여부 체크
   Future<bool> isKakaoInstallable() async {
     try {
       final available = await ShareClient.instance.isKakaoTalkSharingAvailable();

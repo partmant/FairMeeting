@@ -49,7 +49,7 @@ class _FairResultMapScreenState extends State<FairResultMapScreen> {
     _currentResponse = widget.initialResponse;
   }
 
-  /// 지도 초기화
+  // 지도 초기화
   Future<void> _initializeMap(KakaoMapController mapCtrl) async {
     _mapCtrl = mapCtrl;
     showLoadingDialog(context);
@@ -60,47 +60,54 @@ class _FairResultMapScreenState extends State<FairResultMapScreen> {
       await _lodPoiController.initWithMapController(mapCtrl);
       await _drawAndPosition(_currentCenter, _currentResponse, animate: false);
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('지도를 불러오는 중 오류가 발생했습니다.')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('지도를 불러오는 중 오류가 발생했습니다.')));
     } finally {
       hideLoadingDialog(context);
     }
   }
 
-  /// 마커 및 카메라 갱신
+  // 마커 및 카메라 갱신
   Future<void> _drawAndPosition(
-      LatLng center,
-      FairLocationResponse response, {
-        required bool animate,
-      }) async {
+    LatLng center,
+    FairLocationResponse response, {
+    required bool animate,
+  }) async {
     final mapCtrl = _mapCtrl!;
     await _poiController.clearMarkers();
-    final origins = response.routes.map((detail) {
-      final st = detail.fromStation;
-      return PlaceAutoCompleteResponse(
-        placeName: st.name,
-        roadAddress: '',
-        latitude: st.latitude,
-        longitude: st.longitude,
-      );
-    }).toList();
+    final origins =
+        response.routes.map((detail) {
+          final st = detail.fromStation;
+          return PlaceAutoCompleteResponse(
+            placeName: st.name,
+            roadAddress: '',
+            latitude: st.latitude,
+            longitude: st.longitude,
+          );
+        }).toList();
     await _poiController.showMarkers(mapCtrl, origins);
-    await _poiController.showMidpoint(mapCtrl, center.latitude, center.longitude);
+    await _poiController.showMidpoint(
+      mapCtrl,
+      center.latitude,
+      center.longitude,
+    );
     if (_lastDrawnCenter == null || _lastDrawnCenter != center) {
       await mapCtrl.moveCamera(
         CameraUpdate.newCenterPosition(center, zoomLevel: 17),
-        animation: animate ? const CameraAnimation(400) : const CameraAnimation(0),
+        animation:
+            animate ? const CameraAnimation(400) : const CameraAnimation(0),
       );
       _lastDrawnCenter = center;
     }
   }
 
-  /// 편집 처리
+  // 편집 처리
   Future<void> _handleEdit() async {
     final newCenter = await Navigator.of(context).push<LatLng>(
       PageRouteBuilder(
-        pageBuilder: (_, __, ___) => EditResultScreen(initialCenter: _currentCenter),
+        pageBuilder:
+            (_, __, ___) => EditResultScreen(initialCenter: _currentCenter),
         transitionDuration: Duration.zero,
         reverseTransitionDuration: Duration.zero,
       ),
@@ -111,7 +118,8 @@ class _FairResultMapScreenState extends State<FairResultMapScreen> {
     _lodPoiController.clearCache();
 
     showLoadingDialog(context);
-    final stationDtos = _currentResponse.routes.map((d) => d.fromStation).toList();
+    final stationDtos =
+        _currentResponse.routes.map((d) => d.fromStation).toList();
     final response = await OdsayRouteService.requestFairLocationFromOdsay(
       midpoint: newCenter,
       startStations: stationDtos,
@@ -119,9 +127,9 @@ class _FairResultMapScreenState extends State<FairResultMapScreen> {
     hideLoadingDialog(context);
 
     if (response == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('경로 계산에 실패했습니다.')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('경로 계산에 실패했습니다.')));
       return;
     }
 
@@ -136,7 +144,9 @@ class _FairResultMapScreenState extends State<FairResultMapScreen> {
 
     Provider.of<MapController>(context, listen: false).saveLastResult(
       coordinates: [
-        ..._currentResponse.routes.map((d) => LatLng(d.fromStation.latitude, d.fromStation.longitude)),
+        ..._currentResponse.routes.map(
+          (d) => LatLng(d.fromStation.latitude, d.fromStation.longitude),
+        ),
         _currentCenter,
       ],
       center: _currentCenter,
@@ -171,22 +181,30 @@ class _FairResultMapScreenState extends State<FairResultMapScreen> {
                 onMapReady: _initializeMap,
               ),
               Positioned(
-                top: 4, left: 16, right: 16,
+                top: 4,
+                left: 16,
+                right: 16,
                 child: Consumer<LodPoiController>(
-                  builder: (ctx, lodCtrl, _) => CategoryBar(
-                    state: lodCtrl.categoryState,
-                    onTap: (code, nowOn) async {
-                      final isFirst = !lodCtrl.hasCache(code);
-                      if (isFirst) showLoadingDialog(context);
-                      await lodCtrl.toggleCategory(code, _currentCenter);
-                      if (isFirst) hideLoadingDialog(context);
-                    },
-                  ),
+                  builder:
+                      (ctx, lodCtrl, _) => CategoryBar(
+                        state: lodCtrl.categoryState,
+                        onTap: (code, nowOn) async {
+                          final isFirst = !lodCtrl.hasCache(code);
+                          if (isFirst) showLoadingDialog(context);
+                          await lodCtrl.toggleCategory(code, _currentCenter);
+                          if (isFirst) hideLoadingDialog(context);
+                        },
+                      ),
                 ),
               ),
-              Align(
-                alignment: Alignment.bottomCenter,
-                child: FairLocationBottomSheet(fairLocationResponse: _currentResponse),
+              // 화면 하단에 붙이기
+              Positioned(
+                left: 0,
+                right: 0,
+                bottom: 0,
+                child: FairLocationBottomSheet(
+                  fairLocationResponse: _currentResponse,
+                ),
               ),
             ],
           ),
