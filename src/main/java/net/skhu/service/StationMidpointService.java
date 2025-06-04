@@ -1,4 +1,4 @@
-package net.skhu.service;
+ package net.skhu.service;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -49,6 +49,7 @@ public class StationMidpointService {
 
             // 2) 출발역별 Bellman–Ford single-source 최단경로 → nodeId(targetNode)별 소요시간(totalCost) 누적
             Map<Long, List<Double>> timesByNode = new HashMap<>();
+            // 다익스트라 변경 시, 초기 진입에 사용되는 메모리 과다로 컨테이너 소실되는 이슈
             String bellmanFordCypher = """
                 CALL gds.bellmanFord.stream('subwayGraph', {
                   sourceNode: $srcId,

@@ -15,5 +15,12 @@
 		VALUES (#{kakaoId}, #{nickname}, #{profileImageUrl})
 	</insert>
 
+    <update id="update" parameterType="net.skhu.dto.UserDto">
+        UPDATE user
+        SET 
+            nickname = #{nickname},
+            profile_image_url = #{profileImageUrl}
+        WHERE kakao_id = #{kakaoId}
+    </update>
 
 </mapper>
