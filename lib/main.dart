@@ -10,8 +10,10 @@ import 'controllers/map_controller.dart';
 import 'controllers/poi_controller.dart';
 import 'controllers/user_controller.dart';
 import 'providers/fair_result_provider.dart';
+import 'providers/locale_provider.dart';
 import 'screens/loading_screen.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -46,6 +48,7 @@ void main() async {
         ),
         ChangeNotifierProvider(create: (_) => UserController()),
         ChangeNotifierProvider(create: (_) => FairResultProvider()),
+        ChangeNotifierProvider(create: (_) => LocaleProvider()),
       ],
       child: const FairMeetingApp(),
     ),
@@ -57,12 +60,15 @@ class FairMeetingApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final localeProvider = Provider.of<LocaleProvider>(context); // 언어 상태 가져오기
+
     return MaterialApp(
       title: 'Fair Meeting',
       debugShowCheckedModeBanner: false,
-      locale: const Locale('ko'),
-      supportedLocales: const [Locale('ko')],
-      localizationsDelegates: const [
+      locale: localeProvider.locale, // 현재 로케일 반영
+      supportedLocales: const [Locale('ko'), Locale('en')], // 다국어 지원
+      localizationsDelegates: const [ // 앱 로컬라이제이션 적용
+        AppLocalizations.delegate,
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,

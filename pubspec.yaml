@@ -5,6 +5,7 @@ description: "skhu capstone design : Fair Meeting"
 publish_to: 'none' # 공식 배포 예정 시 삭제
 
 version: 1.0.0+1
+
 environment:
   sdk: ^3.7.2
 
@@ -55,6 +56,7 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  generate: true
   assets:
     - assets/kakaoOauth.png
     - assets/markers/
@@ -64,4 +66,14 @@ flutter:
     - family: Itim
       fonts:
         - asset: assets/fonts/Itim-Regular.ttf
+
+localizations:
+  arb-dir: lib/l10n
+  template-arb-file: app_ko.arb
+  output-localization-file: app_localizations.dart
+  output-class: AppLocalizations
+  synthetic-package: true
+  supported-locales:
+    - ko
+    - en
 

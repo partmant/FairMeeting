@@ -1,6 +1,6 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:provider/provider.dart';
+import 'package:fair_front/providers/locale_provider.dart';
 
 class LanguageSettingsPage extends StatefulWidget {
   const LanguageSettingsPage({Key? key}) : super(key: key);
@@ -15,31 +15,17 @@ class _LanguageSettingsPageState extends State<LanguageSettingsPage> {
   @override
   void initState() {
     super.initState();
-    _loadLanguage();
-  }
-
-  Future<void> _loadLanguage() async {
-    final prefs = await SharedPreferences.getInstance();
-    setState(() {
-      _selectedLanguage = prefs.getString('language') ?? 'ko';
-    });
-  }
-
-  Future<void> _saveLanguage(String code) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('language', code);
+    _selectedLanguage = context.read<LocaleProvider>().locale.languageCode;
   }
 
   void _onLanguageSelected(String code) {
+    context.read<LocaleProvider>().setLocale(Locale(code));
     setState(() {
       _selectedLanguage = code;
     });
-    _saveLanguage(code);
   }
 
-  Widget buildDivider() {
-    return const Divider(height: 13, thickness: 1.1, color: Color(0xFFD9C189));
-  }
+  Widget buildDivider() => const Divider(height: 13, thickness: 1.1, color: Color(0xFFD9C189));
 
   Widget buildLanguageTile({required String label, required String code}) {
     final isSelected = _selectedLanguage == code;
