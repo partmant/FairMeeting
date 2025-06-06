@@ -5,7 +5,7 @@ PODS:
     - FlutterMacOS
   - kakao_flutter_sdk_common (1.9.7-3):
     - Flutter
-  - kakao_map_sdk (1.1.0):
+  - kakao_map_sdk (1.1.2):
     - Flutter
     - KakaoMapsSDK (= 2.12.4)
   - KakaoMapsSDK (2.12.4)
@@ -55,10 +55,10 @@ SPEC CHECKSUMS:
   Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
   geolocator_apple: 66b711889fd333205763b83c9dcf0a57a28c7afd
   kakao_flutter_sdk_common: 3dc8492c202af7853585d151490b1c5c6b7576cb
-  kakao_map_sdk: de1f29ae5777af0ec1eb0a2221127a9bad0bd782
+  kakao_map_sdk: f61edbfbf81c5190bb3a23f04b98d33c241dc930
   KakaoMapsSDK: fdfeca50d231bcecbfb3b47c9686544fa63fb5d5
   permission_handler_apple: 9878588469a2b0d0fc1e048d9f43605f92e6cec2
-  screen_brightness_ios: 7437207a2a9bc56553aa10f782afecf830b4c4e2
+  screen_brightness_ios: 6a6f7794b67f07c4f1e24f6374b2d8ad367ffb39
   shared_preferences_foundation: fcdcbc04712aee1108ac7fda236f363274528f78
   url_launcher_ios: 5334b05cef931de560670eeae103fd3e431ac3fe
 

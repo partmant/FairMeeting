@@ -13,19 +13,28 @@ class EditResultService {
   static Future<EditResultResponse> fetchEditResult({
     required double mx,
     required double my,
-    required List<LocationDto> startStations,
+    required List<LocationDto> startStations, // [0]=출발지, [1]=원래 목적지
   }) async {
     debugPrint('🔍 [EditResultService] fetchEditResult 호출');
 
+    // startStations[0] → 출발 지점(LocationDto)
+    // startStations[1] → 원래 도착 지점(LocationDto)
+    final start = startStations[0];
+    final dest = startStations[1];
     final uri = Uri.parse('${ApiConfig.baseUrl}/api/edit/result').replace(
       queryParameters: {
         'mx': mx.toString(),
         'my': my.toString(),
-        'sx': startStations.map((e) => e.longitude.toString()).toList(),
-        'sy': startStations.map((e) => e.latitude.toString()).toList(),
+        'sx': start.longitude.toString(), // 출발지 경도
+        'sy': start.latitude.toString(), // 출발지 위도
+        'dx': dest.longitude.toString(), // 도착지 경도
+        'dy': dest.latitude.toString(), // 도착지 위도
       },
     );
-    debugPrint('    URI: $uri');
+    debugPrint('    URI: $uri'); // 최종 예시:
+    // …/api/edit/result?mx=126.90719550713634&my=37.525453306659784
+    // &sx=126.823828819915&sy=37.4923999909922
+    // &dx=126.97209238331357&dy=37.55597933890212
 
     final response = await http.get(uri);
     debugPrint('✅ [EditResultService] HTTP 상태 코드: ${response.statusCode}');

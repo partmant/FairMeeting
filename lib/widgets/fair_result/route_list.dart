@@ -7,17 +7,21 @@ import 'package:fair_front/services/open_naver_map_service.dart';
 class RouteListItem extends StatelessWidget {
   final FairLocationRouteDetail detail;
   final String centerName;
+  final double centerLat; // 도착지(중심역) 위도
+  final double centerLng; // 도착지(중심역) 경도
 
   const RouteListItem({
     Key? key,
     required this.detail,
     required this.centerName,
+    required this.centerLat,
+    required this.centerLng,
   }) : super(key: key);
 
   String _formatFare(int fare) {
     return fare.toString().replaceAllMapped(
       RegExp(r'\B(?=(\d{3})+(?!\d))'),
-          (match) => ',',
+      (match) => ',',
     );
   }
 
@@ -36,8 +40,8 @@ class RouteListItem extends StatelessWidget {
             sLat: start.latitude,
             sLng: start.longitude,
             dName: centerName,
-            dLat: detail.fromStation.latitude,
-            dLng: detail.fromStation.longitude,
+            dLat: centerLat,
+            dLng: centerLng,
           );
         },
         borderRadius: BorderRadius.circular(100),
@@ -86,7 +90,10 @@ class RouteListItem extends StatelessWidget {
                   ),
                   const Padding(
                     padding: EdgeInsets.symmetric(horizontal: 8),
-                    child: Text('|', style: TextStyle(fontSize: 14, color: Colors.grey)),
+                    child: Text(
+                      '|',
+                      style: TextStyle(fontSize: 14, color: Colors.grey),
+                    ),
                   ),
                   Text(
                     '도보 ${route.totalWalkTime}분',
@@ -94,7 +101,10 @@ class RouteListItem extends StatelessWidget {
                   ),
                   const Padding(
                     padding: EdgeInsets.symmetric(horizontal: 8),
-                    child: Text('|', style: TextStyle(fontSize: 14, color: Colors.grey)),
+                    child: Text(
+                      '|',
+                      style: TextStyle(fontSize: 14, color: Colors.grey),
+                    ),
                   ),
                   Text(
                     '${_formatFare(route.payment)}원',

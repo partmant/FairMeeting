@@ -58,6 +58,9 @@ class _FairLocationBottomSheetState extends State<FairLocationBottomSheet> {
   Widget build(BuildContext context) {
     final routes = widget.fairLocationResponse.routes;
     final centerName = widget.fairLocationResponse.midpointStation.name;
+    final centerLat  = widget.fairLocationResponse.midpointStation.latitude;
+    final centerLng  = widget.fairLocationResponse.midpointStation.longitude;
+
 
     return SafeArea(
       top: false,
@@ -181,6 +184,8 @@ class _FairLocationBottomSheetState extends State<FairLocationBottomSheet> {
                           return RouteListItem(
                             detail: routes[index],
                             centerName: centerName,
+                            centerLat: centerLat,
+                            centerLng: centerLng,
                           );
                         },
                       ),
