@@ -1,4 +1,6 @@
 package net.skhu.controller;
+
+import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +16,9 @@ import net.skhu.service.EditResultService;
 @RestController
 @RequestMapping("/api")
 public class EditResultController {
+	
     private final EditResultService editResultService;
+    
     @Autowired
     public EditResultController(EditResultService editResultService) {
         this.editResultService = editResultService;
@@ -29,17 +33,22 @@ public class EditResultController {
      */
     @GetMapping("/edit/result")
     public ResponseEntity<EditResultResponse> getEditResult(
-            @RequestParam double mx,
-            @RequestParam double my,
-            @RequestParam List<Double> sx,
-            @RequestParam List<Double> sy
+            @RequestParam("mx") double mx,
+            @RequestParam("my") double my,
+            @RequestParam("sx") double sx,
+            @RequestParam("sy") double sy,
+            @RequestParam("dx") double dx,
+            @RequestParam("dy") double dy
     ) {
-        if (sx.size() != sy.size()) {
+        List<Double> sxList = Arrays.asList(sx, dx);
+        List<Double> syList = Arrays.asList(sy, dy);
+    	
+        if (sxList.size() != syList.size()) {
             return ResponseEntity.badRequest().build();
         }
 
         try {
-            EditResultResponse response = editResultService.getEditResult(mx, my, sx, sy);
+            EditResultResponse response = editResultService.getEditResult(mx, my, sxList, syList);
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             e.printStackTrace();
