@@ -1,5 +1,6 @@
 package net.skhu.service;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -67,6 +68,17 @@ public class CategorySearchService {
             allResults.addAll(pageResults);
         }
 
-        return allResults;
+        // 중복 제거: placeUrl을 키로 삼아 LinkedHashMap에 넣으면 첫 등장한 항목만 남겨 순서를 유지함
+        Map<String, CategoryResponse> dedupeMap = new LinkedHashMap<>();
+        for (CategoryResponse cr : allResults) {
+            dedupeMap.putIfAbsent(cr.getPlaceUrl(), cr);
+        }
+        List<CategoryResponse> dedupedResults = new ArrayList<>(dedupeMap.values());
+
+        for (CategoryResponse cr : dedupedResults) {
+			System.out.println(cr);
+		}
+
+        return dedupedResults;
     }
 }
