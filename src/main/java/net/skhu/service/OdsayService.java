@@ -60,7 +60,7 @@ public class OdsayService {
 
             JsonNode root = objectMapper.readTree(response.getBody());
             JsonNode paths = root.path("result").path("path");
-            
+
             if (!paths.isArray() || paths.size() == 0) {
                 throw new RuntimeException("ODsay API 경로 없음");
             }
@@ -126,7 +126,7 @@ public class OdsayService {
 
             JsonNode root = objectMapper.readTree(response.getBody());
             JsonNode paths = root.path("result").path("path");
-            
+
             if (!paths.isArray() || paths.size() == 0) {
                 throw new RuntimeException("ODsay API 경로 없음");
             }
@@ -216,6 +216,25 @@ public class OdsayService {
         } catch (Exception e) {
             throw new RuntimeException("ODsay API 호출 또는 파싱 실패: " + e.getMessage(), e);
         }
+    }
+
+    // 여러 출발지 → 중간지점 경로 조회 로직을 서비스로 이동
+    public List<OdsayRouteResponse> fetchRoutesToMidpoint(
+            double mx, double my, List<Double> sx, List<Double> sy) {
+
+        if (sx.size() != sy.size()) {
+            throw new IllegalArgumentException("sx와 sy 리스트 크기가 다릅니다.");
+        }
+
+        List<OdsayRouteResponse> routes = new ArrayList<>();
+        for (int i = 0; i < sx.size(); i++) {
+            double startX = sx.get(i);
+            double startY = sy.get(i);
+            // 기존 fetchRoute 메서드를 재사용
+            OdsayRouteResponse route = fetchRoute(startX, startY, mx, my);
+            routes.add(route);
+        }
+        return routes;
     }
 
     private String formatCoord(JsonNode latNode, JsonNode lngNode) {

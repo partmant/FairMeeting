@@ -1,6 +1,6 @@
+// OdsayController.java
 package net.skhu.controller;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
@@ -20,6 +20,13 @@ public class OdsayController {
 
     private final OdsayService odsayService;
 
+    /**
+     * GET /api/odsay/routes
+     * @param mx 중간지점 경도
+     * @param my 중간지점 위도
+     * @param sx 출발지 경도 리스트
+     * @param sy 출발지 위도 리스트
+     */
     @GetMapping("/routes")
     public ResponseEntity<List<OdsayRouteResponse>> getRoutesToMidpoint(
             @RequestParam double mx,
@@ -32,10 +39,7 @@ public class OdsayController {
         }
 
         try {
-            List<OdsayRouteResponse> routes = new ArrayList<>();
-            for (int i = 0; i < sx.size(); i++) {
-                routes.add(odsayService.fetchRoute(sx.get(i), sy.get(i), mx, my));
-            }
+            List<OdsayRouteResponse> routes = odsayService.fetchRoutesToMidpoint(mx, my, sx, sy);
             return ResponseEntity.ok(routes);
         } catch (Exception e) {
             e.printStackTrace();
@@ -43,6 +47,13 @@ public class OdsayController {
         }
     }
 
+    /**
+     * GET /api/odsay/route
+     * @param sx 출발지 경도
+     * @param sy 출발지 위도
+     * @param ex 도착지 경도
+     * @param ey 도착지 위도
+     */
     @GetMapping("/route")
     public ResponseEntity<List<OdsayRouteResponse>> getRoute(
             @RequestParam double sx,
@@ -51,6 +62,7 @@ public class OdsayController {
             @RequestParam double ey
     ) {
         try {
+            // fetchRoutes를 호출해서 전체 경로 리스트를 반환
             List<OdsayRouteResponse> routes = odsayService.fetchRoutes(sx, sy, ex, ey);
             return ResponseEntity.ok(routes);
         } catch (Exception e) {
