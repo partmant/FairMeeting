@@ -207,8 +207,6 @@ class _FairLocationBottomSheetState extends State<FairLocationBottomSheet> {
                               route.route.totalWalkTime; // 도보 시간(분)
                           final int fare = route.route.payment; // 비용(원)
 
-                          // 실제 소요 시간 계산 필요
-
                           // 각 박스 위젯
                           return Padding(
                             padding: const EdgeInsets.symmetric(

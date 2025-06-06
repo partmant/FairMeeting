@@ -6,11 +6,14 @@ import 'package:fair_front/widgets/common_appbar.dart';
 import 'package:fair_front/widgets/fair_result/category_bar.dart';
 import 'package:fair_front/widgets/fair_result/result_bottom_sheet.dart';
 import 'package:fair_front/widgets/loading_dialog.dart';
-import 'package:fair_front/services/odsay_service.dart';
+import 'package:fair_front/services/edit_result_service.dart';
 import 'package:provider/provider.dart';
 import '../controllers/lod_poi_controller.dart';
 import '../controllers/poi_controller.dart';
 import '../controllers/map_controller.dart';
+import '../models/edit_result_response.dart';
+import '../models/fair_location_route_detail.dart';
+import '../models/location_dto.dart';
 import 'edit_result_screen.dart';
 
 class FairResultMapScreen extends StatefulWidget {
@@ -102,55 +105,83 @@ class _FairResultMapScreenState extends State<FairResultMapScreen> {
     }
   }
 
-  // 편집 처리
+  // 결과 수정
   Future<void> _handleEdit() async {
+    // 1) 수정 화면에서 새로운 중간지점의 좌표를 받아오기
     final newCenter = await Navigator.of(context).push<LatLng>(
       PageRouteBuilder(
-        pageBuilder:
-            (_, __, ___) => EditResultScreen(initialCenter: _currentCenter),
+        pageBuilder: (_, __, ___) => EditResultScreen(
+          initialCenter: _currentCenter,
+        ),
         transitionDuration: Duration.zero,
         reverseTransitionDuration: Duration.zero,
       ),
     );
     if (newCenter == null) return;
 
-    // 캐시 비우기
-    _lodPoiController.clearCache();
-
+    // 2) 로딩 다이얼로그 띄우고 캐시 비우기
     showLoadingDialog(context);
-    final stationDtos =
-        _currentResponse.routes.map((d) => d.fromStation).toList();
-    final response = await OdsayRouteService.requestFairLocationFromOdsay(
-      midpoint: newCenter,
-      startStations: stationDtos,
-    );
-    hideLoadingDialog(context);
+    _lodPoiController.clearCache();
+    
 
-    if (response == null) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('경로 계산에 실패했습니다.')));
+    // 3) api 요청에 필요한 출발지 리스트
+    final stationDtos = _currentResponse.routes.map((d) => d.fromStation).toList();
+
+    // 4) 방금 받은 newCenter 위/경도로 EditResultService를 호출
+    EditResultResponse editResult;
+    try {
+      editResult = await EditResultService.fetchEditResult(
+        mx: newCenter.longitude,
+        my: newCenter.latitude,
+        startStations: stationDtos,
+      );
+    } catch (e) {
+      hideLoadingDialog(context);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('중간지점 수정 후 경로 요청에 실패했습니다.')),
+      );
       return;
     }
+    hideLoadingDialog(context);
 
+    // 5) api 응답 EditResultResponse를 FairLocationResponse 형태로 바꿔서 사용
+    final midDto = LocationDto(
+      latitude: editResult.midpoint.latitude,
+      longitude: editResult.midpoint.longitude,
+      name: editResult.midpoint.name,
+    );
+    final details = List<FairLocationRouteDetail>.generate(
+      stationDtos.length,
+          (i) => FairLocationRouteDetail(
+        fromStation: stationDtos[i],
+        route: editResult.routes[i],
+      ),
+    );
+    final updatedResponse = FairLocationResponse(
+      midpointStation: midDto,
+      routes: details,
+    );
+
+    // 6) 화면 상태 업데이트 및 지도에 새 위치/경로 그리기
     setState(() {
       _currentCenter = LatLng(
-        response.midpointStation.latitude,
-        response.midpointStation.longitude,
+        updatedResponse.midpointStation.latitude,
+        updatedResponse.midpointStation.longitude,
       );
-      _currentResponse = response;
+      _currentResponse = updatedResponse;
     });
     await _drawAndPosition(_currentCenter, _currentResponse, animate: true);
 
+    // 7) MapController에 저장
     Provider.of<MapController>(context, listen: false).saveLastResult(
       coordinates: [
-        ..._currentResponse.routes.map(
-          (d) => LatLng(d.fromStation.latitude, d.fromStation.longitude),
+        ...updatedResponse.routes.map(
+              (d) => LatLng(d.fromStation.latitude, d.fromStation.longitude),
         ),
         _currentCenter,
       ],
       center: _currentCenter,
-      response: _currentResponse,
+      response: updatedResponse,
     );
   }
 
