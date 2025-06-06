@@ -5,7 +5,14 @@ import 'package:fair_front/buttons/guest_login_button.dart';
 import 'package:fair_front/widgets/common_appbar.dart';
 
 class LoginScreen extends StatelessWidget {
-  const LoginScreen({super.key});
+  final bool redirectToCalendar;
+  final String? initialLocationName;
+
+  const LoginScreen({
+    Key? key,
+    this.redirectToCalendar = false,
+    this.initialLocationName,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -21,8 +28,14 @@ class LoginScreen extends StatelessWidget {
               const SizedBox(height: 100),
               const LogoTitle(),
               const SizedBox(height: 150),
-              const KakaoLoginButton(),
-              const GuestLoginButton(),
+              KakaoLoginButton(
+                redirectToCalendar: redirectToCalendar,
+                initialLocationName: initialLocationName,
+              ),
+              GuestLoginButton(
+                redirectToCalendar: redirectToCalendar,
+                initialLocationName: initialLocationName,
+              ),
             ],
           ),
         ),

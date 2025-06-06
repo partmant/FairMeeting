@@ -6,6 +6,7 @@ import 'package:fair_front/widgets/put_location/location_button.dart';
 import 'package:fair_front/widgets/put_location/fair_meeting_button.dart';
 import 'package:fair_front/widgets/kakao_map.dart';
 import 'package:fair_front/controllers/map_controller.dart';
+import 'package:fair_front/screens/main_menu_screen.dart';
 
 class PutLocationScreen extends StatelessWidget {
   const PutLocationScreen({Key? key}) : super(key: key);
@@ -18,8 +19,9 @@ class PutLocationScreen extends StatelessWidget {
 
     return WillPopScope(
       onWillPop: () async {
-        // 앱바 뒤로가기와 동일한 동작: MainmenuScreen 으로 교체
-        Navigator.of(context).pop();
+        Navigator.of(context).push(
+          MaterialPageRoute(builder: (_) => const MainmenuScreen()),
+        );
         return false;
       },
       child: Scaffold(

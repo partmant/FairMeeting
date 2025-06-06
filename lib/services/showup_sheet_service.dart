@@ -6,18 +6,32 @@ import 'package:fair_front/controllers/user_controller.dart';
 import 'package:fair_front/services/appointment_service.dart';
 import 'package:fair_front/widgets/calendar/add_calendar_sheet.dart';
 
-// 외부에서 필요한 의존성을 모두 전달받는 형태로 작성
 Future<void> showAddOrEditAppointmentDialog({
   required BuildContext context,
   required DateTime selectedDay,
   Map<String, dynamic>? existing,
   required TextEditingController timeController,
   required TextEditingController locationController,
-  required Future<void> Function() reloadAppointments, // _loadAppointments와 같은 역할
+  required Future<void> Function() reloadAppointments,
+  String? initialLocationName,
 }) async {
-  // 기존 값이 있으면 컨트롤러에 미리 채워 넣기
+
+  // 1) 시간 컨트롤러 초기화 (기존 로직 그대로)
   timeController.text = existing?['time'] ?? '';
-  locationController.text = existing?['location'] ?? '';
+
+  // 2) 위치 컨트롤러 초기화
+  if (existing != null) {
+    // 수정 모드면 existing 데이터의 location 그대로 사용
+    locationController.text = existing['location'] ?? '';
+  } else {
+    // 새 약속 추가 모드면, external(initialLocationName)이 있으면 그걸 사용하고 없으면 빈 문자열로
+    if (initialLocationName != null && initialLocationName.isNotEmpty) {
+      locationController.text = initialLocationName;
+    } else {
+      locationController.clear();
+    }
+  }
+
   final isEditing = existing != null;
 
   showAddAppointmentSheet(
@@ -35,9 +49,8 @@ Future<void> showAddOrEditAppointmentDialog({
 
       final kakaoId = Provider.of<UserController>(context, listen: false).userId;
       if (kakaoId == null) {
-        // 로그인 상태가 아니라면 토스트나 다이얼로그 띄우고 리턴
         ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('로그인 정보가 없습니다.'))
+          const SnackBar(content: Text('로그인 정보가 없습니다.')),
         );
         return;
       }
@@ -64,22 +77,26 @@ Future<void> showAddOrEditAppointmentDialog({
           );
         }
 
-        // 약속 목록을 새로 불러와 화면 갱신
+        // 약속 목록 다시 불러오기
         await reloadAppointments();
         Navigator.of(context).pop();
       } catch (e) {
         final msg = e.toString().replaceFirst('Exception: ', '');
         ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(msg))
+          SnackBar(content: Text(msg)),
         );
       }
     },
     onDelete: () async {
       if (existing == null) return;
       final id = existing['id'] as int;
-      final kakaoId = Provider.of<UserController>(context, listen: false).userId;
+      final kakaoId =
+          Provider.of<UserController>(context, listen: false).userId;
       if (kakaoId != null) {
-        await AppointmentService.deleteAppointment(id: id, kakaoId: kakaoId);
+        await AppointmentService.deleteAppointment(
+          id: id,
+          kakaoId: kakaoId,
+        );
         await reloadAppointments();
       }
     },

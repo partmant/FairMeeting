@@ -1,7 +1,8 @@
 import 'dart:math';
-import 'package:fair_front/widgets/fair_result/route_list.dart';
 import 'package:flutter/material.dart';
+import 'package:fair_front/buttons/put_in_calendar_button.dart';
 import '../../models/fair_location_response.dart';
+import 'route_list.dart';
 
 class FairLocationBottomSheet extends StatefulWidget {
   final FairLocationResponse fairLocationResponse;
@@ -18,14 +19,14 @@ class FairLocationBottomSheet extends StatefulWidget {
 
 class _FairLocationBottomSheetState extends State<FairLocationBottomSheet> {
   late final DraggableScrollableController _sheetController;
-  bool _isDraggingList = false; // 리스트 드래그 중인지 상태 추적
+  bool _isDraggingList = false;
 
   @override
   void initState() {
     super.initState();
     _sheetController = DraggableScrollableController();
 
-    // 화면 렌더 후에 완전 펼치기
+    // 화면 렌더 후에 최대로 펼치기
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _sheetController.animateTo(
         _maxSize,
@@ -36,21 +37,19 @@ class _FairLocationBottomSheetState extends State<FairLocationBottomSheet> {
   }
 
   double get _minSize {
-    final headerTotalHeight = 74.0;
-    final usableHeight =
-        MediaQuery.of(context).size.height -
-            MediaQuery.of(context).padding.bottom;
+    const headerTotalHeight = 74.0;
+    final usableHeight = MediaQuery.of(context).size.height -
+        MediaQuery.of(context).padding.bottom;
     return headerTotalHeight / usableHeight;
   }
 
   double get _maxSize {
-    final handleHeight = 40.0;
-    final itemH = 108.0;
+    const handleHeight = 40.0;
+    const itemH = 108.0;
     final total =
         handleHeight + widget.fairLocationResponse.routes.length * itemH;
-    final usableHeight =
-        MediaQuery.of(context).size.height -
-            MediaQuery.of(context).padding.bottom;
+    final usableHeight = MediaQuery.of(context).size.height -
+        MediaQuery.of(context).padding.bottom;
     return min(total / usableHeight, 0.8);
   }
 
@@ -58,9 +57,8 @@ class _FairLocationBottomSheetState extends State<FairLocationBottomSheet> {
   Widget build(BuildContext context) {
     final routes = widget.fairLocationResponse.routes;
     final centerName = widget.fairLocationResponse.midpointStation.name;
-    final centerLat  = widget.fairLocationResponse.midpointStation.latitude;
-    final centerLng  = widget.fairLocationResponse.midpointStation.longitude;
-
+    final centerLat = widget.fairLocationResponse.midpointStation.latitude;
+    final centerLng = widget.fairLocationResponse.midpointStation.longitude;
 
     return SafeArea(
       top: false,
@@ -85,17 +83,14 @@ class _FairLocationBottomSheetState extends State<FairLocationBottomSheet> {
               ),
               child: Column(
                 children: [
+                  // (1) 헤더: 드래그 핸들 + 중간장소 이름
                   GestureDetector(
                     behavior: HitTestBehavior.translucent,
                     onVerticalDragUpdate: (drag) {
                       final delta = drag.primaryDelta ?? 0;
-                      final fraction =
-                          delta / MediaQuery.of(context).size.height;
+                      final fraction = delta / MediaQuery.of(context).size.height;
                       _sheetController.jumpTo(
-                        (_sheetController.size - fraction).clamp(
-                          _minSize,
-                          _maxSize,
-                        ),
+                        (_sheetController.size - fraction).clamp(_minSize, _maxSize),
                       );
                     },
                     onVerticalDragEnd: (_) {
@@ -148,8 +143,8 @@ class _FairLocationBottomSheetState extends State<FairLocationBottomSheet> {
                       ),
                     ),
                   ),
-                  // 리스트: NotificationListener로 드래그 제스처를 감지하며,
-                  // 새로 만든 RouteListItem 위젯을 하나씩 렌더링
+
+                  // (2) 리스트 + 버튼을 하나의 ListView 안에 묶어서 스크롤되도록 함
                   Expanded(
                     child: NotificationListener<ScrollNotification>(
                       onNotification: (notification) {
@@ -177,12 +172,22 @@ class _FairLocationBottomSheetState extends State<FairLocationBottomSheet> {
                         controller: scrollController,
                         physics: const ClampingScrollPhysics(),
                         padding: EdgeInsets.only(
-                          bottom: MediaQuery.of(context).padding.bottom + 16,
+                          bottom: MediaQuery.of(context).padding.bottom,
                         ),
-                        itemCount: routes.length,
+                        itemCount: routes.length + 1, // 수정됨: 버튼까지 포함
                         itemBuilder: (context, index) {
+                          if (index == routes.length) {
+                            // 마지막 인덱스: PutInCalendarButton
+                            return PutInCalendarButton(
+                              initialLocationName: centerName,
+                              onPressed: () {
+                                // todo : 캘린더에 값이 다 들어간 상태로 유지
+                              },
+                            );
+                          }
+                          final detail = routes[index];
                           return RouteListItem(
-                            detail: routes[index],
+                            detail: detail,
                             centerName: centerName,
                             centerLat: centerLat,
                             centerLng: centerLng,

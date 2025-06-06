@@ -3,11 +3,19 @@ import 'package:provider/provider.dart';
 import 'package:fair_front/controllers/user_controller.dart';
 import 'package:fair_front/services/appointment_service.dart';
 import 'package:fair_front/services/kakao_share_service.dart';
-import 'package:fair_front/services/showup_sheet_service.dart';
 import 'package:fair_front/widgets/calendar/active_calendar.dart';
+import 'package:fair_front/services/showup_sheet_service.dart';
 
 class AppointmentCalendarScreen extends StatefulWidget {
-  const AppointmentCalendarScreen({super.key});
+
+  final String? initialLocationName; // 버튼 등에서 전달해 주는 중간지점 이름(선택한 위치)
+  final bool redirectToCalendar;
+
+  const AppointmentCalendarScreen({
+    Key? key,
+    this.redirectToCalendar = false,
+    this.initialLocationName, // 생성자에 named 파라미터로 추가
+  }) : super(key: key);
 
   @override
   State<AppointmentCalendarScreen> createState() =>
@@ -19,10 +27,10 @@ class _AppointmentCalendarScreenState extends State<AppointmentCalendarScreen>
   // 카카오 공유 서비스 인스턴스
   final KakaoShareService _kakaoShareService = KakaoShareService();
 
-  // 날짜 상태 (달력 포커스용)
+  // 달력 포커스용 날짜
   DateTime _focusedDay = DateTime.now();
 
-  // 달력에서 선택된 날짜 (선택된 날짜의 약속을 보여줄 때 씀)
+  // 달력에서 선택된 날짜
   DateTime? _selectedDay;
 
   // 서버에서 불러온 약속 목록을 날짜별로 그룹핑한 맵
@@ -36,6 +44,13 @@ class _AppointmentCalendarScreenState extends State<AppointmentCalendarScreen>
   void initState() {
     super.initState();
     _loadAppointments();
+  }
+
+  @override
+  void dispose() {
+    _timeController.dispose();
+    _locationController.dispose();
+    super.dispose();
   }
 
   // 서버에서 약속 목록 불러와서 _appointments에 채워 넣기
@@ -73,6 +88,28 @@ class _AppointmentCalendarScreenState extends State<AppointmentCalendarScreen>
   // 약속 추가/수정 바텀시트 열기 콜백
   void _showAddOrEditSheet(DateTime selectedDay,
       {Map<String, dynamic>? existing}) {
+    final isEditing = existing != null;
+
+    // ——— 여기서 컨트롤러 초기화 부분 추가 ———
+    // 1) 시간 컨트롤러에 기존값 또는 빈 문자열 세팅
+    _timeController.text = existing?['time'] ?? '';
+
+    // 2) 위치 컨트롤러에
+    if (isEditing) {
+      // 수정 모드라면 existing 데이터의 위치로 세팅
+      _locationController.text = existing?['location'] ?? '';
+    } else {
+      // 새 약속 추가 모드
+      if (widget.initialLocationName != null &&
+          widget.initialLocationName!.isNotEmpty) {
+        // 버튼에서 넘어와서 initialLocationName이 있다면 그것을 우선 채움
+        _locationController.text = widget.initialLocationName!;
+      } else {
+        // 그 외엔 빈 문자열
+        _locationController.clear();
+      }
+    }
+
     showAddOrEditAppointmentDialog(
       context: context,
       selectedDay: selectedDay,
@@ -82,6 +119,7 @@ class _AppointmentCalendarScreenState extends State<AppointmentCalendarScreen>
       reloadAppointments: () async {
         await _loadAppointments();
       },
+      initialLocationName: widget.initialLocationName,
     );
   }
 
@@ -106,7 +144,7 @@ class _AppointmentCalendarScreenState extends State<AppointmentCalendarScreen>
         });
       },
 
-      // 날짜 클릭 시 콜백 : 클릭된 날짜와 포커스 날짜를 부모가 관리 ㄴ
+      // 날짜 클릭 시 콜백
       onDaySelected: (clickedDay, newFocusedDay) {
         setState(() {
           _selectedDay = clickedDay;
