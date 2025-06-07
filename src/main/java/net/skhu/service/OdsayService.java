@@ -35,6 +35,20 @@ public class OdsayService {
 
     // 검색 결과 하나만 출력
     public OdsayRouteResponse fetchRoute(double sx, double sy, double ex, double ey) {
+    	
+        if (Double.compare(sx, ex) == 0 && Double.compare(sy, ey) == 0) {
+            OdsayRouteResponse route = new OdsayRouteResponse();
+            route.setRouteNumber(1);
+            route.setTotalTime(0);
+            route.setPayment(0);
+            route.setSubwayTransitCount(0);
+            route.setBusTransitCount(0);
+            route.setTotalBusTime(0);
+            route.setTotalSubwayTime(0);
+            route.setTotalWalkTime(0);
+            return route;
+        }
+    	
         try {
             // URL 인코딩된 API 키 적용
             String encodedKey = URLEncoder.encode(apiKey, StandardCharsets.UTF_8);
