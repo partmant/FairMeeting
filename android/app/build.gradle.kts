@@ -13,6 +13,7 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
+        isCoreLibraryDesugaringEnabled = true
     }
 
     kotlinOptions {
@@ -53,5 +54,8 @@ dependencies {
 
     // Kakao Android SDK 명시적으로 추가
     implementation("com.kakao.sdk:v2-user:2.18.0")
+
+    // Java 8+ core API desugaring 지원 라이브러리
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")
 }
 

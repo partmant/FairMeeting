@@ -6,8 +6,6 @@ import '../buttons/customer_center_button.dart';
 import '../buttons/app_information_button.dart';
 import '../buttons/language_button.dart';
 
-
-
 class SettingsScreen extends StatelessWidget {
   final List<_SettingsItem> items = [
     _SettingsItem(Icons.notifications_none, '알림'),

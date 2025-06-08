@@ -17,13 +17,17 @@ dependencies:
 
   geolocator: ^14.0.0 # GPS
 
+  flutter_local_notifications: ^19.2.1
+  timezone: ^0.10.1
+  flutter_timezone: ^4.1.1
+
   url_launcher: ^6.3.1
   url_launcher_android: ^6.2.5 #앱으로 연동하도록 사용
   url_launcher_ios: ^6.2.5
 
   cupertino_icons: ^1.0.8
 
-  http: ^0.13.5         # HTTP 요청을 위해 사용
+  http: ^1.4.0         # HTTP 요청을 위해 사용
 
   kakao_map_sdk: ^1.1.0 # 카카오 맵
 
