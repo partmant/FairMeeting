@@ -16,43 +16,39 @@ import net.skhu.service.EditResultService;
 @RestController
 @RequestMapping("/api")
 public class EditResultController {
-	
-    private final EditResultService editResultService;
-    
-    @Autowired
-    public EditResultController(EditResultService editResultService) {
-        this.editResultService = editResultService;
-    }
-    /**
-     * GET /api/edit/result
-     * @param mx 중간지점 경도
-     * @param my 중간지점 위도
-     * @param sx 출발지 경도 리스트
-     * @param sy 출발지 위도 리스트
-     * @return EditResultResponse(PlaceDto midpoint, List<OdsayRouteResponse> routes)
-     */
-    @GetMapping("/edit/result")
-    public ResponseEntity<EditResultResponse> getEditResult(
-            @RequestParam("mx") double mx,
-            @RequestParam("my") double my,
-            @RequestParam("sx") double sx,
-            @RequestParam("sy") double sy,
-            @RequestParam("dx") double dx,
-            @RequestParam("dy") double dy
-    ) {
-        List<Double> sxList = Arrays.asList(sx, dx);
-        List<Double> syList = Arrays.asList(sy, dy);
-    	
-        if (sxList.size() != syList.size()) {
-            return ResponseEntity.badRequest().build();
-        }
 
-        try {
-            EditResultResponse response = editResultService.getEditResult(mx, my, sxList, syList);
-            return ResponseEntity.ok(response);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.internalServerError().build();
-        }
-    }
+	private final EditResultService editResultService;
+
+	@Autowired
+	public EditResultController(EditResultService editResultService) {
+		this.editResultService = editResultService;
+	}
+	/**
+	 * GET /api/edit/result
+	 * 
+	 * @param mx 중간지점 경도
+	 * @param my 중간지점 위도
+	 * @param sx 출발지 경도 리스트
+	 * @param sy 출발지 위도 리스트
+	 * @return EditResultResponse(PlaceDto midpoint, List<OdsayRouteResponse>
+	 *         routes)
+	 */
+	@GetMapping("/edit/result")
+	public ResponseEntity<EditResultResponse> getEditResult(
+			@RequestParam("mx") double mx,
+			@RequestParam("my") double my, 
+			@RequestParam("sx") List<Double> sxList,
+			@RequestParam("sy") List<Double> syList) {
+		if (sxList.size() != syList.size()) {
+			return ResponseEntity.badRequest().build();
+		}
+
+		try {
+			EditResultResponse response = editResultService.getEditResult(mx, my, sxList, syList);
+			return ResponseEntity.ok(response);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.internalServerError().build();
+		}
+	}
 }
