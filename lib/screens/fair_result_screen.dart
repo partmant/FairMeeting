@@ -151,8 +151,9 @@ class _FairResultMapScreenState extends State<FairResultMapScreen> {
       name: editResult.midpoint.name,
     );
     final details = List<FairLocationRouteDetail>.generate(
-      stationDtos.length,
-          (i) => FairLocationRouteDetail(
+      // ch : 실제 반환된 개수로 처리하도록 수정 : 여기 수정하면 백이랑 확인
+      editResult.routes.length,
+      (i) => FairLocationRouteDetail(
         fromStation: stationDtos[i],
         route: editResult.routes[i],
       ),

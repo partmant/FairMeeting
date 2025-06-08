@@ -28,6 +28,7 @@ class LocationList extends StatelessWidget {
           return Card(
             margin: const EdgeInsets.symmetric(vertical: 4),
             child: ListTile(
+              tileColor: Colors.white,
               leading: const Icon(Icons.location_on),
               title: Text(name, style: const TextStyle(fontSize: 16)),
               selected: index == controller.selectedAddressIndex,

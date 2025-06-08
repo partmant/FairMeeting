@@ -13,33 +13,25 @@ class EditResultService {
   static Future<EditResultResponse> fetchEditResult({
     required double mx,
     required double my,
-    required List<LocationDto> startStations, // [0]=출발지, [1]=원래 목적지
+    required List<LocationDto> startStations, // 모든 출발지 및 도착지 리스트
   }) async {
     debugPrint('🔍 [EditResultService] fetchEditResult 호출');
 
-    // startStations[0] → 출발 지점(LocationDto)
-    // startStations[1] → 원래 도착 지점(LocationDto)
-    final start = startStations[0];
-    final dest = startStations[1];
+    // 모든 출발지 좌표를 queryParametersAll로 전달
     final uri = Uri.parse('${ApiConfig.baseUrl}/api/edit/result').replace(
       queryParameters: {
-        'mx': mx.toString(),
-        'my': my.toString(),
-        'sx': start.longitude.toString(), // 출발지 경도
-        'sy': start.latitude.toString(), // 출발지 위도
-        'dx': dest.longitude.toString(), // 도착지 경도
-        'dy': dest.latitude.toString(), // 도착지 위도
+        'mx': [mx.toString()],
+        'my': [my.toString()],
+        'sx': startStations.map((s) => s.longitude.toString()).toList(),
+        'sy': startStations.map((s) => s.latitude.toString()).toList(),
       },
     );
-    debugPrint('    URI: $uri'); // 최종 예시:
-    // …/api/edit/result?mx=126.90719550713634&my=37.525453306659784
-    // &sx=126.823828819915&sy=37.4923999909922
-    // &dx=126.97209238331357&dy=37.55597933890212
+    debugPrint('    URI: $uri');
 
     final response = await http.get(uri);
-    debugPrint('✅ [EditResultService] HTTP 상태 코드: ${response.statusCode}');
+    debugPrint('[EditResultService] HTTP 상태 코드: ${response.statusCode}');
     if (response.statusCode != 200) {
-      debugPrint('❌ [EditResultService] 비정상 상태 코드');
+      debugPrint('[EditResultService] 비정상 상태 코드');
       throw Exception('EditResult 요청 실패: ${response.statusCode}');
     }
 
@@ -50,7 +42,7 @@ class EditResultService {
       final Map<String, dynamic> jsonMap = json.decode(body);
       return EditResultResponse.fromJson(jsonMap);
     } catch (e) {
-      debugPrint('❌ [EditResultService] 파싱 오류: $e');
+      debugPrint('[EditResultService] 파싱 오류: $e');
       throw Exception('EditResult 응답 파싱 실패');
     }
   }
@@ -68,10 +60,9 @@ class EditResultService {
       startStations: startStations,
     );
 
-    // 파싱된 결과에서 FairLocationResponse 생성
     final details = List<FairLocationRouteDetail>.generate(
       startStations.length,
-      (i) => FairLocationRouteDetail(
+          (i) => FairLocationRouteDetail(
         fromStation: startStations[i],
         route: editResult.routes[i],
       ),
@@ -83,7 +74,10 @@ class EditResultService {
       name: editResult.midpoint.name,
     );
 
-    debugPrint('✅ [EditResultService] FairLocationResponse 생성 완료');
-    return FairLocationResponse(midpointStation: midStation, routes: details);
+    debugPrint('[EditResultService] FairLocationResponse 생성 완료');
+    return FairLocationResponse(
+      midpointStation: midStation,
+      routes: details,
+    );
   }
 }
