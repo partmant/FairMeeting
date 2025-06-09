@@ -37,15 +37,15 @@ class _FairLocationBottomSheetState extends State<FairLocationBottomSheet> {
   }
 
   double get _minSize {
-    const headerTotalHeight = 74.0;
+    const headerTotalHeight = 56.0;
     final usableHeight = MediaQuery.of(context).size.height -
         MediaQuery.of(context).padding.bottom;
     return headerTotalHeight / usableHeight;
   }
 
   double get _maxSize {
-    const handleHeight = 40.0;
-    const itemH = 108.0;
+    const handleHeight = 56.0;
+    const itemH = 124.0;
     final total =
         handleHeight + widget.fairLocationResponse.routes.length * itemH;
     final usableHeight = MediaQuery.of(context).size.height -
@@ -174,7 +174,7 @@ class _FairLocationBottomSheetState extends State<FairLocationBottomSheet> {
                         padding: EdgeInsets.only(
                           bottom: MediaQuery.of(context).padding.bottom,
                         ),
-                        itemCount: routes.length + 1, // 수정됨: 버튼까지 포함
+                        itemCount: routes.length + 1,
                         itemBuilder: (context, index) {
                           if (index == routes.length) {
                             // 마지막 인덱스: PutInCalendarButton
