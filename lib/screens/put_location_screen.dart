@@ -6,7 +6,6 @@ import 'package:fair_front/widgets/put_location/location_button.dart';
 import 'package:fair_front/widgets/put_location/fair_meeting_button.dart';
 import 'package:fair_front/widgets/kakao_map.dart';
 import 'package:fair_front/controllers/map_controller.dart';
-import 'package:fair_front/screens/main_menu_screen.dart';
 
 class PutLocationScreen extends StatelessWidget {
   const PutLocationScreen({Key? key}) : super(key: key);
@@ -17,17 +16,11 @@ class PutLocationScreen extends StatelessWidget {
     final mapWidth = MediaQuery.of(context).size.width - 20;
     const sidePadding = 10.0;
 
-    return WillPopScope(
-      onWillPop: () async {
-        Navigator.of(context).push(
-          MaterialPageRoute(builder: (_) => const MainmenuScreen()),
-        );
-        return false;
-      },
-      child: Scaffold(
-        backgroundColor: Colors.white,
-        appBar: common_appbar(context, title: '위치 입력하기'),
-        body: Column(
+    return Scaffold(
+      backgroundColor: Colors.white,
+      appBar: common_appbar(context, title: '위치 입력하기'),
+      body: SafeArea(
+        child: Column(
           children: [
             const SizedBox(height: sidePadding),
             SizedBox(
@@ -50,9 +43,9 @@ class PutLocationScreen extends StatelessWidget {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.only(bottom: 24.0), // 원하는 만큼 조절 가능
+              padding: const EdgeInsets.only(bottom: 24.0),
               child: FairMeetingButton(),
-            )
+            ),
           ],
         ),
       ),

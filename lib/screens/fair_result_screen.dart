@@ -43,16 +43,13 @@ class _FairResultMapScreenState extends State<FairResultMapScreen> {
   @override
   void initState() {
     super.initState();
-    // 로컬 컨트롤러 인스턴스 생성 (각 화면 독립적으로 상태 유지)
     _poiController = PoiController();
     _mapController = MapController(poiController: _poiController);
     _lodPoiController = LodPoiController(_mapController);
-    // 초기 상태
     _currentCenter = widget.initialCenter;
     _currentResponse = widget.initialResponse;
   }
 
-  // 지도 초기화
   Future<void> _initializeMap(KakaoMapController mapCtrl) async {
     _mapCtrl = mapCtrl;
     showLoadingDialog(context);
@@ -71,7 +68,6 @@ class _FairResultMapScreenState extends State<FairResultMapScreen> {
     }
   }
 
-  // 마커 및 카메라 갱신
   Future<void> _drawAndPosition(
     LatLng center,
     FairLocationResponse response, {
@@ -105,29 +101,23 @@ class _FairResultMapScreenState extends State<FairResultMapScreen> {
     }
   }
 
-  // 결과 수정
   Future<void> _handleEdit() async {
-    // 1) 수정 화면에서 새로운 중간지점의 좌표를 받아오기
     final newCenter = await Navigator.of(context).push<LatLng>(
       PageRouteBuilder(
-        pageBuilder: (_, __, ___) => EditResultScreen(
-          initialCenter: _currentCenter,
-        ),
+        pageBuilder:
+            (_, __, ___) => EditResultScreen(initialCenter: _currentCenter),
         transitionDuration: Duration.zero,
         reverseTransitionDuration: Duration.zero,
       ),
     );
     if (newCenter == null) return;
 
-    // 2) 로딩 다이얼로그 띄우고 캐시 비우기
     showLoadingDialog(context);
     _lodPoiController.clearCache();
-    
 
-    // 3) api 요청에 필요한 출발지 리스트
-    final stationDtos = _currentResponse.routes.map((d) => d.fromStation).toList();
+    final stationDtos =
+        _currentResponse.routes.map((d) => d.fromStation).toList();
 
-    // 4) 방금 받은 newCenter 위/경도로 EditResultService를 호출
     EditResultResponse editResult;
     try {
       editResult = await EditResultService.fetchEditResult(
@@ -137,21 +127,19 @@ class _FairResultMapScreenState extends State<FairResultMapScreen> {
       );
     } catch (e) {
       hideLoadingDialog(context);
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('중간지점 수정 후 경로 요청에 실패했습니다.')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('중간지점 수정 후 경로 요청에 실패했습니다.')));
       return;
     }
     hideLoadingDialog(context);
 
-    // 5) api 응답 EditResultResponse를 FairLocationResponse 형태로 바꿔서 사용
     final midDto = LocationDto(
       latitude: editResult.midpoint.latitude,
       longitude: editResult.midpoint.longitude,
       name: editResult.midpoint.name,
     );
     final details = List<FairLocationRouteDetail>.generate(
-      // ch : 실제 반환된 개수로 처리하도록 수정 : 여기 수정하면 백이랑 확인
       editResult.routes.length,
       (i) => FairLocationRouteDetail(
         fromStation: stationDtos[i],
@@ -163,7 +151,6 @@ class _FairResultMapScreenState extends State<FairResultMapScreen> {
       routes: details,
     );
 
-    // 6) 화면 상태 업데이트 및 지도에 새 위치/경로 그리기
     setState(() {
       _currentCenter = LatLng(
         updatedResponse.midpointStation.latitude,
@@ -173,11 +160,10 @@ class _FairResultMapScreenState extends State<FairResultMapScreen> {
     });
     await _drawAndPosition(_currentCenter, _currentResponse, animate: true);
 
-    // 7) MapController에 저장
     Provider.of<MapController>(context, listen: false).saveLastResult(
       coordinates: [
         ...updatedResponse.routes.map(
-              (d) => LatLng(d.fromStation.latitude, d.fromStation.longitude),
+          (d) => LatLng(d.fromStation.latitude, d.fromStation.longitude),
         ),
         _currentCenter,
       ],
@@ -190,23 +176,19 @@ class _FairResultMapScreenState extends State<FairResultMapScreen> {
   Widget build(BuildContext context) {
     return ChangeNotifierProvider<LodPoiController>.value(
       value: _lodPoiController,
-      child: WillPopScope(
-        onWillPop: () async {
-          Navigator.of(context).pop();
-          return false;
-        },
-        child: Scaffold(
-          appBar: common_appbar(
-            context,
-            title: '결과 화면',
-            extraActions: [
-              IconButton(
-                icon: const Icon(Icons.edit, color: Colors.black),
-                onPressed: _handleEdit,
-              ),
-            ],
-          ),
-          body: Stack(
+      child: Scaffold(
+        appBar: common_appbar(
+          context,
+          title: '결과 화면',
+          extraActions: [
+            IconButton(
+              icon: const Icon(Icons.edit, color: Colors.black),
+              onPressed: _handleEdit,
+            ),
+          ],
+        ),
+        body: SafeArea(
+          child: Stack(
             children: [
               KakaoMap(
                 option: KakaoMapOption(position: _currentCenter, zoomLevel: 17),
@@ -229,7 +211,6 @@ class _FairResultMapScreenState extends State<FairResultMapScreen> {
                       ),
                 ),
               ),
-              // 화면 하단에 붙이기
               Positioned(
                 left: 0,
                 right: 0,

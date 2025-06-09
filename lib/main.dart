@@ -20,14 +20,14 @@ void main() async {
 
   await dotenv.load();
   await initializeDateFormatting('ko_KR', null);
-  await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);      // 세로 고정
+  await SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+  ]); // 세로 고정
 
   await KakaoMapSdk.instance.initialize(
     dotenv.env['KAKAO_NATIVE_APP_KEY'] ?? '',
   );
-  KakaoSdk.init(
-    nativeAppKey: dotenv.env['KAKAO_NATIVE_APP_KEY'] ?? '',
-  );
+  KakaoSdk.init(nativeAppKey: dotenv.env['KAKAO_NATIVE_APP_KEY'] ?? '');
 
   SystemChrome.setSystemUIOverlayStyle(
     const SystemUiOverlayStyle(
@@ -42,9 +42,9 @@ void main() async {
       providers: [
         ChangeNotifierProvider(create: (_) => PoiController()),
         ChangeNotifierProvider(
-          create: (context) => MapController(
-            poiController: context.read<PoiController>(),
-          ),
+          create:
+              (context) =>
+                  MapController(poiController: context.read<PoiController>()),
         ),
         ChangeNotifierProvider(create: (_) => UserController()),
         ChangeNotifierProvider(create: (_) => FairResultProvider()),
@@ -65,9 +65,12 @@ class FairMeetingApp extends StatelessWidget {
     return MaterialApp(
       title: 'Fair Meeting',
       debugShowCheckedModeBanner: false,
-      locale: localeProvider.locale, // 현재 로케일 반영
-      supportedLocales: const [Locale('ko'), Locale('en')], // 다국어 지원
-      localizationsDelegates: const [ // 앱 로컬라이제이션 적용
+      locale: localeProvider.locale,
+      // 현재 로케일 반영
+      supportedLocales: const [Locale('ko'), Locale('en')],
+      // 다국어 지원
+      localizationsDelegates: const [
+        // 앱 로컬라이제이션 적용
         AppLocalizations.delegate,
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,
@@ -116,9 +119,7 @@ class FairMeetingApp extends StatelessWidget {
         iconTheme: const IconThemeData(color: Colors.white),
       ),
       home: const AppStart(),
-      routes: {
-        '/main': (context) => MainmenuScreen(),
-      },
+      routes: {'/main': (context) => MainmenuScreen()},
     );
   }
 }
