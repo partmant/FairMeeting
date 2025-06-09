@@ -3,7 +3,6 @@ import 'package:fair_front/screens/calendar_screen.dart';
 import 'package:fair_front/widgets/confirm_dialog.dart';
 import 'package:fair_front/screens/login_screen.dart';
 import 'package:provider/provider.dart';
-
 import '../controllers/user_controller.dart';
 
 class PutInCalendarButton extends StatelessWidget {
@@ -39,18 +38,10 @@ class PutInCalendarButton extends StatelessWidget {
                   Navigator.of(context).push(
                     MaterialPageRoute(
                       builder:
-                          (_) => AppointmentCalendarScreen(
+                          (_) => LoginScreen(
                             redirectToCalendar: true,
                             initialLocationName: initialLocationName,
                           ),
-                    ),
-                  );
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (_) => LoginScreen(
-                        redirectToCalendar: true,
-                        initialLocationName: initialLocationName,
-                      ),
                     ),
                   );
                 },

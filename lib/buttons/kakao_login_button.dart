@@ -61,9 +61,17 @@ class _KakaoLoginButtonState extends State<KakaoLoginButton> {
                   if (!mounted) return;
 
                   if (widget.redirectToCalendar) {
-                    // 로그인 성공 후 단순히 pop() → LoginScreen을 닫고
+                    // 로그인 성공 후 단순히 pop() -> LoginScreen을 닫고
                     // 이전에 푸시된 캘린더 화면으로 돌아갑니다.
                     Navigator.of(context).pop();
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => AppointmentCalendarScreen(
+                          redirectToCalendar: false,
+                          initialLocationName: widget.initialLocationName,
+                        ),
+                      ),
+                    );
                   } else {
                     // 메인 화면으로 이동
                     Navigator.of(context).pushReplacement(

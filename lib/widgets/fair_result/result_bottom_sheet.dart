@@ -180,9 +180,6 @@ class _FairLocationBottomSheetState extends State<FairLocationBottomSheet> {
                             // 마지막 인덱스: PutInCalendarButton
                             return PutInCalendarButton(
                               initialLocationName: centerName,
-                              onPressed: () {
-                                // todo : 캘린더에 값이 다 들어간 상태로 유지
-                              },
                             );
                           }
                           final detail = routes[index];
