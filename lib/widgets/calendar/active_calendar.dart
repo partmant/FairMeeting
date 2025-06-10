@@ -292,7 +292,9 @@ class AppointmentCalendarView extends StatelessWidget {
                                 context,
                                 MaterialPageRoute(
                                     builder: (_) =>
-                                    const LoginScreen()),
+                                    const LoginScreen(
+                                      redirectToCalendar: true
+                                    )),
                               );
                             },
                           );
