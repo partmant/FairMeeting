@@ -34,14 +34,15 @@ class _NotificationSettingsPageState extends State<NotificationSettingsPage> {
   }
 
   Future<void> _loadSettings() async {
-    final prefs   = await SharedPreferences.getInstance();
+    final prefs = await SharedPreferences.getInstance();
     final userCtrl = Provider.of<UserController>(context, listen: false);
-    final kakaoId  = userCtrl.userId;
+    final kakaoId = userCtrl.userId;
 
     setState(() {
-      basicNotification = (kakaoId != null)
-          ? prefs.getBool('$kakaoId-basicNotification') ?? false
-          : false;
+      basicNotification =
+          (kakaoId != null)
+              ? prefs.getBool('basicNotificationsEnabled') ?? false
+              : false;
       friendNotification = prefs.getBool('friendNotification') ?? false;
       noticeNotification = prefs.getBool('noticeNotification') ?? false;
       updateNotification = prefs.getBool('updateNotification') ?? false;
@@ -54,14 +55,19 @@ class _NotificationSettingsPageState extends State<NotificationSettingsPage> {
   }
 
   Widget buildSectionTitle(
-      String title, bool value, ValueChanged<bool> onChanged) {
+    String title,
+    bool value,
+    ValueChanged<bool> onChanged,
+  ) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(title,
-              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+          Text(
+            title,
+            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          ),
           CupertinoSwitch(value: value, onChanged: onChanged),
         ],
       ),
@@ -93,11 +99,14 @@ class _NotificationSettingsPageState extends State<NotificationSettingsPage> {
             children: [
               Icon(Icons.notifications_none, color: Colors.black, size: 35),
               SizedBox(width: 8),
-              Text('알림',
-                  style: TextStyle(
-                      color: Colors.black,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 25)),
+              Text(
+                '알림',
+                style: TextStyle(
+                  color: Colors.black,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 25,
+                ),
+              ),
             ],
           ),
         ),
@@ -115,7 +124,7 @@ class _NotificationSettingsPageState extends State<NotificationSettingsPage> {
             }
             setState(() => basicNotification = value);
             if (kakaoId != null) {
-              await _saveSetting('$kakaoId-basicNotification', value);
+              await _saveSetting('basicNotificationsEnabled', value);
             }
 
             if (basicNotification) {
@@ -124,12 +133,19 @@ class _NotificationSettingsPageState extends State<NotificationSettingsPage> {
               for (final appt in list) {
                 final d = appt.date;
                 final parts = appt.time.split(':').map(int.parse).toList();
-                final eventDt = DateTime(d.year, d.month, d.day, parts[0], parts[1]);
+                final eventDt = DateTime(
+                  d.year,
+                  d.month,
+                  d.day,
+                  parts[0],
+                  parts[1],
+                );
 
                 await NotificationService().scheduleDailyBefore(
-                  id:            appt.id!,
-                  title:         '내일 약속: ${appt.location}',
-                  body:          DateFormat('yyyy-MM-dd HH:mm').format(eventDt) +
+                  id: appt.id!,
+                  title: '내일 약속: ${appt.location}',
+                  body:
+                      DateFormat('yyyy-MM-dd HH:mm').format(eventDt) +
                       ' 약속이 있습니다.',
                   eventDateTime: eventDt,
                 );
@@ -138,11 +154,14 @@ class _NotificationSettingsPageState extends State<NotificationSettingsPage> {
               await NotificationService().cancelAllNotifications();
             }
 
-            final pending = await flutterLocalNotificationsPlugin
-                .pendingNotificationRequests();
+            final pending =
+                await flutterLocalNotificationsPlugin
+                    .pendingNotificationRequests();
             debugPrint('⏳ 보류 중인 알림 개수: ${pending.length}');
             for (final req in pending) {
-              debugPrint('• id=${req.id}, title=${req.title}, body=${req.body}');
+              debugPrint(
+                '• id=${req.id}, title=${req.title}, body=${req.body}',
+              );
             }
           }),
 
@@ -150,9 +169,9 @@ class _NotificationSettingsPageState extends State<NotificationSettingsPage> {
             padding: EdgeInsets.symmetric(horizontal: 16),
             child: Text(
               '아래와 같은 상황에 알림(push)으로 알려드립니다.\n'
-                  '- 약속 확정 시\n'
-                  '- 약속 1일 전\n'
-                  '- 약속 3시간 전',
+              '- 약속 확정 시\n'
+              '- 약속 1일 전\n'
+              '- 약속 3시간 전',
               style: TextStyle(fontSize: 14, height: 1.7),
             ),
           ),

@@ -36,18 +36,17 @@ class NotificationService {
   }
 
   /// 하루 전 알림 예약
-  /// 기본 알림 토글이 OFF인 경우 스킵
   Future<void> scheduleDailyBefore({
     required int id,
     required String title,
     required String body,
     required DateTime eventDateTime,
   }) async {
-    // 기본 알림 설정 체크
+    // 기본 알림 설정 체크 (토글 OFF일 때 예약 스킵)
     final prefs = await SharedPreferences.getInstance();
     final enabled = prefs.getBool('basicNotificationsEnabled') ?? false;
     if (!enabled) {
-      debugPrint('⚠️ [스킵] 기본 알림비활성화(id=$id)');
+      debugPrint('⚠️ [스킵] 기본 알림비활성화(id=$id, eventTime=$eventDateTime)');
       return;
     }
 
@@ -55,7 +54,7 @@ class NotificationService {
     final tzNow = tz.TZDateTime.now(tz.local);
     final tzEvent = tz.TZDateTime.from(eventDateTime, tz.local);
     if (tzEvent.isBefore(tzNow)) {
-      debugPrint('⚠️ [스킵] 이미 지난 약속(id=$id)');
+      debugPrint('⚠️ [스킵] 이미 지난 약속(id=$id, eventTime=$eventDateTime)');
       return;
     }
 
@@ -65,7 +64,7 @@ class NotificationService {
 
     // 2) 하루 전 시점이 지났으면 즉시 알림
     if (tzScheduled.isBefore(tzNow)) {
-      debugPrint('⚡ 즉시 알림(id=$id)');
+      debugPrint('⚡ 즉시 알림(id=$id, eventTime=$eventDateTime)');
       await showImmediateNotification(
         id: id + 100000,
         title: title,
