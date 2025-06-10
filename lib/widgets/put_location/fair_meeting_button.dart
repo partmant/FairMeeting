@@ -16,7 +16,7 @@ class FairMeetingButton extends StatelessWidget {
     final mapController = Provider.of<MapController>(context, listen: false);
 
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 16),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
       child: Material(
         color: Colors.white,
         elevation: 2,

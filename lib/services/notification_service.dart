@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/timezone.dart' as tz;
+import 'package:shared_preferences/shared_preferences.dart';
 import '../utils/notification_plugin.dart';
 
 class NotificationService {
@@ -35,31 +36,40 @@ class NotificationService {
   }
 
   /// 하루 전 알림 예약
+  /// 기본 알림 토글이 OFF인 경우 스킵
   Future<void> scheduleDailyBefore({
     required int id,
     required String title,
     required String body,
     required DateTime eventDateTime,
   }) async {
-    // 0) 약속 시간이 이미 지났으면 스킵
-    final tzNow   = tz.TZDateTime.now(tz.local);
-    final tzEvent = tz.TZDateTime.from(eventDateTime, tz.local);
-    if (tzEvent.isBefore(tzNow)) {
-      debugPrint('⚠️ [스킵] 이미 지난 약속(id=$id) 알림 미등록');
+    // 기본 알림 설정 체크
+    final prefs = await SharedPreferences.getInstance();
+    final enabled = prefs.getBool('basicNotificationsEnabled') ?? false;
+    if (!enabled) {
+      debugPrint('⚠️ [스킵] 기본 알림비활성화(id=$id)');
       return;
     }
 
-    // 1) “하루 전” 시각 계산
-    final scheduledDt  = eventDateTime.subtract(const Duration(days: 1));
-    final tzScheduled  = tz.TZDateTime.from(scheduledDt, tz.local);
+    // 0) 약속 시간이 이미 지났으면 스킵
+    final tzNow = tz.TZDateTime.now(tz.local);
+    final tzEvent = tz.TZDateTime.from(eventDateTime, tz.local);
+    if (tzEvent.isBefore(tzNow)) {
+      debugPrint('⚠️ [스킵] 이미 지난 약속(id=$id)');
+      return;
+    }
+
+    // 1) 하루 전 시각 계산
+    final scheduledDt = eventDateTime.subtract(const Duration(days: 1));
+    final tzScheduled = tz.TZDateTime.from(scheduledDt, tz.local);
 
     // 2) 하루 전 시점이 지났으면 즉시 알림
     if (tzScheduled.isBefore(tzNow)) {
-      debugPrint('⚡ 즉시 알림: id=$id');
+      debugPrint('⚡ 즉시 알림(id=$id)');
       await showImmediateNotification(
-        id:    id + 100000, // offset을 더하면 id 충돌 방지
+        id: id + 100000,
         title: title,
-        body:  body,
+        body: body,
       );
       return;
     }
@@ -68,11 +78,9 @@ class NotificationService {
     bool useExact = true;
     if (Platform.isAndroid) {
       final androidImpl = flutterLocalNotificationsPlugin
-          .resolvePlatformSpecificImplementation<
-          AndroidFlutterLocalNotificationsPlugin>();
+          .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>();
       try {
-        final granted = await androidImpl?.requestExactAlarmsPermission();
-        useExact = granted == true;
+        useExact = await androidImpl?.requestExactAlarmsPermission() ?? false;
       } catch (_) {
         useExact = false;
       }
@@ -81,7 +89,7 @@ class NotificationService {
         ? AndroidScheduleMode.exactAllowWhileIdle
         : AndroidScheduleMode.inexactAllowWhileIdle;
 
-    debugPrint('🔔 예약: id=$id, at=$tzScheduled, mode=${useExact ? '정확' : '대략'}');
+    debugPrint('🔔 예약: id=$id @ $tzScheduled (mode: ${useExact ? '정확' : '대략'})');
 
     // 4) 실제 예약
     await flutterLocalNotificationsPlugin.zonedSchedule(
@@ -105,22 +113,22 @@ class NotificationService {
   }
 
   /// 단일 알림 취소
-  Future<void> cancelNotification(int id) =>
-      flutterLocalNotificationsPlugin.cancel(id);
+  Future<void> cancelNotification(int id) async {
+    await flutterLocalNotificationsPlugin.cancel(id);
+  }
 
   /// 예약된 모든 알림 취소
-  Future<void> cancelAllNotifications() =>
-      flutterLocalNotificationsPlugin.cancelAll();
+  Future<void> cancelAllNotifications() async {
+    await flutterLocalNotificationsPlugin.cancelAll();
+  }
 
   /// iOS/macOS 권한 요청
   Future<void> requestPermissions() async {
     await flutterLocalNotificationsPlugin
-        .resolvePlatformSpecificImplementation<
-        IOSFlutterLocalNotificationsPlugin>()
+        .resolvePlatformSpecificImplementation<IOSFlutterLocalNotificationsPlugin>()
         ?.requestPermissions(alert: true, badge: true, sound: true);
     await flutterLocalNotificationsPlugin
-        .resolvePlatformSpecificImplementation<
-        MacOSFlutterLocalNotificationsPlugin>()
+        .resolvePlatformSpecificImplementation<MacOSFlutterLocalNotificationsPlugin>()
         ?.requestPermissions(alert: true, badge: true, sound: true);
   }
 }

@@ -42,10 +42,7 @@ class PutLocationScreen extends StatelessWidget {
                 child: LocationList(controller: mapController),
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.only(bottom: 24.0),
-              child: FairMeetingButton(),
-            ),
+            FairMeetingButton(),
           ],
         ),
       ),
