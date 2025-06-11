@@ -49,7 +49,7 @@
 
 	<!-- 삽입 시 useGeneratedKeys 로 PK(id) 리턴 -->
 	<insert id="insert" parameterType="net.skhu.dto.AppointmentDto"
-		useGeneratedKeys="true" keyProperty="id">
+		useGeneratedKeys="true" keyProperty="id" keyColumn="id">
 		INSERT INTO appointment (user_id,
 		date, time, location)
 		VALUES (#{userId}, #{date}, #{time}, #{location})

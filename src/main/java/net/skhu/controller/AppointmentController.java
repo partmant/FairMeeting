@@ -5,10 +5,20 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
+import net.skhu.dto.AppointmentCreateResponse;
 import net.skhu.dto.AppointmentDto;
 import net.skhu.dto.UserDto;
 import net.skhu.mapper.AppointmentMapper;
@@ -25,7 +35,7 @@ public class AppointmentController {
 
     /** 약속 생성 (POST /api/appointments) */
     @PostMapping
-    public ResponseEntity<String> createAppointment(@RequestBody AppointmentRequest req) {
+    public ResponseEntity<?> createAppointment(@RequestBody AppointmentRequest req) {
         UserDto user = userMapper.findByKakaoId(req.getKakaoId());
         if (user == null) {
             return ResponseEntity
@@ -44,9 +54,14 @@ public class AppointmentController {
         appt.setTime(req.getTime());
         appt.setLocation(req.getLocation());
         appointmentMapper.insert(appt);
+
+        // 4) 메시지 + ID 함께 반환
+        AppointmentCreateResponse resp =
+            new AppointmentCreateResponse(appt.getId(), "약속이 저장되었습니다.");
+
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body("약속이 저장되었습니다.");
+                .body(resp);
     }
 
     /** 약속 목록 조회 (GET /api/appointments?kakaoId=…) */
@@ -109,7 +124,7 @@ public class AppointmentController {
         appointmentMapper.delete(id);
         return ResponseEntity.ok("약속이 삭제되었습니다.");
     }
-    
+
     @Data
     static class AppointmentRequest {
         private String kakaoId;
