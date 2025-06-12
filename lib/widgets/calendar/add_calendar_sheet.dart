@@ -74,6 +74,7 @@ class _AddAppointmentSheetState extends State<AddAppointmentSheet> {
 
     return SafeArea(
       top: false,
+      bottom : false,
       child: ClipRRect(
         borderRadius: const BorderRadius.only(
           topLeft: Radius.circular(10),
