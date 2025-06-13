@@ -43,7 +43,7 @@ class KakaoShareService {
         ),
       ),
       // optional: 소셜 정보 (좋아요, 댓글, 공유 수 등) : 제거 가능
-      social: Social(likeCount: 100, commentCount: 20, sharedCount: 5),
+      // social: Social(likeCount: 100, commentCount: 20, sharedCount: 5),
       // optional: CTA 버튼
       buttons: [
         Button(

@@ -288,7 +288,7 @@ class AppointmentCalendarView extends StatelessWidget {
                             '로그인이 필요합니다.\n로그인하시겠습니까?',
                             confirmLabel: '확인',
                             onConfirm: () {
-                              Navigator.push(
+                              Navigator.pushReplacement(
                                 context,
                                 MaterialPageRoute(
                                     builder: (_) =>

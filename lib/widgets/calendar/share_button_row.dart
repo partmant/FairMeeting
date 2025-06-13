@@ -47,8 +47,8 @@ class ShareButtonRow extends StatelessWidget {
             padding: const EdgeInsets.symmetric(
                 horizontal: 18, vertical: 10),
             onPressed: () async {
-              final title = 'FairMeeting 약속 알림 ($dateString)';
-              final description = '📍 장소: $location\n⏰ 시간: $time';
+              final title = 'Fair Meeting 약속 알림 ($dateString)';
+              final description = '장소: $location\n시간: $time';
               final baseUrl = dotenv.env['SERVER_BASE_URL']
                   ?? 'https://your.fallback.domain.com';
               // 실제 환경이라면: '$baseUrl/static/images/app_icon.jpg'
