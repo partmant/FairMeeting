@@ -11,7 +11,7 @@ class LocationButton extends StatelessWidget {
   const LocationButton({super.key, required this.controller});
 
   Future<void> _onTap(BuildContext context) async {
-    if (controller.selectedAddresses.length > 5) {
+    if (controller.selectedAddresses.length >= 5) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text("최대 5개까지 위치를 입력할 수 있어요."),

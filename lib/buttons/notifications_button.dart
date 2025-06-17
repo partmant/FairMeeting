@@ -1,5 +1,3 @@
-// lib/buttons/notifications_button.dart
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -168,10 +166,7 @@ class _NotificationSettingsPageState extends State<NotificationSettingsPage> {
           const Padding(
             padding: EdgeInsets.symmetric(horizontal: 16),
             child: Text(
-              '아래와 같은 상황에 알림(push)으로 알려드립니다.\n'
-              '- 약속 확정 시\n'
-              '- 약속 1일 전\n'
-              '- 약속 3시간 전',
+              '약속 1일 전 알려드립니다',
               style: TextStyle(fontSize: 14, height: 1.7),
             ),
           ),

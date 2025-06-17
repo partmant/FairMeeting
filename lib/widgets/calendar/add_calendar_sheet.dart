@@ -41,16 +41,17 @@ void showAddAppointmentSheet({
 }) {
   showCupertinoModalPopup(
     context: context,
-    builder:
-        (_) => AddAppointmentSheet(
-          timeController: timeController,
-          locationController: locationController,
-          onCancel: onCancel,
-          onAdd: onAdd,
-          onDelete: onDelete,
-          title: title,
-          isEditing: isEditing,
-        ),
+    builder: (_) => SafeArea(
+      child: AddAppointmentSheet(
+        timeController: timeController,
+        locationController: locationController,
+        onCancel: onCancel,
+        onAdd: onAdd,
+        onDelete: onDelete,
+        title: title,
+        isEditing: isEditing,
+      ),
+    ),
   );
 }
 
