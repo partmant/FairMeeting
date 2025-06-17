@@ -61,6 +61,16 @@ public class FairLocationService {
 			return new FairLocationRouteDetail(start, route);
 		}).collect(Collectors.toList());
 
+		// 6. 소요 시간 0분 예외 처리 (출발지 2개인 경우에만)
+		if (routes.size() == 2) {
+		    boolean hasZeroTime = routes.stream()
+		        .anyMatch(route -> route.getRoute().getTotalTime() == 0);
+
+		    if (hasZeroTime) {
+		        throw new IllegalArgumentException("소요 시간이 0분인 출발지가 존재합니다. 출발지를 다시 설정해주세요.");
+		    }
+		}
+
 		// 요청으로 받은 출발지점 이름으로 덮어쓰기
 		for (int i = 0; i < routes.size(); i++) {
             PlaceDto original = originalPoints.get(i);
