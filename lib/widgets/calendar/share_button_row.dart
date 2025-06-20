@@ -55,7 +55,8 @@ class ShareButtonRow extends StatelessWidget {
               final imageUrl =
                   'https://via.placeholder.com/300x150.png?text=FairMeeting';
               final linkUrl =
-                  'https://yourdomain.com/appointment/${dateString}_$time';
+                  'https://m.map.naver.com/route.nhn?menu=route';
+              debugPrint('[ShareButtonRow] linkUrl = $linkUrl');
 
               try {
                 await kakaoShareService.shareFeedTemplate(

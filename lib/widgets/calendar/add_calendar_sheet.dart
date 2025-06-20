@@ -42,6 +42,7 @@ void showAddAppointmentSheet({
   showCupertinoModalPopup(
     context: context,
     builder: (_) => SafeArea(
+      bottom: false,
       child: AddAppointmentSheet(
         timeController: timeController,
         locationController: locationController,

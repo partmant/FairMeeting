@@ -47,7 +47,7 @@ class KakaoShareService {
       // optional: CTA 버튼
       buttons: [
         Button(
-          title: '웹으로 보기',
+          title: '네이버 빠른길찾기',
           link: Link(
             webUrl: Uri.parse(linkUrl),
             mobileWebUrl: Uri.parse(linkUrl),
