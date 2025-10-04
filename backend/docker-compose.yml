@@ -1,0 +1,9 @@
+services:
+  fair-back:
+    build: .
+    image: fair-back
+    ports:
+      - "8088:8088"
+    env_file:
+      - .env
+    restart: always
