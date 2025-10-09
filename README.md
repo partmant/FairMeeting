@@ -63,3 +63,7 @@
 - AWS EC2 (배포 서버)
 - AWS RDS (MySQL)
 - Neo4j (지하철 경로 탐색용 그래프DB)
+
+---
+
+🔗 [Figma 디자인 바로가기](https://www.figma.com/design/yHoLZvf0cIJbxY7TDWtGf3/%EC%BA%A1%EC%8A%A4%ED%86%A4?node-id=1-4&t=Bd3fprzq6y4rB3VY-0)
