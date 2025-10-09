@@ -12,15 +12,19 @@
 ## 🖼 주요 화면 미리보기
 
 <p>
-  <img src="images/home_screen.jpg" width="30%">
-  <img src="images/location_input.jpg" width="30%">
-  <img src="images/location_result.jpg" width="30%">
+  <img src="images/home_screen.jpg" width="25%">
+  <img src="images/address_search.jpg" width="25%">
+  <img src="images/location_result.jpg" width="25%">
 </p>
 
 <p>
-  <img src="images/recommendation.jpg" width="30%">
-  <img src="images/route_detail.jpg" width="30%">
-  <img src="images/calendar.jpg" width="30%">
+  <img src="images/recommendation.jpg" width="25%">
+  <img src="images/route_detail.jpg" width="25%">
+</p>
+
+<p>
+  <img src="images/calendar.jpg" width="25%">
+  <img src="images/calendar_edit.jpg" width="25%">
 </p>
 
 ---
